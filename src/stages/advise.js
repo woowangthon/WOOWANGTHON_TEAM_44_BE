@@ -1,0 +1,150 @@
+// ③-b 매뉴얼 조항 인용(원문 부분 문자열 검증), ④ 권고 근거·수신처·전화 스크립트·문자 초안(숫자 검증)
+import { callTool } from '../llm.js';
+import { GRADE_KO, CHANNEL_KO, isSubstring, corpusClaims, unsupportedClaims, norm } from '../util.js';
+
+const citeTool = {
+  name: 'cite_manual',
+  description: '이 사건에서 당직자가 따라야 할 매뉴얼 조항을 원문 그대로 인용한다.',
+  input_schema: {
+    type: 'object',
+    required: ['citations'],
+    properties: {
+      citations: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['clause_id', 'quote', 'why'],
+          properties: {
+            clause_id: { type: 'string' },
+            quote: { type: 'string', description: '조항 본문에서 글자 그대로 복사한 구절' },
+            why: { type: 'string', description: '이 사건에 해당하는 이유 한 문장' },
+          },
+        },
+      },
+      none_reason: { type: 'string', description: '해당 조항이 없으면 그 이유' },
+    },
+  },
+};
+
+const CITE_SYSTEM = `너는 당직 매뉴얼을 찾아 주는 동료다. 주어진 매뉴얼 조항 중 이 사건에서 당직자가 지금 따라야 할 조항만 골라 cite_manual로 답한다.
+quote는 조항 본문을 한 글자도 바꾸지 않고 복사한다(요약·의역 금지). 최대 3개. 해당 조항이 없으면 citations를 비우고 none_reason을 쓴다.
+한 조항에 문장이 여러 개면 문장마다 이 사건에 해당하는지 따로 판단하고, 해당하는 문장은 모두 quote에 넣는다(예: 「전달한다」와 「~한 경우에는 보고한다」가 둘 다 해당하면 둘 다).
+판단 근거는 주어진 신호와 기준 판정뿐이다.`;
+
+function incidentBrief(scn, state, inc) {
+  return {
+    사건: inc.title,
+    시설: scn.facilities.find((f) => f.id === inc.facility_id)?.name ?? '연결된 시설 없음',
+    권고등급: GRADE_KO[inc.grade],
+    등급근거: inc.grade_why,
+    기준판정: inc.criteria.map(({ id, label, status, observed, threshold }) => ({ id, label, status, observed, threshold })),
+    신호: inc.signal_ids.map((sid) => {
+      const s = state.byId[sid];
+      return { id: s.id, 시각: s.t, 채널: CHANNEL_KO[s.channel], 발신: s.from, 본문: s.body };
+    }),
+  };
+}
+
+// 문장 중간에서 잘린 인용은 그 문장 전체로 넓힌다(원문 그대로라 검증은 유지)
+export function wholeSentences(quote, text) {
+  const sents = text.split(/(?<=다\.)\s+/);
+  const q = norm(quote);
+  const hit = sents.filter((x) => norm(x).includes(q) || q.includes(norm(x)));
+  if (!hit.length) {
+    const i = sents.findIndex((x) => norm(x).includes(q.slice(0, 10)));
+    return i >= 0 ? sents[i] : quote;
+  }
+  return hit.join(' ');
+}
+
+export async function cite(scn, state, inc) {
+  const clauses = Object.fromEntries(scn.manual.clauses.map((c) => [c.id, c]));
+  const user = JSON.stringify({ 매뉴얼: scn.manual.clauses, ...incidentBrief(scn, state, inc) }, null, 1);
+  const bad = (c) => (!clauses[c.clause_id] ? '없는 조항 id' : !isSubstring(c.quote, clauses[c.clause_id].text) ? '원문과 글자가 다름' : null);
+  const r = await callTool({
+    tier: 'main', system: CITE_SYSTEM, user, tool: citeTool,
+    check: (o) => o.citations.map((c, i) => bad(c) && `citations[${i}](${c.clause_id}): ${bad(c)}`).filter(Boolean),
+  });
+  const shown = [];
+  const blocked = [];
+  for (const c of r.output.citations) {
+    const why = bad(c);
+    if (why) blocked.push({ ...c, why_blocked: why });
+    else shown.push({ ...c, quote: wholeSentences(c.quote, clauses[c.clause_id].text), heading: clauses[c.clause_id].heading, verified: true });
+  }
+  return { citations: shown, blocked, none_reason: shown.length ? null : r.output.none_reason ?? '해당 조항 없음', cached: r.cached, attempts: r.attempts };
+}
+
+const draftTool = {
+  name: 'draft_report',
+  description: '당직자가 고쳐서 쓸 보고·요청 초안을 만든다. 실제 발송은 사람이 한다.',
+  input_schema: {
+    type: 'object',
+    required: ['rationale', 'evidence_signal_ids', 'recipients', 'call_script', 'sms'],
+    properties: {
+      rationale: { type: 'string', description: '왜 이 권고인지 두 문장 이내' },
+      evidence_signal_ids: { type: 'array', items: { type: 'string' } },
+      recipients: { type: 'array', items: { type: 'string' }, description: '연락처 id' },
+      call_script: { type: 'string', description: '전화로 읽을 스크립트. 소속·사실·요청 순서, 6문장 이내' },
+      sms: { type: 'string', description: '문자 초안 120자 이내' },
+    },
+  },
+};
+
+const DRAFT_SYSTEM = `너는 야간 당직자의 동료다. 결정은 당직자가 하고, 너는 고쳐 쓸 초안만 만든다. draft_report 도구로 답한다.
+- 수치와 시각은 주어진 신호·기준 판정에 있는 것만 쓴다. 추정하거나 반올림하지 않는다.
+- 수신처는 주어진 연락처 id 중에서만 고른다. 통제 검토 요청 권고면 시설 관리주체를 반드시 넣는다.
+- 출처 기관을 밝힌다(누가 언제 알려 왔는지). 단정하지 말고 받은 정보로 쓴다.
+- 「조치하겠습니다」처럼 당직자가 하지 않은 일을 약속하지 않는다.`;
+
+export function evidenceCorpus(scn, state, inc, extra = []) {
+  const fac = scn.facilities.find((f) => f.id === inc.facility_id);
+  return corpusClaims([
+    ...inc.signal_ids.map((s) => `${state.byId[s].t} ${state.byId[s].body}`),
+    ...inc.criteria.map((c) => `${c.observed} ${c.threshold}`),
+    ...(fac ? scn.manual.clauses.map((c) => c.text) : []),
+    ...scn.gauges.map((g) => Object.values(g.levels).map((v) => `${v}m`).join(' ')),
+    `${state.now}`,
+    ...extra,
+  ]);
+}
+
+export async function draft(scn, state, inc) {
+  const fac = scn.facilities.find((f) => f.id === inc.facility_id);
+  const contactIds = new Set(scn.contacts.map((c) => c.id));
+  const sigIds = new Set(inc.signal_ids);
+  const corpus = evidenceCorpus(scn, state, inc);
+  const user = JSON.stringify({
+    현재시각: state.now,
+    당직실: scn.duty.office,
+    시설관리주체: fac ? fac.manager_contact : null,
+    연락처: scn.contacts,
+    인용조항: inc.citations.map(({ clause_id, heading, quote }) => ({ clause_id, heading, quote })),
+    ...incidentBrief(scn, state, inc),
+  }, null, 1);
+  const problemsOf = (o) => {
+    const p = [];
+    o.recipients.forEach((id) => !contactIds.has(id) && p.push(`recipients에 없는 연락처 id: ${id}`));
+    o.evidence_signal_ids.forEach((id) => !sigIds.has(id) && p.push(`evidence_signal_ids에 이 사건에 없는 신호: ${id}`));
+    if (inc.grade === 'control_review' && fac && !o.recipients.includes(fac.manager_contact)) p.push(`통제 검토 요청 권고인데 관리주체(${fac.manager_contact})가 수신처에 없음`);
+    for (const k of ['rationale', 'call_script', 'sms']) {
+      const u = unsupportedClaims(o[k], corpus);
+      if (u.length) p.push(`${k}에 근거 자료에 없는 수치·시각: ${u.join(', ').replace(/[TN]/g, '')}`);
+    }
+    if (o.sms.length > 160) p.push('sms가 너무 김');
+    return p;
+  };
+  const r = await callTool({ tier: 'main', system: DRAFT_SYSTEM, user, tool: draftTool, check: problemsOf });
+  const o = r.output;
+  const problems = problemsOf(o);
+  return {
+    rationale: o.rationale,
+    evidence_signal_ids: o.evidence_signal_ids.filter((id) => sigIds.has(id)),
+    recipients: o.recipients.filter((id) => contactIds.has(id)),
+    call_script: o.call_script,
+    sms: o.sms,
+    warnings: problems,
+    attempts: r.attempts,
+    cached: r.cached,
+  };
+}

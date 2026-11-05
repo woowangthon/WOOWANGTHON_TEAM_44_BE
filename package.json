@@ -1,0 +1,16 @@
+{
+  "name": "woowangthon-team-44-be",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --env-file-if-exists=.env --test \"test/*.test.js\"",
+    "test:unit": "node --test test/unit.test.js",
+    "eval": "node --env-file-if-exists=.env eval/run.js",
+    "replay": "node --env-file-if-exists=.env scripts/replay.js",
+    "dev": "node --env-file-if-exists=.env scripts/dev-server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.5.0"
+  }
+}
