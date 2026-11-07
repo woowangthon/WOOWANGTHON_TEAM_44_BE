@@ -1,7 +1,7 @@
 // 라이브 패널용 공공 API 조회(참고 표시만, 시나리오 판단에는 쓰지 않는다)
 // 수위: 한강홍수통제소 Open API, 특보: 기상청 기상특보 조회서비스(data.go.kr), 재난문자: 재난안전데이터공유플랫폼 DSSP-IF-00247
 const TIMEOUT = 8000;
-const STATION_HINT = process.env.LIVE_WL_STATION || '미호';
+const STATION_HINT = process.env.LIVE_WL_STATION || '미호강교';
 const WEATHER_STN = process.env.LIVE_WEATHER_STN || '131'; // 청주
 const SMS_REGION = process.env.LIVE_SMS_REGION || '충청북도';
 
@@ -83,8 +83,9 @@ export function parseSms(j) {
     throw new Error(`${code} ${j.header.resultMsg ?? ''}`);
   }
   const rows = Array.isArray(j?.body) ? j.body : j?.body?.items ?? j?.response?.body?.items?.item ?? [];
+  const when = (x) => String(x.CRT_DT ?? x.REG_YMD ?? '').replace(/\D/g, '');
   return {
-    items: rows.slice(0, 5).map((x) => ({
+    items: [...rows].sort((a, b) => when(b).localeCompare(when(a))).slice(0, 5).map((x) => ({
       t: x.CRT_DT ?? x.REG_YMD ?? '',
       region: x.RCPTN_RGN_NM ?? '',
       step: x.EMRG_STEP_NM ?? '',
@@ -96,7 +97,7 @@ export function parseSms(j) {
 async function sms() {
   const k = process.env.SAFETYDATA_KEY;
   if (!k) throw new Error('SAFETYDATA_KEY 없음');
-  const url = `https://www.safetydata.go.kr/V2/api/DSSP-IF-00247?serviceKey=${keyParam(k)}&returnType=json&pageNo=1&numOfRows=5&crtDt=${kstDate(6)}&rgnNm=${encodeURIComponent(SMS_REGION)}`;
+  const url = `https://www.safetydata.go.kr/V2/api/DSSP-IF-00247?serviceKey=${keyParam(k)}&returnType=json&pageNo=1&numOfRows=30&crtDt=${kstDate(6)}&rgnNm=${encodeURIComponent(SMS_REGION)}`;
   return parseSms(await getJson(url));
 }
 
