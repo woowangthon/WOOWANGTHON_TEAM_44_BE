@@ -31,11 +31,22 @@ export function createSession(scn) {
     incidents: [],
     log: [],
     next_no: 1,
-    metrics: { llm_calls: 0, citations_shown: 0, citations_blocked: 0, facts_rejected: 0, draft_warnings: 0, ai_errors: 0 },
+    metrics: { llm_calls: 0, check_failures: 0, citations_shown: 0, citations_blocked: 0, facts_verified: 0, facts_rejected: 0, draft_claims_checked: 0, draft_warnings: 0, ai_errors: 0 },
   });
 }
 
 const log = (state, e) => state.log.push({ t: state.now, ...e });
+
+// 이전 버전 상태(화면에 저장된 진행)에는 없는 지표가 있으므로 0부터 더한다
+const bump = (state, k, n = 1) => { state.metrics[k] = (state.metrics[k] ?? 0) + n; };
+const usageMark = () => { const u = getUsage(); return { calls: u.calls, retries: u.schema_retries }; };
+/** 이번 요청에서 쓴 AI 호출 수와 검증에 걸린 AI 답 수(걸리면 사유를 붙여 한 번 다시 묻는다)를 상태에 더한다 */
+export function addUsage(state, mark) {
+  const u = getUsage();
+  bump(state, 'llm_calls', u.calls - mark.calls);
+  bump(state, 'check_failures', u.schema_retries - mark.retries);
+}
+export { usageMark };
 
 function undecidedAt(inc) {
   const best = Math.max(-1, ...inc.decisions.filter((d) => d.action !== 'hold').map((d) => gradeRank(d.action)));
@@ -53,7 +64,8 @@ async function refreshAdvice(scn, state, inc, { skipAi }) {
     state.metrics.citations_blocked += c.blocked.length;
     if (gradeRank(inc.grade) >= 1) {
       inc.draft = await draft(scn, state, inc);
-      state.metrics.draft_warnings += inc.draft.warnings.length;
+      bump(state, 'draft_warnings', inc.draft.warnings.length);
+      bump(state, 'draft_claims_checked', inc.draft.claims_checked);
     }
     inc.ai_error = null;
   } catch (e) {
@@ -69,7 +81,8 @@ export async function redraft(scn, state, inc) {
   hydrate(state);
   try {
     inc.draft = await draft(scn, state, inc);
-    state.metrics.draft_warnings += inc.draft.warnings.length;
+    bump(state, 'draft_warnings', inc.draft.warnings.length);
+    bump(state, 'draft_claims_checked', inc.draft.claims_checked);
     inc.ai_error = null;
   } catch (e) {
     inc.ai_error = e.message;
@@ -84,12 +97,13 @@ export async function ingest(scn, state, raw, { skipAi = false } = {}) {
   const sig = { ...raw, status: 'pending', incident_id: null };
   state.now = sig.t;
   state.signals.push(sig);
-  const before = getUsage().calls;
+  const before = usageMark();
   try {
     const r = await normalizeSignal(scn, sig);
     sig.norm = r.norm;
     sig.facts_rejected = r.rejected;
-    state.metrics.facts_rejected += r.rejected.length;
+    bump(state, 'facts_rejected', r.rejected.length);
+    if (r.norm.by === 'llm') bump(state, 'facts_verified', r.norm.facts.length);
   } catch (e) {
     sig.norm = { place_ids: [], other_places: [], facility_ids: [], hazard: 'other', scope: 'local', urgency: 'caution', asks_action: false, one_line: sig.body.slice(0, 30), facts: [], by: 'fallback' };
     sig.ai_error = e.message;
@@ -101,7 +115,7 @@ export async function ingest(scn, state, raw, { skipAi = false } = {}) {
   if (a.action === 'background' || a.action === 'unrelated') {
     sig.status = 'background';
     log(state, { type: 'signal', signal_id: sig.id, channel: sig.channel, text: sig.norm.one_line, link: a });
-    state.metrics.llm_calls += getUsage().calls - before;
+    addUsage(state, before);
     return { signal: sig, incident: null };
   }
 
@@ -167,7 +181,7 @@ export async function ingest(scn, state, raw, { skipAi = false } = {}) {
     // 등급은 그대로지만 급한 신호가 붙으면 초안만 새로 쓴다(인용은 유지)
     await redraft(scn, state, inc);
   }
-  state.metrics.llm_calls += getUsage().calls - before;
+  addUsage(state, before);
   return { signal: sig, incident: inc };
 }
 
@@ -208,8 +222,8 @@ export function decide(scn, state, { incident_id, action, reason, recipients = [
 
 export async function makeHandover(scn, state, opts) {
   hydrate(state);
-  const before = getUsage().calls;
+  const before = usageMark();
   const r = await handover(scn, state, opts);
-  state.metrics.llm_calls += getUsage().calls - before;
+  addUsage(state, before);
   return r;
 }

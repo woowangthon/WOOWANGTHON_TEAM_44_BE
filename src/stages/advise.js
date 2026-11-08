@@ -1,6 +1,6 @@
 // ③-b 매뉴얼 조항 인용(원문 부분 문자열 검증), ④ 권고 근거·수신처·전화 스크립트·문자 초안(숫자 검증)
 import { callTool } from '../llm.js';
-import { GRADE_KO, CHANNEL_KO, isSubstring, corpusClaims, unsupportedClaims, norm } from '../util.js';
+import { GRADE_KO, CHANNEL_KO, isSubstring, corpusClaims, unsupportedClaims, numericClaims, internalCodes, norm } from '../util.js';
 
 const citeTool = {
   name: 'cite_manual',
@@ -29,7 +29,8 @@ const citeTool = {
 const CITE_SYSTEM = `너는 당직 매뉴얼을 찾아 주는 동료다. 주어진 매뉴얼 조항 중 이 사건에서 당직자가 지금 따라야 할 조항만 골라 cite_manual로 답한다.
 quote는 조항 본문을 한 글자도 바꾸지 않고 복사한다(요약·의역 금지). 최대 3개. 해당 조항이 없으면 citations를 비우고 none_reason을 쓴다.
 한 조항에 문장이 여러 개면 문장마다 이 사건에 해당하는지 따로 판단하고, 해당하는 문장은 모두 quote에 넣는다(예: 「전달한다」와 「~한 경우에는 보고한다」가 둘 다 해당하면 둘 다).
-판단 근거는 주어진 신호와 기준 판정뿐이다.`;
+판단 근거는 주어진 신호와 기준 판정뿐이다.
+why는 당직자가 읽는 문장이다. 기준·조항·연락처 id(C1, M3-1 같은 것)나 met, approaching 같은 영문 판정 코드를 쓰지 말고, 기준 이름(label)과 「도달」, 「접근」 같은 우리말로 쓴다.`;
 
 function incidentBrief(scn, state, inc) {
   return {
@@ -61,9 +62,13 @@ export async function cite(scn, state, inc) {
   const clauses = Object.fromEntries(scn.manual.clauses.map((c) => [c.id, c]));
   const user = JSON.stringify({ 매뉴얼: scn.manual.clauses, ...incidentBrief(scn, state, inc) }, null, 1);
   const bad = (c) => (!clauses[c.clause_id] ? '없는 조항 id' : !isSubstring(c.quote, clauses[c.clause_id].text) ? '원문과 글자가 다름' : null);
+  const codeIn = (c) => internalCodes(c.why);
   const r = await callTool({
     tier: 'main', system: CITE_SYSTEM, user, tool: citeTool,
-    check: (o) => o.citations.map((c, i) => bad(c) && `citations[${i}](${c.clause_id}): ${bad(c)}`).filter(Boolean),
+    check: (o) => o.citations.flatMap((c, i) => [
+      bad(c) && `citations[${i}](${c.clause_id}): ${bad(c)}`,
+      codeIn(c).length && `citations[${i}].why에 내부 코드: ${codeIn(c).join(', ')} (기준 이름과 우리말로 쓸 것)`,
+    ]).filter(Boolean),
   });
   const shown = [];
   const blocked = [];
@@ -95,7 +100,8 @@ const DRAFT_SYSTEM = `너는 야간 당직자의 동료다. 결정은 당직자�
 - 수치와 시각은 주어진 신호·기준 판정에 있는 것만 쓴다. 추정하거나 반올림하지 않는다.
 - 수신처는 주어진 연락처 id 중에서만 고른다. 통제 검토 요청 권고면 시설 관리주체를 반드시 넣는다.
 - 출처 기관을 밝힌다(누가 언제 알려 왔는지). 단정하지 말고 받은 정보로 쓴다.
-- 「조치하겠습니다」처럼 당직자가 하지 않은 일을 약속하지 않는다.`;
+- 「조치하겠습니다」처럼 당직자가 하지 않은 일을 약속하지 않는다.
+- 연락처·기준·조항 id(K1, C2, M3-1 같은 것)와 met 같은 영문 판정 코드는 글에 쓰지 않는다. 기관명과 기준 이름으로 쓴다.`;
 
 export function evidenceCorpus(scn, state, inc, extra = []) {
   const fac = scn.facilities.find((f) => f.id === inc.facility_id);
@@ -130,6 +136,8 @@ export async function draft(scn, state, inc) {
     for (const k of ['rationale', 'call_script', 'sms']) {
       const u = unsupportedClaims(o[k], corpus);
       if (u.length) p.push(`${k}에 근거 자료에 없는 수치·시각: ${u.join(', ').replace(/[TN]/g, '')}`);
+      const codes = internalCodes(o[k]);
+      if (codes.length) p.push(`${k}에 내부 코드: ${codes.join(', ')} (기관명·기준 이름으로 쓸 것)`);
     }
     if (o.sms.length > 160) p.push('sms가 너무 김');
     return p;
@@ -144,6 +152,8 @@ export async function draft(scn, state, inc) {
     call_script: o.call_script,
     sms: o.sms,
     warnings: problems,
+    // 화면에 «수치·시각 N개 근거 확인»으로 보이는 값: 최종 초안에서 검사한 수치·시각 토큰 수
+    claims_checked: ['rationale', 'call_script', 'sms'].reduce((a, k) => a + numericClaims(o[k]).size, 0),
     attempts: r.attempts,
     cached: r.cached,
   };

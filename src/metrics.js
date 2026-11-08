@@ -1,5 +1,5 @@
 // 재생 결과를 시나리오 expected와 비교하는 검증 지표 (README·발표 부록용)
-import { isSubstring, gradeRank, unsupportedClaims } from './util.js';
+import { isSubstring, gradeRank, unsupportedClaims, internalCodes } from './util.js';
 import { evidenceCorpus } from './stages/advise.js';
 
 export function scoreRun(scn, state, report) {
@@ -49,6 +49,12 @@ export function scoreRun(scn, state, report) {
     return ['rationale', 'call_script', 'sms'].flatMap((k) => unsupportedClaims(i.draft[k], corpus).map((u) => `${i.id}.${k}:${u}`));
   });
 
+  // 화면 문장(인용 이유, 초안) 속 내부 코드(C3, met 등)
+  const codeLeaks = [
+    ...shown.flatMap((c) => internalCodes(c.why).map((x) => `cite.why:${x}`)),
+    ...state.incidents.filter((i) => i.draft).flatMap((i) => ['rationale', 'call_script', 'sms'].flatMap((k) => internalCodes(i.draft[k]).map((x) => `${i.id}.${k}:${x}`))),
+  ];
+
   return {
     association_accuracy: +(correct / total).toFixed(3),
     association_wrong: wrong,
@@ -61,6 +67,8 @@ export function scoreRun(scn, state, report) {
     citations_blocked_by_verifier: state.metrics.citations_blocked,
     facts_rejected_by_verifier: state.metrics.facts_rejected,
     draft_unsupported_numbers: draftIssues,
+    internal_codes_on_screen: codeLeaks,
+    answers_failed_check: state.metrics.check_failures ?? 0,
     handover_summary_verified: report.summary_verified,
     ai_errors: state.metrics.ai_errors,
     llm_calls: state.metrics.llm_calls,

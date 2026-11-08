@@ -6,8 +6,7 @@
 // { op: 'redraft', scenario_id, state, incident_id }               초안 다시 만들기
 // { op: 'handover', scenario_id, state }
 import { handler, loadScenario } from './_lib.js';
-import { createSession, hydrate, ingest, decide, makeHandover, redraft } from '../src/engine.js';
-import { getUsage } from '../src/llm.js';
+import { createSession, hydrate, ingest, decide, makeHandover, redraft, usageMark, addUsage } from '../src/engine.js';
 import { toMin } from '../src/util.js';
 
 export const config = { maxDuration: 60 };
@@ -45,9 +44,9 @@ export default handler(async (req) => {
   if (b.op === 'redraft') {
     const inc = state.incidents.find((i) => i.id === b.incident_id);
     if (!inc) throw new Error(`없는 사건: ${b.incident_id}`);
-    const before = getUsage().calls;
+    const before = usageMark();
     await redraft(scn, state, inc);
-    state.metrics.llm_calls += getUsage().calls - before;
+    addUsage(state, before);
     return { state };
   }
   if (b.op === 'handover') return { state, ...(await makeHandover(scn, state)) };

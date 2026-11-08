@@ -16,7 +16,7 @@ const tool = {
 };
 
 const SYSTEM = `너는 야간 당직 인계 보고서의 요약을 쓴다. 주어진 결정 로그에 있는 사실·시각·수치만 쓴다.
-AI 권고와 당직자 결정을 구분해 쓴다(「AI가 권고했고 당직자가 결정했다」). 평가나 책임 판단은 하지 않는다. write_summary로 답한다.`;
+권고와 당직자 결정을 구분해 쓴다. 권고 등급은 규칙표가 정한 것이므로 「AI가 권고했다」고 쓰지 않고 「~ 권고가 올라갔고 당직자가 ~를 결정했다」처럼 쓴다. 평가나 책임 판단은 하지 않는다. write_summary로 답한다.`;
 
 const esc = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
 
@@ -38,7 +38,7 @@ export function handoverTables(scn, state) {
     lines.push(`### 사건 #${inc.no} ${inc.title}`);
     const fac = scn.facilities.find((f) => f.id === inc.facility_id);
     lines.push(`- 시설: ${fac ? `${fac.name} (관리주체: ${contact(fac.manager_contact)})` : '없음'}`);
-    lines.push(`- 최종 AI 권고: ${GRADE_KO[inc.grade]} (${inc.grade_why.join(', ')})`);
+    lines.push(`- 최종 권고 등급(규칙표): ${GRADE_KO[inc.grade]} (${inc.grade_why.join(', ')})`);
     if (inc.criteria.length) {
       lines.push('- 통제 기준 판정:');
       inc.criteria.forEach((c) => lines.push(`  - ${c.label}: ${({ met: '도달', approaching: '접근', not_met: '미도달', unknown: '자료 없음' })[c.status]} — ${c.observed}`));
@@ -46,13 +46,27 @@ export function handoverTables(scn, state) {
     lines.push('', '| 시각 | 구분 | 내용 |', '|---|---|---|');
     for (const e of state.log.filter((x) => x.incident_id === inc.id)) {
       if (e.type === 'signal') lines.push(`| ${e.t} | 신호 ${e.signal_id} (${CHANNEL_KO[e.channel]}) | ${esc(e.text)} |`);
-      if (e.type === 'grade') lines.push(`| ${e.t} | AI 권고 | ${esc(GRADE_KO[e.grade])} — ${esc(e.why.join(', '))} |`);
-      if (e.type === 'nudge') lines.push(`| ${e.t} | AI 재촉 | ${esc(e.text)} |`);
+      if (e.type === 'grade') lines.push(`| ${e.t} | 권고 상향(규칙표) | ${esc(GRADE_KO[e.grade])} — ${esc(e.why.join(', '))} |`);
+      if (e.type === 'nudge') lines.push(`| ${e.t} | 재촉(규칙) | ${esc(e.text)} |`);
       if (e.type === 'decision') lines.push(`| ${e.t} | **당직자 결정: ${ACTION_KO[e.action]}** | ${esc(e.reason)}${e.recipients.length ? ` → ${e.recipients.map(contact).join(', ')}` : ''} |`);
     }
     lines.push('');
   }
   return lines.join('\n');
+}
+
+// 이 세션에서 검증기가 한 일. 수는 모두 세션 상태의 실제 집계다(보고서 요약 호출은 아래 줄에 따로 적는다).
+export function verificationLines(state, summaryOk) {
+  const m = state.metrics;
+  const n = (k) => m[k] ?? 0;
+  return [
+    `- AI 호출 ${n('llm_calls')}회(이 보고서 요약 제외), 검증에 걸린 AI 답 ${n('check_failures')}건 — 걸리면 사유를 붙여 한 번 다시 묻습니다`,
+    `- 매뉴얼 인용: 원문과 글자 일치를 확인해 화면에 올린 인용 ${n('citations_shown')}건(갱신 포함 누적), 원문과 달라 막은 인용 ${n('citations_blocked')}건`,
+    `- 신호에서 뽑은 사실: 본문 구절과 대조해 쓴 사실 ${n('facts_verified')}건, 본문에 근거가 없어 버린 사실 ${n('facts_rejected')}건`,
+    `- 보고 초안: 수치·시각 ${n('draft_claims_checked')}개를 근거 신호와 대조, 근거 없는 수치·시각 경고 ${n('draft_warnings')}건`,
+    `- AI 실패 ${n('ai_errors')}건(실패해도 기준 판정과 권고 등급은 규칙표 결과로 유지)`,
+    `- 이 보고서 요약: ${summaryOk ? '수치·시각이 모두 기록에 있어 실음' : '검증을 통과하지 못해 싣지 않음'}`,
+  ];
 }
 
 export async function handover(scn, state, { officer = '당직원' } = {}) {
@@ -98,7 +112,8 @@ export async function handover(scn, state, { officer = '당직원' } = {}) {
     '## 사건과 무관하게 분류된 신호',
     ...(bg.length ? bg.map((x) => `- ${x}`) : ['- 없음']),
     '',
-    `AI 호출 ${state.metrics.llm_calls}회 · 화면에 올린 인용 ${state.metrics.citations_shown}건(원문 일치 검증) · 검증기가 막은 인용 ${state.metrics.citations_blocked}건`,
+    '## AI 검증 기록',
+    ...verificationLines(state, !!summary),
     ...warn.map((w) => `\n> ${w}`),
   ].join('\n');
   return { markdown: md, summary_verified: !!summary, warnings: warn };

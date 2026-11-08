@@ -2,7 +2,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { isSubstring, numericClaims, unsupportedClaims, corpusClaims } from '../src/util.js';
+import { isSubstring, numericClaims, unsupportedClaims, corpusClaims, internalCodes } from '../src/util.js';
+import { verificationLines } from '../src/stages/handover.js';
 import { validate } from '../src/schema.js';
 import { evaluateCriteria, gradeFor } from '../src/stages/criteria.js';
 import { createSession, decide } from '../src/engine.js';
@@ -22,6 +23,24 @@ test('수치·시각 추출과 근거 대조', () => {
   const corpus = corpusClaims(['미르천교 06시경 계획홍수위 9.5m 도달 예상']);
   assert.deepEqual(unsupportedClaims('06:00 9.5m 도달 예상', corpus), []);
   assert.deepEqual(unsupportedClaims('06:30 9.7m 도달 예상', corpus), ['T6:30', 'N9.7m']);
+});
+
+test('화면 문장 속 내부 코드 검출', () => {
+  assert.deepEqual(internalCodes('제3조 제1항 제3호 상황(C3 met)이 확인되었으므로'), ['C3', 'met']);
+  assert.deepEqual(internalCodes('K1에 통제 검토 요청, M3-1-2 근거, approaching'), ['K1', 'M3-1-2', 'approaching']);
+  assert.deepEqual(internalCodes('04:26 홍수경보 통보(S06), 9.5m 도달, SMS 120자'), []);
+});
+
+test('인계 보고서 검증 기록은 상태의 실제 집계를 적는다(이전 상태의 빈 지표는 0)', () => {
+  const st = createSession(scn);
+  Object.assign(st.metrics, { llm_calls: 25, check_failures: 2, citations_shown: 17 });
+  delete st.metrics.facts_verified;
+  const t = verificationLines(st, true).join('\n');
+  assert.match(t, /AI 호출 25회/);
+  assert.match(t, /검증에 걸린 AI 답 2건/);
+  assert.match(t, /화면에 올린 인용 17건/);
+  assert.match(t, /대조해 쓴 사실 0건/);
+  assert.match(verificationLines(st, false).at(-1), /싣지 않음/);
 });
 
 test('스키마 검증기', () => {

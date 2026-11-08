@@ -19,6 +19,7 @@ test('재생 e2e: 신호 → 사건 → 인용 → 권고 → 결정 → 로그 
   assert.equal(m.merged_expected_incidents, 0, '서로 다른 사건이 하나로 묶임');
   m.grade_timing.forEach((g) => assert.ok(g.ok, `${g.incident} ${g.grade} 권고가 ${g.not_later_than}까지 안 나옴`));
   assert.deepEqual(m.draft_unsupported_numbers, [], '초안에 근거 없는 수치·시각');
+  assert.deepEqual(m.internal_codes_on_screen, [], '화면 문장에 내부 코드(C3, met 등)');
 
   assert.equal(decisionLog.filter((d) => !d.skipped).length, scn.expected.demo_decisions.length);
   assert.ok(state.log.some((e) => e.type === 'decision' && e.action === 'hold'));
@@ -29,4 +30,6 @@ test('재생 e2e: 신호 → 사건 → 인용 → 권고 → 결정 → 로그 
   assert.match(report.markdown, /## 요약/);
   assert.match(report.markdown, /당직자 결정: 통제 검토 요청/);
   assert.match(report.markdown, /재생 모드 · 합성 신호/);
+  assert.match(report.markdown, /## AI 검증 기록/);
+  assert.ok(state.metrics.llm_calls > 0 && state.metrics.check_failures >= 0, '검증 집계');
 });

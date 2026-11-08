@@ -52,4 +52,12 @@ export function unsupportedClaims(text, corpus) {
   return [...numericClaims(text)].filter((c) => !corpus.has(c));
 }
 
+// 화면 문장에 섞이면 안 되는 내부 코드: 기준(C1)·조항(M3-1-2)·연락처(K1)·시설(F1)·장소(P1)·관측소(G1) id, 판정 영문 코드
+export function internalCodes(text) {
+  const s = String(text ?? '');
+  const ids = s.match(/(?<![A-Za-z0-9])[CMKFPG]\d+(?:-\d+)*(?![A-Za-z0-9])/g) ?? [];
+  const codes = s.match(/(?<![A-Za-z_])(?:met|not_met|approaching|unknown|observe|control_review)(?![A-Za-z_])/g) ?? [];
+  return [...new Set([...ids, ...codes])];
+}
+
 export const clone = (x) => structuredClone(x);
