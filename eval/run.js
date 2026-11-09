@@ -5,7 +5,7 @@ import { replayScenario } from '../src/replay.js';
 import { scoreRun } from '../src/metrics.js';
 import { getUsage, resetUsage, MODELS } from '../src/llm.js';
 
-const id = process.argv[2] || 'gaon-202607-demo';
+const id = process.argv[2] || 'cheongju-20260709';
 const n = Number(process.argv[3] || 5);
 const scn = JSON.parse(readFileSync(new URL(`../scenarios/${id}.json`, import.meta.url)));
 const runs = [];

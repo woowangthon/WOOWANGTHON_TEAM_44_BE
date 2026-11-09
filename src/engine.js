@@ -8,9 +8,12 @@ import { getUsage } from './llm.js';
 import { GRADE_KO, ACTION_KO, gradeRank, maxGrade, toMin } from './util.js';
 
 const HAZARD_KO = {
-  river_flood: '하천 범람 우려', levee: '제방 위험', road_water: '도로 침수', urban_flooding: '맨홀·배수 역류',
-  underpass: '지하차도 침수 우려', tree_fall: '가로수 쓰러짐', weather: '기상', other: '기타',
+  river_flood: '하천 수위 상승', levee: '제방 위험', road_water: '도로 침수', urban_flooding: '빗물 역류·유입',
+  underpass: '지하차도 침수 우려', tree_fall: '가로수 쓰러짐', landslide: '토사·축대 붕괴', facility_flooding: '시설 침수', outage: '정전',
+  weather: '기상', other: '기타',
 };
+// 사건 제목은 묶인 신호 중 가장 무거운 위험으로 정한다(먼저 온 신호가 가벼워도)
+const HAZARD_RANK = ['weather', 'other', 'outage', 'tree_fall', 'urban_flooding', 'facility_flooding', 'road_water', 'underpass', 'river_flood', 'levee', 'landslide'];
 const STATUS_RANK = { unknown: 0, not_met: 0, approaching: 1, met: 2 };
 
 export function hydrate(state) {
@@ -53,19 +56,27 @@ function undecidedAt(inc) {
   return best < gradeRank(inc.grade);
 }
 
-async function refreshAdvice(scn, state, inc, { skipAi }) {
+// 권고 근거 갱신. 등급이 바뀌었거나 인용이 아직 없으면 조항을 다시 찾고, 기준 판정만 바뀌었으면 초안만 다시 쓴다(AI 대기 시간 절약)
+async function refreshAdvice(scn, state, inc, { skipAi, recite = true }) {
   if (skipAi) return;
   try {
-    const c = await cite(scn, state, inc);
-    inc.citations = c.citations;
-    inc.citations_blocked = c.blocked;
-    inc.none_reason = c.none_reason;
-    state.metrics.citations_shown += c.citations.length;
-    state.metrics.citations_blocked += c.blocked.length;
-    if (gradeRank(inc.grade) >= 1) {
-      inc.draft = await draft(scn, state, inc);
-      bump(state, 'draft_warnings', inc.draft.warnings.length);
-      bump(state, 'draft_claims_checked', inc.draft.claims_checked);
+    // 조항 찾기와 초안 쓰기는 서로 기다리지 않고 함께 부른다
+    const needCite = recite || !inc.citations?.length;
+    const [c, d] = await Promise.all([
+      needCite ? cite(scn, state, inc) : null,
+      gradeRank(inc.grade) >= 1 ? draft(scn, state, inc) : null,
+    ]);
+    if (c) {
+      inc.citations = c.citations;
+      inc.citations_blocked = c.blocked;
+      inc.none_reason = c.none_reason;
+      state.metrics.citations_shown += c.citations.length;
+      state.metrics.citations_blocked += c.blocked.length;
+    }
+    if (d) {
+      inc.draft = d;
+      bump(state, 'draft_warnings', d.warnings.length);
+      bump(state, 'draft_claims_checked', d.claims_checked);
     }
     inc.ai_error = null;
   } catch (e) {
@@ -124,11 +135,15 @@ export async function ingest(scn, state, raw, { skipAi = false } = {}) {
   if (a.action === 'attach') {
     inc = state.incidents.find((i) => i.id === a.incident_id);
     inc.keys = [...new Set([...inc.keys, ...keys])];
+    if (HAZARD_RANK.indexOf(sig.norm.hazard) > HAZARD_RANK.indexOf(inc.hazard ?? 'other') && HAZARD_KO[sig.norm.hazard]) {
+      inc.hazard = sig.norm.hazard;
+      inc.title = `${inc.place_name} ${HAZARD_KO[sig.norm.hazard]}`;
+    }
   } else {
     const no = state.next_no++;
     const place = scn.places.find((p) => sig.norm.place_ids.includes(p.id))?.name ?? sig.norm.other_places[0] ?? '위치 미상';
     inc = {
-      id: `I${no}`, no, title: `${place} ${HAZARD_KO[sig.norm.hazard] ?? '기타'}`, keys: [...keys],
+      id: `I${no}`, no, title: `${place} ${HAZARD_KO[sig.norm.hazard] ?? '기타'}`, place_name: place, hazard: sig.norm.hazard, keys: [...keys],
       facility_id: null, signal_ids: [], opened_at: sig.t, last_t: sig.t,
       criteria: [], grade: 'observe', grade_why: [], grade_history: [], citations: [], citations_blocked: [],
       none_reason: null, draft: null, decisions: [], nudges: [], sig_key: null,
@@ -166,7 +181,7 @@ export async function ingest(scn, state, raw, { skipAi = false } = {}) {
     let text = null;
     if (gradeUp) text = `${held}권고가 「${GRADE_KO[inc.grade]}」로 올라갔습니다: ${inc.grade_why[0]}.`;
     else if (newlyMet.some((c) => c.status === 'met')) text = `${held}${newlyMet.find((c) => c.status === 'met').label} 기준에 도달했습니다.`;
-    else if (sig.norm.urgency === 'urgent') text = `${held}${sig.norm.one_line}.`;
+    else if (sig.norm.urgency === 'urgent' && !(inc.nudges.length && toMin(sig.t) - toMin(inc.nudges.at(-1).at) < 20)) text = `${held}${sig.norm.one_line}.`; // 같은 말을 20분 안에 되풀이하지 않는다
     if (text) {
       inc.nudges.push({ at: sig.t, text });
       log(state, { type: 'nudge', incident_id: inc.id, text });
@@ -175,8 +190,10 @@ export async function ingest(scn, state, raw, { skipAi = false } = {}) {
 
   const key = `${inc.grade}|${inc.criteria.map((c) => c.status).join(',')}`;
   if (key !== inc.sig_key) {
+    const gradeChanged = !inc.sig_key || inc.sig_key.split('|')[0] !== inc.grade;
     inc.sig_key = key;
-    await refreshAdvice(scn, state, inc, { skipAi });
+    // 관찰 등급에서 기준 판정만 바뀐 경우는 다시 부르지 않는다(초안이 없는 등급)
+    if (gradeChanged || gradeRank(inc.grade) >= 1) await refreshAdvice(scn, state, inc, { skipAi, recite: gradeChanged });
   } else if (!skipAi && gradeRank(inc.grade) >= 1 && undecidedAt(inc) && isPressing(sig.norm)) {
     // 등급은 그대로지만 급한 신호가 붙으면 초안만 새로 쓴다(인용은 유지)
     await redraft(scn, state, inc);

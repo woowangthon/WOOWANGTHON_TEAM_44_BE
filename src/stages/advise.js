@@ -64,7 +64,8 @@ export async function cite(scn, state, inc) {
   const bad = (c) => (!clauses[c.clause_id] ? '없는 조항 id' : !isSubstring(c.quote, clauses[c.clause_id].text) ? '원문과 글자가 다름' : null);
   const codeIn = (c) => internalCodes(c.why);
   const r = await callTool({
-    tier: 'main', system: CITE_SYSTEM, user, tool: citeTool,
+    // 관찰 등급(초안 없음)은 가벼운 모델로 조항을 찾는다. 검증(원문 부분 문자열)은 같다
+    tier: inc.grade === 'observe' ? 'light' : 'main', system: CITE_SYSTEM, user, tool: citeTool,
     check: (o) => o.citations.flatMap((c, i) => [
       bad(c) && `citations[${i}](${c.clause_id}): ${bad(c)}`,
       codeIn(c).length && `citations[${i}].why에 내부 코드: ${codeIn(c).join(', ')} (기준 이름과 우리말로 쓸 것)`,
@@ -125,7 +126,8 @@ export async function draft(scn, state, inc) {
     당직실: scn.duty.office,
     시설관리주체: fac ? fac.manager_contact : null,
     연락처: scn.contacts,
-    인용조항: inc.citations.map(({ clause_id, heading, quote }) => ({ clause_id, heading, quote })),
+    // 조항 찾기와 동시에 쓰므로 고른 인용 대신 매뉴얼 전체를 준다(인용 검증은 cite가 따로 한다)
+    매뉴얼: scn.manual.clauses.map(({ heading, text }) => ({ heading, text })),
     ...incidentBrief(scn, state, inc),
   }, null, 1);
   const problemsOf = (o) => {

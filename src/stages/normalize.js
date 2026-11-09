@@ -2,7 +2,7 @@
 import { callTool } from '../llm.js';
 import { isSubstring, norm } from '../util.js';
 
-const HAZARDS = ['river_flood', 'levee', 'road_water', 'urban_flooding', 'underpass', 'tree_fall', 'weather', 'other'];
+const HAZARDS = ['river_flood', 'levee', 'road_water', 'urban_flooding', 'underpass', 'tree_fall', 'landslide', 'facility_flooding', 'outage', 'weather', 'other'];
 const FACT_TYPES = ['flood_watch_issued', 'flood_warning_issued', 'level_observed', 'level_forecast', 'levee_concern', 'closure_request', 'road_water', 'road_blocked', 'life_risk', 'other'];
 
 const tool = {
@@ -41,7 +41,9 @@ const SYSTEM = `너는 지자체 야간 당직실의 신호 정리 담당이다.
 규칙: 본문에 없는 사실을 만들지 않는다. evidence_span은 본문을 글자 그대로 복사한다. value와 at도 본문에 적힌 것만 쓴다.
 홍수주의보 발령은 flood_watch_issued, 홍수경보 발령은 flood_warning_issued, 관측 수위는 level_observed, 예상 수위는 level_forecast,
 제방 유실·월류·넘침 우려는 levee_concern, 통행 차단 요청은 closure_request, 도로 물 고임은 road_water,
-도로나 차선이 막힘(한 차선만 막혀도 해당)은 road_blocked, 사람이 다쳤거나 고립·대피가 필요한 인명 위험은 life_risk.`;
+도로나 차선이 막힘(한 차선만 막혀도 해당)은 road_blocked, 사람이 다쳤거나 고립·대피가 필요한 인명 위험은 life_risk.
+hazard: 토사 유출·축대 붕괴·산사태·낙석은 landslide, 학교·건물·주차장 등 시설이 물에 잠김은 facility_flooding, 정전·낙뢰는 outage, 하천 물이 제방까지 차오름은 levee.
+시청과 무관한 단순 문의(버스 운행, 일정 등)로 특정 장소의 위험이 없으면 scope는 citywide, urgency는 info.`;
 
 function aliasMatch(scn, body) {
   const b = norm(body);
@@ -52,10 +54,10 @@ function ruleNormalize(scn, sig) {
   const d = sig.data;
   if (d.type === 'gauge') {
     const g = scn.gauges.find((x) => x.id === d.gauge);
-    const over = Object.entries(g.levels).filter(([, v]) => d.level_m >= v).map(([k]) => k).pop();
+    const over = Object.entries(g.levels).filter(([, v]) => typeof v === 'number' && d.level_m >= v).sort((a, b) => a[1] - b[1]).map(([k]) => k).pop();
     return {
       place_ids: [g.place_id], other_places: [], facility_ids: [], hazard: 'river_flood', scope: 'local',
-      urgency: over === '계획홍수위' ? 'urgent' : over ? 'caution' : 'info', asks_action: false,
+      urgency: ['계획홍수위', '심각', '경계', '경보', '주의'].includes(over) ? 'urgent' : over ? 'caution' : 'info', asks_action: false,
       one_line: `${g.name} ${d.level_m}m${over ? ` (${over} 이상)` : ''}`,
       facts: [{ type: 'level_observed', gauge_id: g.id, value: d.level_m, at: sig.t, evidence_span: sig.body, verified: true }],
       by: 'rule',

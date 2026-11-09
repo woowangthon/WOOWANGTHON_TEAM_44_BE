@@ -1,11 +1,11 @@
-// 재생 e2e: 실제 Claude API로 가상 시나리오를 끝까지 재생 (키가 없으면 건너뜀)
+// 재생 e2e: 실제 Claude API로 청주 2026-07-09 시나리오를 끝까지 재생 (키가 없으면 건너뜀)
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { replayScenario } from '../src/replay.js';
 import { scoreRun } from '../src/metrics.js';
 
-const scn = JSON.parse(readFileSync(new URL('../scenarios/gaon-202607-demo.json', import.meta.url)));
+const scn = JSON.parse(readFileSync(new URL('../scenarios/cheongju-20260709.json', import.meta.url)));
 
 test('재생 e2e: 신호 → 사건 → 인용 → 권고 → 결정 → 로그 → 인계 보고서', { skip: !process.env.ANTHROPIC_API_KEY && 'ANTHROPIC_API_KEY 없음', timeout: 600_000 }, async () => {
   const { state, report, decisionLog } = await replayScenario(scn);
@@ -23,8 +23,10 @@ test('재생 e2e: 신호 → 사건 → 인용 → 권고 → 결정 → 로그 
 
   assert.equal(decisionLog.filter((d) => !d.skipped).length, scn.expected.demo_decisions.length);
   assert.ok(state.log.some((e) => e.type === 'decision' && e.action === 'hold'));
-  const i1 = state.incidents.find((i) => i.signal_ids.includes('S10'));
-  assert.ok(i1.draft.recipients.includes('K1'), '관리주체가 수신처 초안에 없음');
+  const i1 = state.incidents.find((i) => i.signal_ids.includes('C06'));
+  assert.equal(i1.grade, 'control_review');
+  assert.ok(i1.draft.recipients.includes('K3'), '하상도로 관리 부서가 수신처 초안에 없음');
+  assert.ok(i1.nudges.length > 0, '보류 뒤 수위가 주의 수위를 넘었는데 재촉이 없음');
   assert.ok(i1.decisions.every((d) => d.sent === false), '실제 발송 표시가 있으면 안 됨');
 
   assert.match(report.markdown, /## 요약/);

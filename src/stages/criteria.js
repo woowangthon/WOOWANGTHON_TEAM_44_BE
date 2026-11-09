@@ -41,6 +41,31 @@ export function evaluateCriteria(scn, state, inc) {
       else if (lastObs || maxFc) status = 'not_met';
       return { ...base, status, observed: parts.join(', ') || '자료 없음', threshold: `홍수경보 + ${c.level} ${plan}m 도달 예상`, evidence: [...new Set(evidence)] };
     }
+    if (c.kind === 'river_alert') {
+      // 하천변 도로·둔치: 해당 관측소에 홍수특보가 나오거나 관측 수위가 기준 수위에 닿으면 도달
+      const g = scn.gauges.find((x) => x.id === c.gauge);
+      const lv = g.levels[c.level];
+      const near = c.near_level ? g.levels[c.near_level] : undefined;
+      const mine = (f) => f.gauge_id === g.id || (!f.gauge_id && f.place_ids.includes(g.place_id));
+      const alert = facts.filter((f) => ['flood_watch_issued', 'flood_warning_issued'].includes(f.type) && mine(f));
+      const obs = facts.filter((f) => f.type === 'level_observed' && mine(f) && typeof f.value === 'number');
+      const lastObs = obs.at(-1);
+      const parts = [];
+      if (alert.length) parts.push(alert.some((f) => f.type === 'flood_warning_issued') ? '홍수경보 발령' : '홍수주의보 발령');
+      if (lastObs) parts.push(`관측 ${lastObs.value}m (${lastObs.at ?? state.byId[lastObs.signal_id].t})`);
+      let status = 'unknown';
+      if (alert.length || (lastObs && typeof lv === 'number' && lastObs.value >= lv)) status = 'met';
+      else if (lastObs && typeof near === 'number' && lastObs.value >= near) status = 'approaching';
+      else if (lastObs) status = 'not_met';
+      return { ...base, status, observed: parts.join(', ') || '자료 없음', threshold: `${g.name} 홍수특보 또는 ${c.level} 수위${typeof lv === 'number' ? ` ${lv}m` : ''}`,
+        evidence: [...new Set([...alert, lastObs].filter(Boolean).map((f) => f.signal_id))] };
+    }
+    if (c.kind === 'fact_report') {
+      // 지정한 장소에서 지정한 종류의 사실(물 고임, 통행 막힘 등)이 신고되면 도달
+      const xs = facts.filter((f) => c.fact_types.includes(f.type) && f.place_ids.some((p) => c.place_ids.includes(p)));
+      return { ...base, status: xs.length ? 'met' : 'unknown', observed: xs.length ? `신고 ${xs.length}건` : '신고 없음',
+        threshold: c.threshold_label ?? '신고 접수', evidence: [...new Set(xs.map((f) => f.signal_id))] };
+    }
     if (c.kind === 'levee_report') {
       const xs = facts.filter((f) => f.type === 'levee_concern' && f.place_ids.includes(c.place_id));
       return { ...base, status: xs.length ? 'met' : 'unknown', observed: xs.length ? `신고 ${xs.length}건` : '신고 없음',
@@ -50,7 +75,7 @@ export function evaluateCriteria(scn, state, inc) {
   });
 }
 
-// 규칙표: 기준 하나라도 met → 통제 검토 요청 권고 / 접근·홍수경보·긴급·통행 차단 요청·통행 막힘·인명 위험 → 보고 권고 / 그 외 관찰
+// 규칙표: 기준 하나라도 met → 통제 검토 요청 권고 / 접근·홍수경보·긴급·통행 차단 요청·통행 막힘·인명 위험·토사·하천 넘침 우려 → 보고 권고 / 그 외 관찰
 export function gradeFor(state, inc, criteria) {
   const why = [];
   const met = criteria.filter((c) => c.status === 'met');
@@ -62,6 +87,8 @@ export function gradeFor(state, inc, criteria) {
   if (sigs.some((s) => s.norm.facts.some((f) => f.type === 'closure_request'))) why.push('통행 차단 요청');
   if (sigs.some((s) => s.norm.facts.some((f) => f.type === 'road_blocked'))) why.push('도로 통행 막힘');
   if (sigs.some((s) => s.norm.facts.some((f) => f.type === 'life_risk'))) why.push('인명 위험');
+  if (sigs.some((s) => s.norm.hazard === 'landslide')) why.push('토사·축대 붕괴 신고');
+  if (sigs.some((s) => s.norm.facts.some((f) => f.type === 'levee_concern'))) why.push('하천 넘침·제방 우려 신고');
   if (why.length) return { grade: 'report', why };
   return { grade: 'observe', why: ['기준 미도달, 긴급 신호 없음'] };
 }

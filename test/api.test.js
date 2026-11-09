@@ -19,17 +19,17 @@ function call(fn, { method = 'GET', query = {}, body } = {}) {
 
 test('시나리오 목록과 상세(정답 제외)', async () => {
   const list = await call(scenarios);
-  assert.ok(list.body.some((s) => s.id === 'gaon-202607-demo'));
-  const one = await call(scenarios, { query: { id: 'gaon-202607-demo' } });
+  assert.ok(list.body.some((s) => s.id === 'cheongju-20260709'));
+  const one = await call(scenarios, { query: { id: 'cheongju-20260709' } });
   assert.equal(one.body.expected, undefined);
   assert.equal(one.body.synthetic, true);
   assert.equal((await call(scenarios, { query: { id: '../x' } })).code, 400);
 });
 
 test('세션 시작 → 결정 검증 오류는 400', async () => {
-  const s = await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'gaon-202607-demo' } });
+  const s = await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-20260709' } });
   assert.equal(s.body.state.cursor, 0);
-  const bad = await call(session, { method: 'POST', body: { op: 'decide', scenario_id: 'gaon-202607-demo', state: s.body.state, incident_id: 'I1', action: 'report', reason: 'x', recipients: ['K2'] } });
+  const bad = await call(session, { method: 'POST', body: { op: 'decide', scenario_id: 'cheongju-20260709', state: s.body.state, incident_id: 'I1', action: 'report', reason: 'x', recipients: ['K2'] } });
   assert.equal(bad.code, 400);
   assert.match(bad.body.error, /없는 사건/);
 });

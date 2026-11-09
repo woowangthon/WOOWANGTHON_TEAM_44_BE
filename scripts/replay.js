@@ -4,7 +4,7 @@ import { replayScenario } from '../src/replay.js';
 import { getUsage } from '../src/llm.js';
 import { GRADE_KO } from '../src/util.js';
 
-const id = process.argv[2] || 'gaon-202607-demo';
+const id = process.argv[2] || 'cheongju-20260709';
 const scn = JSON.parse(readFileSync(new URL(`../scenarios/${id}.json`, import.meta.url)));
 const t0 = Date.now();
 const { state, report } = await replayScenario(scn, {

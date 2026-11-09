@@ -8,7 +8,7 @@ import { validate } from '../src/schema.js';
 import { evaluateCriteria, gradeFor } from '../src/stages/criteria.js';
 import { createSession, decide } from '../src/engine.js';
 
-const scn = JSON.parse(readFileSync(new URL('../scenarios/gaon-202607-demo.json', import.meta.url)));
+const scn = JSON.parse(readFileSync(new URL('./fixtures/gaon-202607-demo.json', import.meta.url)));
 
 test('인용 검증: 공백 차이는 통과, 한 글자라도 바뀌면 막는다', () => {
   const t = scn.manual.clauses.find((c) => c.id === 'M3-1-2').text;
@@ -111,4 +111,29 @@ test('통행 막힘은 보고 권고(매뉴얼 제4조)', () => {
   const g = gradeFor(st, { signal_ids: ['S12'] }, []);
   assert.equal(g.grade, 'report');
   assert.ok(g.why.includes('도로 통행 막힘'));
+});
+
+test('청주 규칙표: 홍수주의보면 하상도로 기준 도달, 경계 수위면 접근, 토사·하천 넘침 신고는 보고 권고', () => {
+  const cj = JSON.parse(readFileSync(new URL('../scenarios/cheongju-20260709.json', import.meta.url)));
+  const mk = (rows) => ({ signals: rows.map(([id, place, n]) => ({ id, t: cj.signals.find((s) => s.id === id)?.t ?? '06:00', norm: { ...base, place_ids: [place], ...n } })),
+    get byId() { return Object.fromEntries(this.signals.map((s) => [s.id, s])); } });
+  let st = mk([['C06', 'P1', { facts: [{ type: 'flood_watch_issued', evidence_span: '홍수주의보' }] }]]);
+  let inc = { facility_id: 'F1', signal_ids: ['C06'] };
+  let c = evaluateCriteria(cj, st, inc);
+  assert.equal(c.find((x) => x.id === 'C1').status, 'met');
+  assert.equal(gradeFor(st, inc, c).grade, 'control_review');
+
+  st = mk([['C05', 'P2', { facts: [{ type: 'level_observed', gauge_id: 'G2', value: 2.58, evidence_span: '2.58m' }] }]]);
+  inc = { facility_id: 'F2', signal_ids: ['C05'] };
+  c = evaluateCriteria(cj, st, inc);
+  assert.equal(c.find((x) => x.id === 'C3').status, 'approaching');
+  assert.equal(gradeFor(st, inc, c).grade, 'report');
+
+  st = mk([['C08', 'P3', { hazard: 'landslide', facts: [] }], ['C12', 'P6', { facts: [{ type: 'levee_concern', evidence_span: '제방' }] }]]);
+  assert.equal(gradeFor(st, { signal_ids: ['C08'] }, []).grade, 'report');
+  assert.equal(gradeFor(st, { signal_ids: ['C12'] }, []).grade, 'report');
+
+  st = mk([['C13', 'P10', { facts: [{ type: 'road_water', evidence_span: '물이 차' }] }]]);
+  c = evaluateCriteria(cj, st, { facility_id: 'F3', signal_ids: ['C13'] });
+  assert.equal(c[0].status, 'met');
 });
