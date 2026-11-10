@@ -1,0 +1,263 @@
+{
+ "agg": {
+  "scenario": "cheongju-20260709",
+  "runs": 3,
+  "models": {
+   "light": "claude-haiku-5-5",
+   "main": "claude-sonnet-5-5"
+  },
+  "at": "2026-11-10T04:15:57.948Z",
+  "association_accuracy_mean": 1,
+  "runs_with_merged_incidents": 0,
+  "grade_timing_ok_runs": 3,
+  "citations_shown_total": 51,
+  "citations_hallucinated_total": 0,
+  "citations_blocked_total": 0,
+  "facts_rejected_total": 0,
+  "draft_unsupported_total": 0,
+  "internal_codes_on_screen_total": 0,
+  "answers_failed_check_total": 5,
+  "runs_with_failed_check": 3,
+  "handover_summary_verified_runs": 3,
+  "ai_errors_total": 0,
+  "llm_calls_mean": 47,
+  "tokens_mean": 190792,
+  "secs_mean": 170
+ },
+ "runs": [
+  {
+   "run": 1,
+   "secs": 173,
+   "association_accuracy": 1,
+   "association_wrong": [],
+   "merged_expected_incidents": 0,
+   "predicted_incidents": 10,
+   "expected_incidents": 10,
+   "grade_timing": [
+    {
+     "incident": "E_mipyeong",
+     "grade": "control_review",
+     "not_later_than": "C05",
+     "at_signal": "C04",
+     "ok": true
+    },
+    {
+     "incident": "E_musim",
+     "grade": "control_review",
+     "not_later_than": "C06",
+     "at_signal": "C06",
+     "ok": true
+    },
+    {
+     "incident": "E_nangseong",
+     "grade": "report",
+     "not_later_than": "C08",
+     "at_signal": "C08",
+     "ok": true
+    },
+    {
+     "incident": "E_gadeok",
+     "grade": "report",
+     "not_later_than": "C10",
+     "at_signal": "C10",
+     "ok": true
+    },
+    {
+     "incident": "E_biha",
+     "grade": "report",
+     "not_later_than": "C12",
+     "at_signal": "C12",
+     "ok": true
+    },
+    {
+     "incident": "E_munam",
+     "grade": "control_review",
+     "not_later_than": "C13",
+     "at_signal": "C13",
+     "ok": true
+    },
+    {
+     "incident": "E_suseok",
+     "grade": "report",
+     "not_later_than": "C15",
+     "at_signal": "C15",
+     "ok": true
+    }
+   ],
+   "citations_shown": 19,
+   "citations_hallucinated": 0,
+   "citations_blocked_by_verifier": 0,
+   "facts_rejected_by_verifier": 0,
+   "draft_unsupported_numbers": [],
+   "internal_codes_on_screen": [],
+   "answers_failed_check": 3,
+   "handover_summary_verified": true,
+   "ai_errors": 0,
+   "llm_calls": 48,
+   "usage": {
+    "calls": 48,
+    "input_tokens": 161986,
+    "output_tokens": 34904,
+    "schema_retries": 3,
+    "failures": 0,
+    "cache_hits": 0
+   }
+  },
+  {
+   "run": 2,
+   "secs": 169,
+   "association_accuracy": 1,
+   "association_wrong": [],
+   "merged_expected_incidents": 0,
+   "predicted_incidents": 10,
+   "expected_incidents": 10,
+   "grade_timing": [
+    {
+     "incident": "E_mipyeong",
+     "grade": "control_review",
+     "not_later_than": "C05",
+     "at_signal": "C04",
+     "ok": true
+    },
+    {
+     "incident": "E_musim",
+     "grade": "control_review",
+     "not_later_than": "C06",
+     "at_signal": "C06",
+     "ok": true
+    },
+    {
+     "incident": "E_nangseong",
+     "grade": "report",
+     "not_later_than": "C08",
+     "at_signal": "C08",
+     "ok": true
+    },
+    {
+     "incident": "E_gadeok",
+     "grade": "report",
+     "not_later_than": "C10",
+     "at_signal": "C10",
+     "ok": true
+    },
+    {
+     "incident": "E_biha",
+     "grade": "report",
+     "not_later_than": "C12",
+     "at_signal": "C12",
+     "ok": true
+    },
+    {
+     "incident": "E_munam",
+     "grade": "control_review",
+     "not_later_than": "C13",
+     "at_signal": "C13",
+     "ok": true
+    },
+    {
+     "incident": "E_suseok",
+     "grade": "report",
+     "not_later_than": "C15",
+     "at_signal": "C15",
+     "ok": true
+    }
+   ],
+   "citations_shown": 16,
+   "citations_hallucinated": 0,
+   "citations_blocked_by_verifier": 0,
+   "facts_rejected_by_verifier": 0,
+   "draft_unsupported_numbers": [],
+   "internal_codes_on_screen": [],
+   "answers_failed_check": 1,
+   "handover_summary_verified": true,
+   "ai_errors": 0,
+   "llm_calls": 47,
+   "usage": {
+    "calls": 47,
+    "input_tokens": 156990,
+    "output_tokens": 34223,
+    "schema_retries": 1,
+    "failures": 0,
+    "cache_hits": 0
+   }
+  },
+  {
+   "run": 3,
+   "secs": 169,
+   "association_accuracy": 1,
+   "association_wrong": [],
+   "merged_expected_incidents": 0,
+   "predicted_incidents": 10,
+   "expected_incidents": 10,
+   "grade_timing": [
+    {
+     "incident": "E_mipyeong",
+     "grade": "control_review",
+     "not_later_than": "C05",
+     "at_signal": "C04",
+     "ok": true
+    },
+    {
+     "incident": "E_musim",
+     "grade": "control_review",
+     "not_later_than": "C06",
+     "at_signal": "C06",
+     "ok": true
+    },
+    {
+     "incident": "E_nangseong",
+     "grade": "report",
+     "not_later_than": "C08",
+     "at_signal": "C08",
+     "ok": true
+    },
+    {
+     "incident": "E_gadeok",
+     "grade": "report",
+     "not_later_than": "C10",
+     "at_signal": "C10",
+     "ok": true
+    },
+    {
+     "incident": "E_biha",
+     "grade": "report",
+     "not_later_than": "C12",
+     "at_signal": "C12",
+     "ok": true
+    },
+    {
+     "incident": "E_munam",
+     "grade": "control_review",
+     "not_later_than": "C13",
+     "at_signal": "C13",
+     "ok": true
+    },
+    {
+     "incident": "E_suseok",
+     "grade": "report",
+     "not_later_than": "C15",
+     "at_signal": "C15",
+     "ok": true
+    }
+   ],
+   "citations_shown": 16,
+   "citations_hallucinated": 0,
+   "citations_blocked_by_verifier": 0,
+   "facts_rejected_by_verifier": 0,
+   "draft_unsupported_numbers": [],
+   "internal_codes_on_screen": [],
+   "answers_failed_check": 1,
+   "handover_summary_verified": true,
+   "ai_errors": 0,
+   "llm_calls": 46,
+   "usage": {
+    "calls": 46,
+    "input_tokens": 150935,
+    "output_tokens": 33337,
+    "schema_retries": 1,
+    "failures": 0,
+    "cache_hits": 0
+   }
+  }
+ ]
+}

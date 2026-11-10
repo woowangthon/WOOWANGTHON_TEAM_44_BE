@@ -63,12 +63,12 @@ export function evaluateCriteria(scn, state, inc) {
     if (c.kind === 'fact_report') {
       // 지정한 장소에서 지정한 종류의 사실(물 고임, 통행 막힘 등)이 신고되면 도달
       const xs = facts.filter((f) => c.fact_types.includes(f.type) && f.place_ids.some((p) => c.place_ids.includes(p)));
-      return { ...base, status: xs.length ? 'met' : 'unknown', observed: xs.length ? `신고 ${xs.length}건` : '신고 없음',
+      return { ...base, status: xs.length ? 'met' : 'unknown', observed: xs.length ? `신고 ${new Set(xs.map((f) => f.signal_id)).size}건` : '신고 없음',
         threshold: c.threshold_label ?? '신고 접수', evidence: [...new Set(xs.map((f) => f.signal_id))] };
     }
     if (c.kind === 'levee_report') {
       const xs = facts.filter((f) => f.type === 'levee_concern' && f.place_ids.includes(c.place_id));
-      return { ...base, status: xs.length ? 'met' : 'unknown', observed: xs.length ? `신고 ${xs.length}건` : '신고 없음',
+      return { ...base, status: xs.length ? 'met' : 'unknown', observed: xs.length ? `신고 ${new Set(xs.map((f) => f.signal_id)).size}건` : '신고 없음',
         threshold: '유실·월류 우려 신고 접수', evidence: [...new Set(xs.map((f) => f.signal_id))] };
     }
     return { ...base, status: 'unknown', observed: '판정 규칙 없음', threshold: '-', evidence: [] };

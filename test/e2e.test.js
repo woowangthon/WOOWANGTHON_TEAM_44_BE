@@ -27,7 +27,7 @@ test('재생 e2e: 신호 → 사건 → 인용 → 권고 → 결정 → 로그 
   assert.equal(i1.grade, 'control_review');
   assert.ok(i1.draft.recipients.includes('K3'), '하상도로 관리 부서가 수신처 초안에 없음');
   assert.ok(i1.nudges.length > 0, '보류 뒤 수위가 주의 수위를 넘었는데 재촉이 없음');
-  assert.ok(i1.decisions.every((d) => d.sent === false), '실제 발송 표시가 있으면 안 됨');
+  assert.ok(i1.decisions.every((d) => d.sent_by_system === false), '시스템이 보낸 것으로 기록되면 안 됨');
 
   assert.match(report.markdown, /## 요약/);
   assert.match(report.markdown, /당직자 결정: 통제 검토 요청/);

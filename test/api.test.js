@@ -33,3 +33,32 @@ test('세션 시작 → 결정 검증 오류는 400', async () => {
   assert.equal(bad.code, 400);
   assert.match(bad.body.error, /없는 사건/);
 });
+
+test('체험 접속 기간과 접속 코드', async () => {
+  const { default: access } = await import('../api/access.js');
+  const { openAccess } = await import('../api/_lib.js');
+  const keep = { u: process.env.OPEN_ACCESS_UNTIL, c: process.env.DEMO_ACCESS_CODE };
+  process.env.DEMO_ACCESS_CODE = 'test-code';
+  process.env.OPEN_ACCESS_UNTIL = '2099-01-01';
+  assert.equal(openAccess().open, true);
+  assert.equal((await call(access)).body.open, true);
+  // 체험 기간에는 코드 없이 AI 경로가 열린다(start는 AI를 부르지 않는다)
+  assert.equal((await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-live' } })).code, 200);
+  process.env.OPEN_ACCESS_UNTIL = '2020-01-01';
+  assert.equal(openAccess().open, false);
+  assert.equal((await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-live' } })).code, 401);
+  assert.equal((await call(access, { method: 'POST', body: { code: 'nope' } })).code, 401);
+  process.env.OPEN_ACCESS_UNTIL = '2099-01-01';
+  assert.equal((await call(access, { method: 'POST', body: { code: 'nope' } })).code, 401);
+  assert.equal((await call(access, { method: 'POST', body: { code: 'test-code' } })).body.ok, true);
+  for (const [k, v] of [['OPEN_ACCESS_UNTIL', keep.u], ['DEMO_ACCESS_CODE', keep.c]]) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+});
+
+test('실시간 기지는 신호 없이 시작하고 목록에 live로 표시된다', async () => {
+  const list = await call(scenarios);
+  const live = list.body.find((s) => s.id === 'cheongju-live');
+  assert.equal(live.live, true);
+  assert.equal(live.signals, 0);
+  const s = await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-live' } });
+  assert.equal(s.body.state.signals.length, 0);
+});

@@ -1,6 +1,6 @@
 // 재생 결과를 시나리오 expected와 비교하는 검증 지표 (README·발표 부록용)
 import { isSubstring, gradeRank, unsupportedClaims, internalCodes } from './util.js';
-import { evidenceCorpus } from './stages/advise.js';
+import { evidenceCorpus, briefTexts } from './stages/advise.js';
 
 export function scoreRun(scn, state, report) {
   const exp = scn.expected;
@@ -46,13 +46,13 @@ export function scoreRun(scn, state, report) {
   // 초안 숫자: 마지막 초안의 수치·시각이 근거 자료에 있는가
   const draftIssues = state.incidents.filter((i) => i.draft).flatMap((i) => {
     const corpus = evidenceCorpus(scn, { ...state, byId }, i);
-    return ['rationale', 'call_script', 'sms'].flatMap((k) => unsupportedClaims(i.draft[k], corpus).map((u) => `${i.id}.${k}:${u}`));
+    return briefTexts(i.draft).flatMap(([k, t]) => unsupportedClaims(t, corpus).map((u) => `${i.id}.${k}:${u}`));
   });
 
   // 화면 문장(인용 이유, 초안) 속 내부 코드(C3, met 등)
   const codeLeaks = [
     ...shown.flatMap((c) => internalCodes(c.why).map((x) => `cite.why:${x}`)),
-    ...state.incidents.filter((i) => i.draft).flatMap((i) => ['rationale', 'call_script', 'sms'].flatMap((k) => internalCodes(i.draft[k]).map((x) => `${i.id}.${k}:${x}`))),
+    ...state.incidents.filter((i) => i.draft).flatMap((i) => briefTexts(i.draft).flatMap(([k, t]) => internalCodes(t).map((x) => `${i.id}.${k}:${x}`))),
   ];
 
   return {

@@ -2,14 +2,17 @@
 // { op: 'start', scenario_id }
 // { op: 'advance', scenario_id, state, until: 'HH:MM', max?: 1 }   재생 시계 진행(한 번에 max건)
 // { op: 'memo', scenario_id, state, body, from? }                 당직자가 직접 넣은 전화 메모
-// { op: 'decide', scenario_id, state, incident_id, action, reason, recipients, call_script?, sms? }
+// { op: 'decide', scenario_id, state, incident_id, action, reason, contacts: [{ id, status, note }], brief? }
+// { op: 'contact', scenario_id, state, incident_id, contact_id, status, note? }      회신 받음 등 연락 결과 고치기
 // { op: 'redraft', scenario_id, state, incident_id }               초안 다시 만들기
 // { op: 'handover', scenario_id, state }
 import { handler, loadScenario } from './_lib.js';
-import { createSession, hydrate, ingest, decide, makeHandover, redraft, usageMark, addUsage } from '../src/engine.js';
+import { createSession, hydrate, ingest, decide, updateContact, makeHandover, redraft, usageMark, addUsage } from '../src/engine.js';
 import { toMin } from '../src/util.js';
 
 export const config = { maxDuration: 60 };
+
+const kstToday = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
 
 export default handler(async (req) => {
   if (req.method !== 'POST') throw Object.assign(new Error('POST만 지원'), { status: 405 });
@@ -41,6 +44,7 @@ export default handler(async (req) => {
     const d = decide(scn, state, b);
     return { state, decision: d };
   }
+  if (b.op === 'contact') return { state, contact: updateContact(scn, state, b) };
   if (b.op === 'redraft') {
     const inc = state.incidents.find((i) => i.id === b.incident_id);
     if (!inc) throw new Error(`없는 사건: ${b.incident_id}`);
@@ -49,6 +53,10 @@ export default handler(async (req) => {
     addUsage(state, before);
     return { state };
   }
-  if (b.op === 'handover') return { state, ...(await makeHandover(scn, state)) };
+  if (b.op === 'handover') {
+    // 실제 근무 기록은 오늘 날짜와 첫 신호 시각으로 머리말을 쓴다
+    const s = scn.live ? { ...scn, clock: { ...scn.clock, date: kstToday(), start: state.signals[0]?.t ?? state.now } } : scn;
+    return { state, ...(await makeHandover(s, state)) };
+  }
   throw new Error(`알 수 없는 op: ${b.op}`);
 });

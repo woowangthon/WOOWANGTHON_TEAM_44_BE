@@ -20,9 +20,13 @@ const SYSTEM = `너는 야간 당직 인계 보고서의 요약을 쓴다. 주�
 
 const esc = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
 
-export function pendingItems(state) {
+export function pendingItems(state, scn) {
   const items = [];
+  const org = (id) => scn?.contacts.find((c) => c.id === id)?.org ?? id;
   for (const inc of state.incidents) {
+    for (const d of inc.decisions) {
+      for (const c of d.contacts ?? []) if (c.status === 'pending') items.push(`사건 #${inc.no} ${inc.title}: ${org(c.id)} 회신 대기(${d.at} 연락)${c.note ? ` — ${c.note}` : ''}`);
+    }
     const last = inc.decisions.at(-1);
     if (gradeRank(inc.grade) >= 1 && !last) items.push(`사건 #${inc.no} ${inc.title}: ${GRADE_KO[inc.grade]} 상태에서 결정 없음`);
     else if (last?.action === 'hold') items.push(`사건 #${inc.no} ${inc.title}: ${last.at} 보류 — ${last.reason}`);
@@ -48,7 +52,11 @@ export function handoverTables(scn, state) {
       if (e.type === 'signal') lines.push(`| ${e.t} | 신호 ${e.signal_id} (${CHANNEL_KO[e.channel]}) | ${esc(e.text)} |`);
       if (e.type === 'grade') lines.push(`| ${e.t} | 권고 상향(규칙표) | ${esc(GRADE_KO[e.grade])} — ${esc(e.why.join(', '))} |`);
       if (e.type === 'nudge') lines.push(`| ${e.t} | 재촉(규칙) | ${esc(e.text)} |`);
-      if (e.type === 'decision') lines.push(`| ${e.t} | **당직자 결정: ${ACTION_KO[e.action]}** | ${esc(e.reason)}${e.recipients.length ? ` → ${e.recipients.map(contact).join(', ')}` : ''} |`);
+      if (e.type === 'decision') {
+        const who = (e.contacts ?? e.recipients.map((id) => ({ id, status: 'reached' }))).map((c) => `${contact(c.id)}(${c.status === 'pending' ? '회신 대기' : '전달함'}${c.note ? `: ${c.note}` : ''})`);
+        lines.push(`| ${e.t} | **당직자 결정: ${ACTION_KO[e.action]}** | ${esc(e.reason)}${who.length ? ` → ${esc(who.join(', '))}` : ''} |`);
+      }
+      if (e.type === 'contact') lines.push(`| ${e.t} | 연락 결과 | ${esc(contact(e.contact_id))}: ${e.status === 'pending' ? '회신 대기' : '회신 받음'}${e.note ? `, ${esc(e.note)}` : ''} |`);
     }
     lines.push('');
   }
@@ -63,7 +71,7 @@ export function verificationLines(state, summaryOk) {
     `- AI 호출 ${n('llm_calls')}회(이 보고서 요약 제외), 검증에 걸린 AI 답 ${n('check_failures')}건 — 걸리면 사유를 붙여 한 번 다시 묻습니다`,
     `- 매뉴얼 인용: 원문과 글자 일치를 확인해 화면에 올린 인용 ${n('citations_shown')}건(갱신 포함 누적), 원문과 달라 막은 인용 ${n('citations_blocked')}건`,
     `- 신호에서 뽑은 사실: 본문 구절과 대조해 쓴 사실 ${n('facts_verified')}건, 본문에 근거가 없어 버린 사실 ${n('facts_rejected')}건`,
-    `- 보고 초안: 수치·시각 ${n('draft_claims_checked')}개를 근거 신호와 대조, 근거 없는 수치·시각 경고 ${n('draft_warnings')}건`,
+    `- 전달 사항: 수치·시각 ${n('draft_claims_checked')}개를 근거 신호와 대조, 근거 없는 수치·시각 경고 ${n('draft_warnings')}건`,
     `- AI 실패 ${n('ai_errors')}건(실패해도 기준 판정과 권고 등급은 규칙표 결과로 유지)`,
     `- 이 보고서 요약: ${summaryOk ? '수치·시각이 모두 기록에 있어 실음' : '검증을 통과하지 못해 싣지 않음'}`,
   ];
@@ -71,7 +79,7 @@ export function verificationLines(state, summaryOk) {
 
 export async function handover(scn, state, { officer = '당직원' } = {}) {
   const tables = handoverTables(scn, state);
-  const pending = pendingItems(state);
+  const pending = pendingItems(state, scn);
   const bg = state.signals.filter((s) => s.status === 'background').map((s) => `${s.t} ${s.norm.one_line}`);
   const corpus = corpusClaims([tables, ...pending, ...bg, ...state.signals.map((s) => `${s.t} ${s.body}`)]);
   const user = JSON.stringify({ 당직실: scn.duty.office, 결정로그: tables, 미결: pending, 배경신호: bg }, null, 1);

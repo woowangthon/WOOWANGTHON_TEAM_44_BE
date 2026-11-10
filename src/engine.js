@@ -214,27 +214,52 @@ export async function advanceTo(scn, state, time, opts) {
   return out;
 }
 
-export function decide(scn, state, { incident_id, action, reason, recipients = [], call_script, sms, by = '당직원', at }) {
+const CONTACT_STATUS = ['reached', 'pending'];
+
+/**
+ * 당직자 결정. 연락은 당직자가 전화·메신저로 직접 하고, 여기에는 결정과 연락 결과만 남긴다.
+ * contacts: [{ id, status: 'reached'(전달함) | 'pending'(회신 대기), note? }]  (recipients만 주면 모두 전달함으로 본다)
+ */
+export function decide(scn, state, { incident_id, action, reason, recipients, contacts, brief, by = '당직원', at }) {
   hydrate(state);
   const inc = state.incidents.find((i) => i.id === incident_id);
   if (!inc) throw new Error(`없는 사건: ${incident_id}`);
   if (!['report', 'control_review', 'hold'].includes(action)) throw new Error(`알 수 없는 결정: ${action}`);
   if (!reason || !reason.trim()) throw new Error('사유는 필수입니다');
+  const list = action === 'hold' ? [] : (contacts ?? (recipients ?? []).map((id) => ({ id, status: 'reached' })));
   const ids = new Set(scn.contacts.map((c) => c.id));
-  const bad = recipients.filter((r) => !ids.has(r));
+  const bad = list.filter((c) => !ids.has(c.id)).map((c) => c.id);
   if (bad.length) throw new Error(`없는 수신처: ${bad.join(', ')}`);
-  if (action !== 'hold' && !recipients.length) throw new Error('보고·요청은 수신처가 필요합니다');
+  if (list.some((c) => !CONTACT_STATUS.includes(c.status))) throw new Error('연락 결과는 전달함 또는 회신 대기입니다');
+  if (action !== 'hold' && !list.length) throw new Error('보고·요청은 연락한 곳이 필요합니다');
+  const t = at ?? state.now;
   const d = {
-    action, reason: reason.trim(), recipients, by, at: at ?? state.now,
+    action, reason: reason.trim(), recipients: list.map((c) => c.id), by, at: t,
+    contacts: list.map((c) => ({ id: c.id, status: c.status, note: (c.note ?? '').trim().slice(0, 200), at: t })),
     ai_grade_at_decision: inc.grade,
     followed_ai: action === 'hold' ? null : gradeRank(action) >= gradeRank(inc.grade),
-    call_script: call_script ?? inc.draft?.call_script ?? null,
-    sms: sms ?? inc.draft?.sms ?? null,
-    sent: false, // 실제 발송 없음. 「보냈다고 기록」
+    brief: action === 'hold' ? null : (brief ?? (inc.draft ? { headline: inc.draft.headline, facts: inc.draft.facts, ask: inc.draft.ask } : null)),
+    sent_by_system: false, // 시스템은 연락하지 않는다. 당직자가 직접 연락한 결과를 기록한다
   };
   inc.decisions.push(d);
-  log(state, { type: 'decision', incident_id: inc.id, action, reason: d.reason, recipients, by, t: d.at });
+  log(state, { type: 'decision', incident_id: inc.id, action, reason: d.reason, recipients: d.recipients, contacts: d.contacts, by, t });
   return d;
+}
+
+/** 회신 대기였던 곳의 결과를 나중에 고친다(예: 회신 받음) */
+export function updateContact(scn, state, { incident_id, contact_id, status, note }) {
+  hydrate(state);
+  const inc = state.incidents.find((i) => i.id === incident_id);
+  if (!inc) throw new Error(`없는 사건: ${incident_id}`);
+  if (!CONTACT_STATUS.includes(status)) throw new Error('연락 결과는 전달함 또는 회신 대기입니다');
+  const d = [...inc.decisions].reverse().find((x) => x.contacts?.some((c) => c.id === contact_id));
+  if (!d) throw new Error('이 사건에서 연락한 기록이 없는 곳입니다');
+  const c = d.contacts.find((x) => x.id === contact_id);
+  c.status = status;
+  if (note?.trim()) c.note = note.trim().slice(0, 200);
+  c.at = state.now;
+  log(state, { type: 'contact', incident_id: inc.id, contact_id, status, note: c.note, t: state.now });
+  return c;
 }
 
 export async function makeHandover(scn, state, opts) {

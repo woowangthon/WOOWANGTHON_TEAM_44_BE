@@ -77,7 +77,7 @@ test('결정: 사유 필수, 없는 수신처 거부, 보류는 수신처 없어
   st.incidents.push({ id: 'I1', decisions: [], grade: 'report', draft: null });
   assert.throws(() => decide(scn, st, { incident_id: 'I1', action: 'report', reason: ' ', recipients: ['K2'] }), /사유/);
   assert.throws(() => decide(scn, st, { incident_id: 'I1', action: 'report', reason: '경보', recipients: ['K99'] }), /수신처/);
-  assert.equal(decide(scn, st, { incident_id: 'I1', action: 'hold', reason: '현장 확인 대기' }).sent, false);
+  assert.equal(decide(scn, st, { incident_id: 'I1', action: 'hold', reason: '현장 확인 대기' }).sent_by_system, false);
   assert.equal(st.log.at(-1).type, 'decision');
 });
 
@@ -89,8 +89,8 @@ for (const file of readdirSync(new URL('../scenarios/', import.meta.url)).filter
     const times = s.signals.map((x) => x.t);
     assert.deepEqual(times, [...times].sort());
     assert.equal(typeof s.synthetic, 'boolean');
-    for (const e of s.expected.incidents) e.signals.forEach((x) => assert.ok(ids.includes(x), x));
-    for (const x of s.expected.background ?? []) assert.ok(ids.includes(x), x);
+    for (const e of s.expected?.incidents ?? []) e.signals.forEach((x) => assert.ok(ids.includes(x), x));
+    for (const x of s.expected?.background ?? []) assert.ok(ids.includes(x), x);
     for (const f of s.facilities) {
       assert.ok(s.contacts.some((k) => k.id === f.manager_contact));
       f.criteria.forEach((c) => assert.ok(s.manual.clauses.some((m) => m.id === c.clause), c.clause));
@@ -136,4 +136,20 @@ test('청주 규칙표: 홍수주의보면 하상도로 기준 도달, 경계 �
   st = mk([['C13', 'P10', { facts: [{ type: 'road_water', evidence_span: '물이 차' }] }]]);
   c = evaluateCriteria(cj, st, { facility_id: 'F3', signal_ids: ['C13'] });
   assert.equal(c[0].status, 'met');
+});
+
+test('연락 결과: 전달함·회신 대기 기록, 회신 받음으로 고치기, 인계 미결에 회신 대기', async () => {
+  const { updateContact } = await import('../src/engine.js');
+  const { pendingItems } = await import('../src/stages/handover.js');
+  const st = createSession(scn);
+  st.incidents.push({ id: 'I1', no: 1, title: '시험 사건', grade: 'report', grade_why: [], decisions: [], nudges: [], signal_ids: [], criteria: [], citations: [], grade_history: [] });
+  const k = scn.contacts.map((c) => c.id);
+  const d = decide(scn, st, { incident_id: 'I1', action: 'report', reason: '보고', contacts: [{ id: k[0], status: 'reached', note: '당직 책임자 확인' }, { id: k[1], status: 'pending' }] });
+  assert.deepEqual(d.recipients, [k[0], k[1]]);
+  assert.equal(d.sent_by_system, false);
+  assert.ok(pendingItems(st, scn).some((x) => x.includes('회신 대기')));
+  updateContact(scn, st, { incident_id: 'I1', contact_id: k[1], status: 'reached', note: '현장 확인 후 회신' });
+  assert.ok(!pendingItems(st, scn).some((x) => x.includes('회신 대기')));
+  assert.throws(() => decide(scn, st, { incident_id: 'I1', action: 'report', reason: '보고', contacts: [{ id: k[0], status: 'sent' }] }), /연락 결과/);
+  assert.throws(() => decide(scn, st, { incident_id: 'I1', action: 'report', reason: '보고', contacts: [] }), /연락한 곳/);
 });

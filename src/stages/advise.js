@@ -30,7 +30,8 @@ const CITE_SYSTEM = `너는 당직 매뉴얼을 찾아 주는 동료다. 주어�
 quote는 조항 본문을 한 글자도 바꾸지 않고 복사한다(요약·의역 금지). 최대 3개. 해당 조항이 없으면 citations를 비우고 none_reason을 쓴다.
 한 조항에 문장이 여러 개면 문장마다 이 사건에 해당하는지 따로 판단하고, 해당하는 문장은 모두 quote에 넣는다(예: 「전달한다」와 「~한 경우에는 보고한다」가 둘 다 해당하면 둘 다).
 판단 근거는 주어진 신호와 기준 판정뿐이다.
-why는 당직자가 읽는 문장이다. 기준·조항·연락처 id(C1, M3-1 같은 것)나 met, approaching 같은 영문 판정 코드를 쓰지 말고, 기준 이름(label)과 「도달」, 「접근」 같은 우리말로 쓴다.`;
+why는 당직자가 읽는 문장이다. 기준·조항·연락처 id(C1, M3-1 같은 것)나 met, approaching 같은 영문 판정 코드를 쓰지 말고, 기준 이름(label)과 「도달」, 「접근」 같은 우리말로 쓴다.
+why에 수위 같은 수치를 쓸 때는 기준판정의 observed(지금 값)를 쓴다. 신호에 같은 관측소의 수위가 여러 번 있으면 가장 늦은 시각의 값이 지금 값이고, 앞선 값을 지금처럼 쓰지 않는다.`;
 
 function incidentBrief(scn, state, inc) {
   return {
@@ -82,27 +83,33 @@ export async function cite(scn, state, inc) {
 }
 
 const draftTool = {
-  name: 'draft_report',
-  description: '당직자가 고쳐서 쓸 보고·요청 초안을 만든다. 실제 발송은 사람이 한다.',
+  name: 'draft_brief',
+  description: '당직자가 전화나 메신저로 연락할 때 보고 말할 전달 사항을 정리한다. 연락은 사람이 한다.',
   input_schema: {
     type: 'object',
-    required: ['rationale', 'evidence_signal_ids', 'recipients', 'call_script', 'sms'],
+    required: ['rationale', 'evidence_signal_ids', 'recipients', 'headline', 'facts', 'ask'],
     properties: {
       rationale: { type: 'string', description: '왜 이 권고인지 두 문장 이내' },
       evidence_signal_ids: { type: 'array', items: { type: 'string' } },
       recipients: { type: 'array', items: { type: 'string' }, description: '연락처 id' },
-      call_script: { type: 'string', description: '전화로 읽을 스크립트. 소속·사실·요청 순서, 6문장 이내' },
-      sms: { type: 'string', description: '문자 초안 120자 이내' },
+      headline: { type: 'string', description: '무엇이 어디서 일어났는지 한 줄. 40자 이내' },
+      facts: { type: 'array', items: { type: 'string' }, minItems: 1, maxItems: 4, description: '받은 사실을 한 줄씩(2~3줄, 한 줄 50자 안팎). 「시각 출처: 내용」 꼴, 수치는 관측 시각과 함께' },
+      ask: { type: 'string', description: '받는 기관에 요청할 것 한 문장' },
     },
   },
 };
 
-const DRAFT_SYSTEM = `너는 야간 당직자의 동료다. 결정은 당직자가 하고, 너는 고쳐 쓸 초안만 만든다. draft_report 도구로 답한다.
-- 수치와 시각은 주어진 신호·기준 판정에 있는 것만 쓴다. 추정하거나 반올림하지 않는다.
+const DRAFT_SYSTEM = `너는 야간 당직자의 동료다. 결정과 연락은 당직자가 하고, 너는 당직자가 전화나 메신저로 연락하면서 보고 말할 전달 사항을 짧게 정리한다. draft_brief 도구로 답한다.
+- 전달 사항은 읽는 대본이 아니라 한눈에 보는 메모다. headline 한 줄, facts 두세 줄(한 줄에 사실 하나, 50자 안팎), ask 한 문장으로 쓴다. 인사말, 「당직실입니다」, 「~라고 알려 옴」 같은 군더더기는 줄이고 「13:06 사직동 주민 전화: …」처럼 시각과 출처를 앞에 둔다.
+- 수치와 시각은 주어진 신호·기준 판정에 있는 것만 쓴다. 추정하거나 반올림하지 않는다. 같은 관측소 수위가 여럿이면 가장 늦은 값을 쓴다.
 - 수신처는 주어진 연락처 id 중에서만 고른다. 통제 검토 요청 권고면 시설 관리주체를 반드시 넣는다.
-- 출처 기관을 밝힌다(누가 언제 알려 왔는지). 단정하지 말고 받은 정보로 쓴다.
+- 출처 기관을 밝힌다(누가 언제 알려 왔는지). 단정하지 말고 받은 정보로 쓴다. 확인되지 않은 것은 확인되지 않았다고 쓴다.
 - 「조치하겠습니다」처럼 당직자가 하지 않은 일을 약속하지 않는다.
 - 연락처·기준·조항 id(K1, C2, M3-1 같은 것)와 met 같은 영문 판정 코드는 글에 쓰지 않는다. 기관명과 기준 이름으로 쓴다.`;
+
+const TEXT_KEYS = ['rationale', 'headline', 'ask'];
+/** 전달 사항에서 수치·시각 검증을 할 글: 근거, 한 줄 요약, 사실 줄들, 요청 */
+export const briefTexts = (o) => [...TEXT_KEYS.map((k) => [k, o[k] ?? '']), ...(o.facts ?? []).map((f, i) => [`facts[${i}]`, f])];
 
 export function evidenceCorpus(scn, state, inc, extra = []) {
   const fac = scn.facilities.find((f) => f.id === inc.facility_id);
@@ -135,13 +142,14 @@ export async function draft(scn, state, inc) {
     o.recipients.forEach((id) => !contactIds.has(id) && p.push(`recipients에 없는 연락처 id: ${id}`));
     o.evidence_signal_ids.forEach((id) => !sigIds.has(id) && p.push(`evidence_signal_ids에 이 사건에 없는 신호: ${id}`));
     if (inc.grade === 'control_review' && fac && !o.recipients.includes(fac.manager_contact)) p.push(`통제 검토 요청 권고인데 관리주체(${fac.manager_contact})가 수신처에 없음`);
-    for (const k of ['rationale', 'call_script', 'sms']) {
-      const u = unsupportedClaims(o[k], corpus);
+    for (const [k, text] of briefTexts(o)) {
+      const u = unsupportedClaims(text, corpus);
       if (u.length) p.push(`${k}에 근거 자료에 없는 수치·시각: ${u.join(', ').replace(/[TN]/g, '')}`);
-      const codes = internalCodes(o[k]);
+      const codes = internalCodes(text);
       if (codes.length) p.push(`${k}에 내부 코드: ${codes.join(', ')} (기관명·기준 이름으로 쓸 것)`);
     }
-    if (o.sms.length > 160) p.push('sms가 너무 김');
+    if ((o.headline ?? '').length > 60) p.push('headline이 너무 김');
+    if ((o.facts ?? []).length > 4) p.push('facts는 4줄 이내');
     return p;
   };
   const r = await callTool({ tier: 'main', system: DRAFT_SYSTEM, user, tool: draftTool, check: problemsOf });
@@ -151,11 +159,12 @@ export async function draft(scn, state, inc) {
     rationale: o.rationale,
     evidence_signal_ids: o.evidence_signal_ids.filter((id) => sigIds.has(id)),
     recipients: o.recipients.filter((id) => contactIds.has(id)),
-    call_script: o.call_script,
-    sms: o.sms,
+    headline: o.headline,
+    facts: (o.facts ?? []).slice(0, 4),
+    ask: o.ask,
     warnings: problems,
-    // 화면에 «수치·시각 N개 근거 확인»으로 보이는 값: 최종 초안에서 검사한 수치·시각 토큰 수
-    claims_checked: ['rationale', 'call_script', 'sms'].reduce((a, k) => a + numericClaims(o[k]).size, 0),
+    // 화면에 «수치·시각 N개 근거 확인»으로 보이는 값: 최종 전달 사항에서 검사한 수치·시각 토큰 수
+    claims_checked: briefTexts(o).reduce((a, [, t]) => a + numericClaims(t).size, 0),
     attempts: r.attempts,
     cached: r.cached,
   };
