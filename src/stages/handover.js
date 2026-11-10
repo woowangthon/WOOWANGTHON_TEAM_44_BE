@@ -63,6 +63,14 @@ export function handoverTables(scn, state) {
   return lines.join('\n');
 }
 
+// 이전 근무에서 인계함으로 넘겨받은 것(받은 근무자가 이어받았는지)
+export function receivedLines(rc) {
+  if (!rc?.items?.length) return [];
+  const t = (x) => esc(String(x ?? '').slice(0, 200));
+  return ['## 이전 근무에서 넘겨받은 것', `${t(rc.from)}, ${t(rc.period)}`,
+    ...rc.items.slice(0, 20).map((i) => `- ${i.taken ? '이어받음' : '확인만'}: ${t(i.title)} — ${t(i.text)}`), ''];
+}
+
 // 이 세션에서 검증기가 한 일. 수는 모두 세션 상태의 실제 집계다(보고서 요약 호출은 아래 줄에 따로 적는다).
 export function verificationLines(state, summaryOk) {
   const m = state.metrics;
@@ -77,7 +85,7 @@ export function verificationLines(state, summaryOk) {
   ];
 }
 
-export async function handover(scn, state, { officer = '당직원' } = {}) {
+export async function handover(scn, state, { officer = '당직원', received = null } = {}) {
   const tables = handoverTables(scn, state);
   const pending = pendingItems(state, scn);
   const bg = state.signals.filter((s) => s.status === 'background').map((s) => `${s.t} ${s.norm.one_line}`);
@@ -112,7 +120,8 @@ export async function handover(scn, state, { officer = '당직원' } = {}) {
     '## 요약',
     summary ?? '(AI 요약 없음 — 아래 기록을 확인하세요)',
     '',
-    '## 아침 담당자 확인 사항',
+    ...receivedLines(received),
+    '## 다음 근무자 확인 사항',
     ...(open.length ? open.map((x) => `- ${x}`) : ['- 없음']),
     '',
     '## 사건별 기록',

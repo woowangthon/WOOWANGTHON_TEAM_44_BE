@@ -102,16 +102,23 @@ async function sms() {
 }
 
 let cache = null;
+const lastGood = {}; // 항목마다 마지막으로 성공한 값(잠깐 실패하면 이것을 보여 준다)
 export async function liveSnapshot({ maxAgeMs = 60_000 } = {}) {
-  if (cache && Date.now() - cache.fetched < maxAgeMs) return { ...cache.data, cached: true };
-  const wrap = async (fn) => {
+  // 하나라도 실패했으면 10초만 기억하고 다시 부른다(첫 호출이 느려 실패한 것을 1분 동안 보여 주지 않게)
+  const age = cache && (Object.values(cache.ok).every(Boolean) ? maxAgeMs : 10_000);
+  if (cache && Date.now() - cache.fetched < age) return { ...cache.data, cached: true };
+  const wrap = async (key, fn) => {
     try {
-      return { ok: true, ...(await fn()) };
+      const v = { ok: true, ...(await fn()) };
+      lastGood[key] = { at: Date.now(), v };
+      return v;
     } catch (e) {
-      return { ok: false, error: scrub(e.name === 'TimeoutError' ? '응답 시간 초과' : e.message === 'fetch failed' ? '서버에 접속하지 못함' : e.message) };
+      const g = lastGood[key];
+      if (g && Date.now() - g.at < 30 * 60_000) return { ...g.v, stale: true };
+      return { ok: false, error: scrub(e.name === 'TimeoutError' ? '응답이 늦어 다시 불러오는 중' : e.message === 'fetch failed' ? '서버에 접속하지 못함' : e.message) };
     }
   };
-  const [w, wx, m] = await Promise.all([wrap(water), wrap(weather), wrap(sms)]);
+  const [w, wx, m] = await Promise.all([wrap('water', water), wrap('weather', weather), wrap('sms', sms)]);
   const data = {
     at: new Date().toISOString(),
     region: '충청북도(실제 데이터, 참고용)',
@@ -119,6 +126,6 @@ export async function liveSnapshot({ maxAgeMs = 60_000 } = {}) {
     weather: { source: '기상청 기상특보 조회서비스(공공데이터포털)', stn: WEATHER_STN, ...wx },
     sms: { source: '행정안전부 긴급재난문자(재난안전데이터공유플랫폼), 공공누리 제4유형 — 원문을 바꾸지 않고 표시', region: SMS_REGION, ...m },
   };
-  cache = { fetched: Date.now(), data };
+  cache = { fetched: Date.now(), data, ok: { w: w.ok, wx: wx.ok, m: m.ok } };
   return { ...data, cached: false };
 }

@@ -10,10 +10,11 @@ import { GRADE_KO, ACTION_KO, gradeRank, maxGrade, toMin } from './util.js';
 const HAZARD_KO = {
   river_flood: '하천 수위 상승', levee: '제방 위험', road_water: '도로 침수', urban_flooding: '빗물 역류·유입',
   underpass: '지하차도 침수 우려', tree_fall: '가로수 쓰러짐', landslide: '토사·축대 붕괴', facility_flooding: '시설 침수', outage: '정전',
-  weather: '기상', other: '기타',
+  water_main: '상수도 누수·동파', road_damage: '도로 시설 파손', streetlight: '가로등·신호등 고장', snow_ice: '도로 결빙·제설', animal: '동물 신고',
+  fire_gas: '화재·가스 신고', noise: '소음 민원', person: '보호가 필요한 사람', weather: '기상', other: '기타',
 };
 // 사건 제목은 묶인 신호 중 가장 무거운 위험으로 정한다(먼저 온 신호가 가벼워도)
-const HAZARD_RANK = ['weather', 'other', 'outage', 'tree_fall', 'urban_flooding', 'facility_flooding', 'road_water', 'underpass', 'river_flood', 'levee', 'landslide'];
+const HAZARD_RANK = ['weather', 'other', 'noise', 'animal', 'streetlight', 'road_damage', 'snow_ice', 'water_main', 'outage', 'tree_fall', 'urban_flooding', 'facility_flooding', 'road_water', 'underpass', 'river_flood', 'levee', 'person', 'landslide', 'fire_gas'];
 const STATUS_RANK = { unknown: 0, not_met: 0, approaching: 1, met: 2 };
 
 export function hydrate(state) {
@@ -224,14 +225,14 @@ export function decide(scn, state, { incident_id, action, reason, recipients, co
   hydrate(state);
   const inc = state.incidents.find((i) => i.id === incident_id);
   if (!inc) throw new Error(`없는 사건: ${incident_id}`);
-  if (!['report', 'control_review', 'hold'].includes(action)) throw new Error(`알 수 없는 결정: ${action}`);
+  if (!['relay', 'report', 'control_review', 'hold'].includes(action)) throw new Error(`알 수 없는 결정: ${action}`);
   if (!reason || !reason.trim()) throw new Error('사유는 필수입니다');
   const list = action === 'hold' ? [] : (contacts ?? (recipients ?? []).map((id) => ({ id, status: 'reached' })));
   const ids = new Set(scn.contacts.map((c) => c.id));
   const bad = list.filter((c) => !ids.has(c.id)).map((c) => c.id);
   if (bad.length) throw new Error(`없는 수신처: ${bad.join(', ')}`);
   if (list.some((c) => !CONTACT_STATUS.includes(c.status))) throw new Error('연락 결과는 전달함 또는 회신 대기입니다');
-  if (action !== 'hold' && !list.length) throw new Error('보고·요청은 연락한 곳이 필요합니다');
+  if (action !== 'hold' && !list.length) throw new Error('전달·보고·요청은 연락한 곳이 필요합니다');
   const t = at ?? state.now;
   const d = {
     action, reason: reason.trim(), recipients: list.map((c) => c.id), by, at: t,

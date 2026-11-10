@@ -3,7 +3,7 @@ import http from 'node:http';
 import { URL } from 'node:url';
 
 const port = Number(process.env.PORT || 3001);
-const routes = { '/api/scenarios': (await import('../api/scenarios.js')).default, '/api/session': (await import('../api/session.js')).default, '/api/live': (await import('../api/live.js')).default, '/api/access': (await import('../api/access.js')).default };
+const routes = { '/api/scenarios': (await import('../api/scenarios.js')).default, '/api/session': (await import('../api/session.js')).default, '/api/live': (await import('../api/live.js')).default, '/api/access': (await import('../api/access.js')).default, '/api/handoff': (await import('../api/handoff.js')).default };
 
 http.createServer(async (req, res) => {
   const u = new URL(req.url, 'http://x');

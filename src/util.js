@@ -1,6 +1,6 @@
-export const GRADES = ['observe', 'report', 'control_review'];
-export const GRADE_KO = { observe: '관찰', report: '보고 권고', control_review: '통제 검토 요청 권고' };
-export const ACTION_KO = { report: '보고', control_review: '통제 검토 요청', hold: '보류' };
+export const GRADES = ['observe', 'relay', 'report', 'control_review'];
+export const GRADE_KO = { observe: '관찰', relay: '담당 부서 전달 권고', report: '보고 권고', control_review: '통제 검토 요청 권고' };
+export const ACTION_KO = { relay: '담당 부서 전달', report: '보고', control_review: '통제 검토 요청', hold: '보류' };
 export const CHANNEL_KO = {
   phone_memo: '전화 메모', disaster_sms: '재난문자', agency_notice: '기관 통보문',
   police_112: '112 공조', fire_119: '119 공동대응', system_alert: '시스템 알림',
@@ -56,7 +56,7 @@ export function unsupportedClaims(text, corpus) {
 export function internalCodes(text) {
   const s = String(text ?? '');
   const ids = s.match(/(?<![A-Za-z0-9])[CMKFPG]\d+(?:-\d+)*(?![A-Za-z0-9])/g) ?? [];
-  const codes = s.match(/(?<![A-Za-z_])(?:met|not_met|approaching|unknown|observe|control_review)(?![A-Za-z_])/g) ?? [];
+  const codes = s.match(/(?<![A-Za-z_])(?:met|not_met|approaching|unknown|observe|relay|control_review)(?![A-Za-z_])/g) ?? [];
   return [...new Set([...ids, ...codes])];
 }
 

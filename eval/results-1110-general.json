@@ -1,0 +1,267 @@
+{
+ "note": "11/10 밤: 생활 민원(담당 부서 전달 권고)과 인계함을 넣은 뒤 측정. 겨울 새벽(가상 신호) 2회, 청주 호우 회귀 확인 1회.",
+ "cheongju-winter": {
+  "agg": {
+   "scenario": "cheongju-winter",
+   "runs": 2,
+   "models": {
+    "light": "claude-haiku-5-5",
+    "main": "claude-sonnet-5-5"
+   },
+   "at": "2026-11-10T13:48:17.202Z",
+   "association_accuracy_mean": 1,
+   "runs_with_merged_incidents": 0,
+   "grade_timing_ok_runs": 2,
+   "citations_shown_total": 23,
+   "citations_hallucinated_total": 0,
+   "citations_blocked_total": 0,
+   "facts_rejected_total": 0,
+   "draft_unsupported_total": 0,
+   "internal_codes_on_screen_total": 0,
+   "answers_failed_check_total": 3,
+   "runs_with_failed_check": 2,
+   "handover_summary_verified_runs": 2,
+   "ai_errors_total": 0,
+   "llm_calls_mean": 38.5,
+   "tokens_mean": 172520,
+   "secs_mean": 112
+  },
+  "runs": [
+   {
+    "run": 1,
+    "secs": 115,
+    "association_accuracy": 1,
+    "association_wrong": [],
+    "merged_expected_incidents": 0,
+    "predicted_incidents": 9,
+    "expected_incidents": 9,
+    "grade_timing": [
+     {
+      "incident": "E_yongam",
+      "grade": "relay",
+      "not_later_than": "W02",
+      "at_signal": "W02",
+      "ok": true
+     },
+     {
+      "incident": "E_gagyeong",
+      "grade": "relay",
+      "not_later_than": "W04",
+      "at_signal": "W04",
+      "ok": true
+     },
+     {
+      "incident": "E_yullyang",
+      "grade": "report",
+      "not_later_than": "W07",
+      "at_signal": "W07",
+      "ok": true
+     },
+     {
+      "incident": "E_myeongam",
+      "grade": "relay",
+      "not_later_than": "W08",
+      "at_signal": "W08",
+      "ok": true
+     },
+     {
+      "incident": "E_bunpyeong",
+      "grade": "relay",
+      "not_later_than": "W12",
+      "at_signal": "W12",
+      "ok": true
+     }
+    ],
+    "citations_shown": 11,
+    "citations_hallucinated": 0,
+    "citations_blocked_by_verifier": 0,
+    "facts_rejected_by_verifier": 0,
+    "draft_unsupported_numbers": [],
+    "internal_codes_on_screen": [],
+    "answers_failed_check": 2,
+    "handover_summary_verified": true,
+    "ai_errors": 0,
+    "llm_calls": 39,
+    "usage": {
+     "calls": 39,
+     "input_tokens": 150690,
+     "output_tokens": 22928,
+     "schema_retries": 2,
+     "failures": 0,
+     "cache_hits": 0
+    }
+   },
+   {
+    "run": 2,
+    "secs": 108,
+    "association_accuracy": 1,
+    "association_wrong": [],
+    "merged_expected_incidents": 0,
+    "predicted_incidents": 9,
+    "expected_incidents": 9,
+    "grade_timing": [
+     {
+      "incident": "E_yongam",
+      "grade": "relay",
+      "not_later_than": "W02",
+      "at_signal": "W02",
+      "ok": true
+     },
+     {
+      "incident": "E_gagyeong",
+      "grade": "relay",
+      "not_later_than": "W04",
+      "at_signal": "W04",
+      "ok": true
+     },
+     {
+      "incident": "E_yullyang",
+      "grade": "report",
+      "not_later_than": "W07",
+      "at_signal": "W07",
+      "ok": true
+     },
+     {
+      "incident": "E_myeongam",
+      "grade": "relay",
+      "not_later_than": "W08",
+      "at_signal": "W08",
+      "ok": true
+     },
+     {
+      "incident": "E_bunpyeong",
+      "grade": "relay",
+      "not_later_than": "W12",
+      "at_signal": "W12",
+      "ok": true
+     }
+    ],
+    "citations_shown": 12,
+    "citations_hallucinated": 0,
+    "citations_blocked_by_verifier": 0,
+    "facts_rejected_by_verifier": 0,
+    "draft_unsupported_numbers": [],
+    "internal_codes_on_screen": [],
+    "answers_failed_check": 1,
+    "handover_summary_verified": true,
+    "ai_errors": 0,
+    "llm_calls": 38,
+    "usage": {
+     "calls": 38,
+     "input_tokens": 149158,
+     "output_tokens": 22263,
+     "schema_retries": 1,
+     "failures": 0,
+     "cache_hits": 0
+    }
+   }
+  ]
+ },
+ "cheongju-20260709": {
+  "agg": {
+   "scenario": "cheongju-20260709",
+   "runs": 1,
+   "models": {
+    "light": "claude-haiku-5-5",
+    "main": "claude-sonnet-5-5"
+   },
+   "at": "2026-11-10T13:51:09.062Z",
+   "association_accuracy_mean": 1,
+   "runs_with_merged_incidents": 0,
+   "grade_timing_ok_runs": 1,
+   "citations_shown_total": 16,
+   "citations_hallucinated_total": 0,
+   "citations_blocked_total": 0,
+   "facts_rejected_total": 0,
+   "draft_unsupported_total": 0,
+   "internal_codes_on_screen_total": 0,
+   "answers_failed_check_total": 4,
+   "runs_with_failed_check": 1,
+   "handover_summary_verified_runs": 1,
+   "ai_errors_total": 0,
+   "llm_calls_mean": 49,
+   "tokens_mean": 203552,
+   "secs_mean": 172
+  },
+  "runs": [
+   {
+    "run": 1,
+    "secs": 172,
+    "association_accuracy": 1,
+    "association_wrong": [],
+    "merged_expected_incidents": 0,
+    "predicted_incidents": 10,
+    "expected_incidents": 10,
+    "grade_timing": [
+     {
+      "incident": "E_mipyeong",
+      "grade": "control_review",
+      "not_later_than": "C05",
+      "at_signal": "C04",
+      "ok": true
+     },
+     {
+      "incident": "E_musim",
+      "grade": "control_review",
+      "not_later_than": "C06",
+      "at_signal": "C06",
+      "ok": true
+     },
+     {
+      "incident": "E_nangseong",
+      "grade": "report",
+      "not_later_than": "C08",
+      "at_signal": "C08",
+      "ok": true
+     },
+     {
+      "incident": "E_gadeok",
+      "grade": "report",
+      "not_later_than": "C10",
+      "at_signal": "C10",
+      "ok": true
+     },
+     {
+      "incident": "E_biha",
+      "grade": "report",
+      "not_later_than": "C12",
+      "at_signal": "C12",
+      "ok": true
+     },
+     {
+      "incident": "E_munam",
+      "grade": "control_review",
+      "not_later_than": "C13",
+      "at_signal": "C13",
+      "ok": true
+     },
+     {
+      "incident": "E_suseok",
+      "grade": "report",
+      "not_later_than": "C15",
+      "at_signal": "C15",
+      "ok": true
+     }
+    ],
+    "citations_shown": 16,
+    "citations_hallucinated": 0,
+    "citations_blocked_by_verifier": 0,
+    "facts_rejected_by_verifier": 0,
+    "draft_unsupported_numbers": [],
+    "internal_codes_on_screen": [],
+    "answers_failed_check": 4,
+    "handover_summary_verified": true,
+    "ai_errors": 0,
+    "llm_calls": 49,
+    "usage": {
+     "calls": 49,
+     "input_tokens": 170610,
+     "output_tokens": 32942,
+     "schema_retries": 4,
+     "failures": 0,
+     "cache_hits": 0
+    }
+   }
+  ]
+ }
+}

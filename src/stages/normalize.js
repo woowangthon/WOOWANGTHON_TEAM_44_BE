@@ -2,7 +2,8 @@
 import { callTool } from '../llm.js';
 import { isSubstring, norm } from '../util.js';
 
-const HAZARDS = ['river_flood', 'levee', 'road_water', 'urban_flooding', 'underpass', 'tree_fall', 'landslide', 'facility_flooding', 'outage', 'weather', 'other'];
+const HAZARDS = ['river_flood', 'levee', 'road_water', 'urban_flooding', 'underpass', 'tree_fall', 'landslide', 'facility_flooding', 'outage',
+  'water_main', 'road_damage', 'streetlight', 'snow_ice', 'animal', 'fire_gas', 'noise', 'person', 'weather', 'other'];
 const FACT_TYPES = ['flood_watch_issued', 'flood_warning_issued', 'level_observed', 'level_forecast', 'levee_concern', 'closure_request', 'road_water', 'road_blocked', 'life_risk', 'other'];
 
 const tool = {
@@ -43,6 +44,8 @@ const SYSTEM = `너는 지자체 야간 당직실의 신호 정리 담당이다.
 제방 유실·월류·넘침 우려는 levee_concern, 통행 차단 요청은 closure_request, 도로 물 고임은 road_water,
 도로나 차선이 막힘(한 차선만 막혀도 해당)은 road_blocked, 사람이 다쳤거나 고립·대피가 필요한 인명 위험은 life_risk.
 hazard: 토사 유출·축대 붕괴·산사태·낙석은 landslide, 학교·건물·주차장 등 시설이 물에 잠김은 facility_flooding, 정전·낙뢰는 outage, 하천 물이 제방까지 차오름은 levee.
+생활 민원도 같은 방식으로 나눈다: 상수도관 누수·단수·계량기 동파는 water_main, 도로 파임·맨홀 뚜껑·낙하물·시설물 파손은 road_damage, 가로등·보안등·신호등 고장은 streetlight,
+도로 결빙·제설 요청·눈 쌓임은 snow_ice, 동물 사체·유기동물·야생동물 출몰은 animal, 화재·연기·가스 냄새는 fire_gas, 소음은 noise, 주취자·길 잃은 사람·한파 속 노숙인처럼 사람 보호가 필요한 경우는 person.
 시청과 무관한 단순 문의(버스 운행, 일정 등)로 특정 장소의 위험이 없으면 scope는 citywide, urgency는 info.`;
 
 function aliasMatch(scn, body) {

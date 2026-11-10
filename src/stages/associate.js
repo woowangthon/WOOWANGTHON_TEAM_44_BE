@@ -33,17 +33,27 @@ const tool = {
 };
 
 const SYSTEM = `너는 야간 당직실에서 흩어진 신호를 같은 사건으로 묶는 담당이다.
-같은 장소·같은 위험(같은 하천의 범람, 같은 시설)이면 attach, 다른 장소의 별개 문제면 new, 시 전체 안내처럼 특정 사건이 아니면 unrelated.
+같은 장소·같은 위험(같은 하천의 범람, 같은 시설, 같은 고장)이면 attach, 다른 장소의 별개 문제나 같은 장소라도 다른 종류의 문제(가로등 고장과 상수도 누수)면 new, 시 전체 안내처럼 특정 사건이 아니면 unrelated.
 확실하지 않으면 과하게 묶지 말고 new를 고른다. link_signal 도구로 답한다.`;
+
+// 생활 민원 종류는 저마다 따로, 물난리 계열(하천·도로 침수·시설 침수·토사·정전·가로수)은 서로 같은 사건이 될 수 있다
+const OWN = new Set(['water_main', 'road_damage', 'streetlight', 'snow_ice', 'animal', 'fire_gas', 'noise', 'person']);
+export function compatible(a, b) {
+  if (!a || !b || a === b || ['other', 'weather'].includes(a) || ['other', 'weather'].includes(b)) return true;
+  return !OWN.has(a) && !OWN.has(b);
+}
 
 export async function associate(scn, state, sig, n) {
   if (n.scope === 'citywide' && !n.place_ids.length && !n.other_places.length) {
     return { action: 'background', by: 'rule', reason: '시 전체 대상 안내·특보' };
   }
   const keys = anchorKeys(scn, n);
-  const open = state.incidents.filter((i) => toMin(sig.t) - toMin(i.last_t) <= WINDOW_MIN);
+  const win = scn.window_min ?? WINDOW_MIN; // 한 근무 내내 이어지는 민원은 시나리오에서 창을 넓힌다
+  const open = state.incidents.filter((i) => toMin(sig.t) - toMin(i.last_t) <= win);
   const hits = open.filter((i) => i.keys.some((k) => keys.has(k)));
-  if (hits.length === 1) return { action: 'attach', incident_id: hits[0].id, by: 'rule', reason: '같은 장소·시설' };
+  // 같은 장소라도 위험 종류가 다르면(예: 같은 동의 가로등 고장과 상수도 누수) 규칙으로 묶지 않고 판단을 맡긴다
+  const sameKind = hits.length === 1 && compatible(hits[0].hazard, n.hazard);
+  if (sameKind) return { action: 'attach', incident_id: hits[0].id, by: 'rule', reason: '같은 장소·시설' };
   if (hits.length === 0 && n.place_ids.length) return { action: 'new', by: 'rule', reason: '열린 사건과 겹치는 장소 없음' };
   if (!open.length) return { action: 'new', by: 'rule', reason: '열린 사건 없음' };
 

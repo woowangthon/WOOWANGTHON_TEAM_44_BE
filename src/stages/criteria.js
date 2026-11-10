@@ -75,7 +75,10 @@ export function evaluateCriteria(scn, state, inc) {
   });
 }
 
-// 규칙표: 기준 하나라도 met → 통제 검토 요청 권고 / 접근·홍수경보·긴급·통행 차단 요청·통행 막힘·인명 위험·토사·하천 넘침 우려 → 보고 권고 / 그 외 관찰
+// 규칙표: 기준 하나라도 met → 통제 검토 요청 권고 / 접근·홍수경보·긴급·통행 차단 요청·통행 막힘·인명 위험·토사·하천 넘침 우려·화재·가스 → 보고 권고
+//         / 생활 민원(상수도, 도로 시설, 가로등·신호등, 결빙·제설, 정전, 동물, 소음, 보호가 필요한 사람) → 담당 부서 전달 권고 / 그 외 관찰
+export const RELAY_KO = { water_main: '상수도', road_damage: '도로 시설', streetlight: '가로등·신호등', snow_ice: '결빙·제설', outage: '정전',
+  animal: '동물', noise: '소음', person: '보호가 필요한 사람' };
 export function gradeFor(state, inc, criteria) {
   const why = [];
   const met = criteria.filter((c) => c.status === 'met');
@@ -89,7 +92,11 @@ export function gradeFor(state, inc, criteria) {
   if (sigs.some((s) => s.norm.facts.some((f) => f.type === 'life_risk'))) why.push('인명 위험');
   if (sigs.some((s) => s.norm.hazard === 'landslide')) why.push('토사·축대 붕괴 신고');
   if (sigs.some((s) => s.norm.facts.some((f) => f.type === 'levee_concern'))) why.push('하천 넘침·제방 우려 신고');
+  if (sigs.some((s) => s.norm.hazard === 'fire_gas')) why.push('화재·가스 신고');
   if (why.length) return { grade: 'report', why };
+  // 생활 민원: 담당 부서나 관할 기관에 전달할 일
+  const relay = [...new Set(sigs.map((s) => RELAY_KO[s.norm.hazard]).filter(Boolean))];
+  if (relay.length) return { grade: 'relay', why: relay.map((x) => `생활 불편 신고: ${x}`) };
   return { grade: 'observe', why: ['기준 미도달, 긴급 신호 없음'] };
 }
 

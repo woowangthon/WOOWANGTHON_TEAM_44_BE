@@ -102,7 +102,7 @@ const draftTool = {
 const DRAFT_SYSTEM = `너는 야간 당직자의 동료다. 결정과 연락은 당직자가 하고, 너는 당직자가 전화나 메신저로 연락하면서 보고 말할 전달 사항을 짧게 정리한다. draft_brief 도구로 답한다.
 - 전달 사항은 읽는 대본이 아니라 한눈에 보는 메모다. headline 한 줄, facts 두세 줄(한 줄에 사실 하나, 50자 안팎), ask 한 문장으로 쓴다. 인사말, 「당직실입니다」, 「~라고 알려 옴」 같은 군더더기는 줄이고 「13:06 사직동 주민 전화: …」처럼 시각과 출처를 앞에 둔다.
 - 수치와 시각은 주어진 신호·기준 판정에 있는 것만 쓴다. 추정하거나 반올림하지 않는다. 같은 관측소 수위가 여럿이면 가장 늦은 값을 쓴다.
-- 수신처는 주어진 연락처 id 중에서만 고른다. 통제 검토 요청 권고면 시설 관리주체를 반드시 넣는다.
+- 수신처는 주어진 연락처 id 중에서만 고른다. 통제 검토 요청 권고면 시설 관리주체를 반드시 넣는다. 담당 부서 전달 권고면 담당부서 중에서 고르고, 보고할 일이 아니면 당직사령은 넣지 않는다.
 - 출처 기관을 밝힌다(누가 언제 알려 왔는지). 단정하지 말고 받은 정보로 쓴다. 확인되지 않은 것은 확인되지 않았다고 쓴다.
 - 「조치하겠습니다」처럼 당직자가 하지 않은 일을 약속하지 않는다.
 - 연락처·기준·조항 id(K1, C2, M3-1 같은 것)와 met 같은 영문 판정 코드는 글에 쓰지 않는다. 기관명과 기준 이름으로 쓴다.`;
@@ -123,6 +123,11 @@ export function evidenceCorpus(scn, state, inc, extra = []) {
   ]);
 }
 
+/** 사건 위험 종류에 맞는 담당 부서 연락처 id(시나리오의 routing 표) */
+export function routeFor(scn, inc) {
+  return scn.routing?.[inc.hazard] ?? [];
+}
+
 export async function draft(scn, state, inc) {
   const fac = scn.facilities.find((f) => f.id === inc.facility_id);
   const contactIds = new Set(scn.contacts.map((c) => c.id));
@@ -132,6 +137,7 @@ export async function draft(scn, state, inc) {
     현재시각: state.now,
     당직실: scn.duty.office,
     시설관리주체: fac ? fac.manager_contact : null,
+    담당부서: routeFor(scn, inc),
     연락처: scn.contacts,
     // 조항 찾기와 동시에 쓰므로 고른 인용 대신 매뉴얼 전체를 준다(인용 검증은 cite가 따로 한다)
     매뉴얼: scn.manual.clauses.map(({ heading, text }) => ({ heading, text })),
@@ -142,6 +148,8 @@ export async function draft(scn, state, inc) {
     o.recipients.forEach((id) => !contactIds.has(id) && p.push(`recipients에 없는 연락처 id: ${id}`));
     o.evidence_signal_ids.forEach((id) => !sigIds.has(id) && p.push(`evidence_signal_ids에 이 사건에 없는 신호: ${id}`));
     if (inc.grade === 'control_review' && fac && !o.recipients.includes(fac.manager_contact)) p.push(`통제 검토 요청 권고인데 관리주체(${fac.manager_contact})가 수신처에 없음`);
+    const route = routeFor(scn, inc);
+    if (inc.grade === 'relay' && route.length && !o.recipients.some((id) => route.includes(id))) p.push(`담당 부서 전달 권고인데 담당부서(${route.join(', ')}) 중 하나도 수신처에 없음`);
     for (const [k, text] of briefTexts(o)) {
       const u = unsupportedClaims(text, corpus);
       if (u.length) p.push(`${k}에 근거 자료에 없는 수치·시각: ${u.join(', ').replace(/[TN]/g, '')}`);

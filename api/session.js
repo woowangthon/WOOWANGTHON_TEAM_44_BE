@@ -6,9 +6,11 @@
 // { op: 'contact', scenario_id, state, incident_id, contact_id, status, note? }      회신 받음 등 연락 결과 고치기
 // { op: 'redraft', scenario_id, state, incident_id }               초안 다시 만들기
 // { op: 'handover', scenario_id, state }
+// { op: 'handoff', scenario_id, state, practice?, client?, from?, note?, summary? }  다음 근무자에게 넘기기(당직실 인계함)
 import { handler, loadScenario } from './_lib.js';
 import { createSession, hydrate, ingest, decide, updateContact, makeHandover, redraft, usageMark, addUsage } from '../src/engine.js';
 import { toMin } from '../src/util.js';
+import { boxFor, sendHandoff } from '../src/handoff.js';
 
 export const config = { maxDuration: 60 };
 
@@ -56,7 +58,13 @@ export default handler(async (req) => {
   if (b.op === 'handover') {
     // 실제 근무 기록은 오늘 날짜와 첫 신호 시각으로 머리말을 쓴다
     const s = scn.live ? { ...scn, clock: { ...scn.clock, date: kstToday(), start: state.signals[0]?.t ?? state.now } } : scn;
-    return { state, ...(await makeHandover(s, state)) };
+    return { state, ...(await makeHandover(s, state, { received: b.received })) };
+  }
+  if (b.op === 'handoff') {
+    const practice = !scn.live;
+    const box = boxFor({ practice, client: b.client, office: scn.duty.office.replace(/\(.*\)/, '').trim() });
+    const period = scn.live ? `${kstToday()} ${state.signals[0]?.t ?? state.now}~${state.now}` : undefined;
+    return { handoff: await sendHandoff(scn, state, { box, from: b.from, note: b.note, summary: b.summary, period }) };
   }
   throw new Error(`알 수 없는 op: ${b.op}`);
 });
