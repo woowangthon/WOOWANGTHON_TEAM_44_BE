@@ -184,7 +184,7 @@ async function tryPlant(type, s, source, rand) {
  * 검사(코드): 숫자·단위 → 근거 문단에 없는 숫자가 생김 / 방향 → 인용과 반대 방향 / 큰 결론 → 한정어 빠짐 / 없음 → 덧붙임이 원자료에 없음.
  * 검사(점검 모델): 심은 문장을 원자료와 대조해 「뒷받침 안 됨」이라고 해야 한다.
  */
-export async function p3p4Plant(source, sentences, { n, seed, types = ['number', 'direction', 'overclaim', 'unsupported', 'unit'] }) {
+export async function p3p4Plant(source, sentences, { n, seed, types = ['number', 'direction', 'overclaim', 'unsupported', 'unit'], only = false }) {
   const rand = rng(seed);
   const log = [];
   const planted = [];
@@ -199,9 +199,11 @@ export async function p3p4Plant(source, sentences, { n, seed, types = ['number',
     return n >= 2 ? [...o.filter((s) => s.sid !== sentences[0].sid), sentences[0]] : o;
   };
   // 유형을 돌아가며 한 번씩, 그래도 모자라면 숫자부터 다시
-  for (const type of [...typeQueue, 'number', 'direction', 'number']) {
+  // only(약점 맞춤): 정한 유형만 여러 번 시도한다
+  const plan = only ? Array.from({ length: n + 2 }, (_, i) => typeQueue[i % typeQueue.length]) : [...typeQueue, 'number', 'direction', 'number'];
+  for (const type of plan) {
     if (candidates.length >= n + 2) break;
-    if (candidates.filter((c) => c.type === type).length >= 2) continue;
+    if (!only && candidates.filter((c) => c.type === type).length >= 2) continue;
     for (const s of sentOrder()) {
       if (used.has(s.sid)) continue;
       const r = await tryPlant(type, s, source, rand);

@@ -53,3 +53,18 @@ test('잘못된 입력', async () => {
   assert.equal((await call('grade', { method: 'POST', body: { id: 'fx-01', marks: [], decision: '보류' } })).status, 400);
   assert.equal((await call('feedback', { method: 'POST', body: { taskId: 'fx-01', helpful: true, note: 'x'.repeat(500) } })).status, 200);
 });
+
+test('코칭: 결재가 끝나기 전에는 400, 의견이 없으면 모델을 부르지 않는다', async () => {
+  const half = await call('coach', { method: 'POST', body: { id: 'fx-01', rounds: [{ marks: [{ sid: 's1', note: 'x' }], decision: '반려' }] } });
+  assert.equal(half.status, 400);
+  const none = await call('coach', { method: 'POST', body: { id: 'fx-01', rounds: [{ marks: [{ sid: 's1' }], decision: '승인' }] } });
+  assert.equal(none.status, 200);
+  assert.equal(none.body.skipped, true);
+});
+
+test('라이브 자료 목록은 결재함 원자료와 겹치지 않는다', async () => {
+  const { poolSources } = await import('../src/live.js');
+  const { readdirSync } = await import('node:fs');
+  const bank = new Set(readdirSync('data/sources').map((f) => f.replace(/\.json$/, '')));
+  for (const s of poolSources()) assert.ok(!bank.has(s.id), s.id);
+});

@@ -1,7 +1,7 @@
 // 라이브 모드: 은행 과제와 같은 파이프라인(P1~P5)을 서버에서 단계별로 돌린다.
 // 한 요청에 한 단계만 돌리고 상태는 KV에 둔다(함수 제한 시간 안에 들고, 화면의 진행 표시가 실제 단계와 맞는다).
 // 붙여 넣은 글과 만든 과제는 24시간 뒤 지워진다(KV TTL). 붙여 넣은 글 속의 지시문은 따르지 않는다(pipeline.js DATA_ONLY).
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { p1Write, p2Verify, p3p4Plant, p5Blind } from './pipeline.js';
 import { assembleTask } from './assemble.js';
@@ -22,13 +22,15 @@ export const STEPS = [
 
 const kstDate = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
 const rid = () => Math.random().toString(36).slice(2, 12).padEnd(10, '0');
-const SRC_DIR = () => process.env.SOURCES_DIR || join(process.cwd(), 'data', 'sources');
+// 새 보고서용 자료 묶음(data/pool). 결재함 과제의 원자료(data/sources)와 겹치지 않게 따로 둔다
+const POOL_DIR = () => process.env.POOL_DIR || join(process.cwd(), 'data', 'pool');
 
-/** 공공 자료 묶음(data/sources)에서 맛보기를 뺀 원자료 목록 */
+/** 새 보고서 받기에서 고를 수 있는 원자료 목록(최신 보도일 순) */
 export function poolSources() {
-  return readdirSync(SRC_DIR()).filter((f) => f.endsWith('.json'))
-    .map((f) => JSON.parse(readFileSync(join(SRC_DIR(), f), 'utf8')))
-    .filter((s) => s.difficulty !== 'mini');
+  if (!existsSync(POOL_DIR())) return [];
+  return readdirSync(POOL_DIR()).filter((f) => f.endsWith('.json'))
+    .map((f) => JSON.parse(readFileSync(join(POOL_DIR(), f), 'utf8')))
+    .sort((a, b) => String(b.publishedAt ?? b.id.slice(-4)).localeCompare(String(a.publishedAt ?? a.id.slice(-4))));
 }
 
 /** 붙여 넣은 글을 원자료 모양으로. 줄 단위로 문단을 나눈다 */
@@ -50,7 +52,16 @@ export function textSource(text, title) {
 /** 오류 수: 넷 중 하나는 틀린 곳이 없다. 사용자는 미리 모른다 */
 const pickN = (r) => [0, 2, 3, 3][Math.floor(r * 4)];
 
-export async function startJob({ mode, sourceId, text, title, deviceId, maker }) {
+/** 약점 맞춤: 화면의 사유 이름 → 심기 유형 */
+export const FOCUS_TYPES = {
+  '숫자·단위': ['number', 'unit'],
+  '원자료에 없음': ['unsupported'],
+  '방향·주체가 바뀜': ['direction'],
+  '근거보다 큰 결론': ['overclaim'],
+};
+
+export async function startJob({ mode, sourceId, text, title, deviceId, maker, focus }) {
+  if (focus && !FOCUS_TYPES[focus]) throw Object.assign(new Error('알 수 없는 오류 유형'), { status: 400 });
   if (!deviceId) throw Object.assign(new Error('기기 번호가 없습니다'), { status: 400 });
   const used = await incr(`ss:live:dev:${kstDate()}:${deviceId}`, 0, 2 * DAY);
   const limit = maker ? LIVE_PER_MAKER : LIVE_PER_DEVICE;
@@ -68,7 +79,7 @@ export async function startJob({ mode, sourceId, text, title, deviceId, maker })
   await incr(`ss:live:count:${kstDate()}`, 1, 30 * DAY);
   const id = `live-${rid()}`;
   const job = {
-    id, mode: mode === 'text' ? 'text' : 'pool', source, n: pickN(Math.random()), seed: rid(), count: 6,
+    id, mode: mode === 'text' ? 'text' : 'pool', source, n: focus ? 2 : pickN(Math.random()), seed: rid(), count: 6, focus: focus ?? null,
     status: 'p1', public: [], log: [], createdAt: new Date().toISOString(), maker: !!maker,
     models: { writer: ROLES.writer().model, checker: ROLES.checker().model },
   };
@@ -81,7 +92,7 @@ export function view(job) {
   return {
     jobId: job.id, status: job.status, steps: STEPS, done: job.public,
     source: { title: job.source.title, publisher: job.source.publisher, chars: job.source.paragraphs.reduce((a, p) => a + p.text.length, 0), paragraphs: job.source.paragraphs.length },
-    taskId: job.status === 'done' ? job.id : null, error: job.error ?? null,
+    taskId: job.status === 'done' ? job.id : null, error: job.error ?? null, focus: job.focus ?? null,
   };
 }
 
@@ -117,11 +128,13 @@ export async function runStep(jobId) {
       if (job.clean.length < 4) fail(job, '원자료가 뒷받침하는 문장이 4개보다 적습니다. 다른 자료로 해 보세요');
       else job.status = 'p3';
     } else if (job.status === 'p3') {
-      const pl = job.n ? await p3p4Plant(src, job.clean, { n: job.n, seed: job.seed }) : { planted: [], log: [] };
+      const pl = job.n
+        ? await p3p4Plant(src, job.clean, job.focus ? { n: job.n, seed: job.seed, types: FOCUS_TYPES[job.focus], only: true } : { n: job.n, seed: job.seed })
+        : { planted: [], log: [] };
       job.planted = pl.planted;
       job.n = pl.planted.length; // 검증을 통과한 만큼만 심는다(0개일 수도 있다)
       job.log.push({ step: 'p3', planned: job.n, planted: pl.planted.length, tries: pl.log, ms: Date.now() - t0 });
-      job.public.push({ key: 'p3', text: '오류를 심고, 심은 문장이 코드 검사와 점검 모델 양쪽에서 틀렸다고 나오는지 확인했습니다. 몇 곳인지(없을 수도 있음)는 결재 뒤에 알려 드립니다.' });
+      job.public.push({ key: 'p3', text: (job.focus ? `「${job.focus}」 유형 위주로 ` : '') + '오류를 심고, 심은 문장이 코드 검사와 점검 모델 양쪽에서 틀렸다고 나오는지 확인했습니다. 몇 곳인지(없을 수도 있음)는 결재 뒤에 알려 드립니다.' });
       job.status = 'p5';
     } else if (job.status === 'p5') {
       const plantedBy = new Map(job.planted.map((p) => [p.sid, p]));

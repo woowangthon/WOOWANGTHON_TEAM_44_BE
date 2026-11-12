@@ -13,7 +13,7 @@ export default handler(async (req) => {
   const b = body(req);
   if (b.op === 'start') {
     if (!deviceOk(b.deviceId)) throw Object.assign(new Error('기기 번호가 없습니다'), { status: 400 });
-    return startJob({ mode: b.mode, sourceId: b.sourceId, text: b.text, title: b.title, deviceId: b.deviceId, maker: b.maker === true });
+    return startJob({ mode: b.mode, sourceId: b.sourceId, text: b.text, title: b.title, deviceId: b.deviceId, maker: b.maker === true, focus: b.focus || undefined });
   }
   if (b.op === 'step') return runStep(b.jobId);
   throw Object.assign(new Error('op는 start 또는 step'), { status: 400 });
