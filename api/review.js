@@ -7,7 +7,7 @@
 import { handler, body, err, requireReviewer } from './_lib.js';
 import { getRun, fixedRunIds, ledgerVersions, latestLedger, getDraft, setDraft, applyReview, finalizeDraft, objections, decideObjection } from '../src/ledger.js';
 import { loadMission, loadDocs } from '../src/mission.js';
-import { makerSolved } from '../src/record.js';
+import { makerSolved, getAnswer } from '../src/record.js';
 
 async function draftOf(runId) {
   const d = await getDraft(runId);
@@ -36,7 +36,10 @@ export default handler(async (req) => {
     // 정답을 보기 전에 풀어야 한다: 만든 사람 풀이가 없으면 열지 않는다(force=1로 열 수는 있다)
     if (run.origin !== 'live' && !(await makerSolved(runId)) && req.query?.force !== '1') throw err('먼저 이 판을 정답 없이 풀어 주세요(?maker=1로 풀이). 그래도 열려면 force=1', 423);
     const m = loadMission(run.missionId);
-    return { run, mission: m, docs: loadDocs(m), versions: await ledgerVersions(runId), draft: await draftOf(runId), objections: (await objections()).filter((o) => o.runId === runId) };
+    // 만든 사람이 정답 없이 풀 때 그은 빨간 줄: 검수 화면에서 항목 옆에 보여 주고, 장부에 없는 것은 추가 후보로 띄운다
+    const solved = await makerSolved(runId);
+    const makerAnswer = solved ? await getAnswer(solved.answerId) : null;
+    return { run, mission: m, docs: loadDocs(m), versions: await ledgerVersions(runId), draft: await draftOf(runId), objections: (await objections()).filter((o) => o.runId === runId), makerMarks: makerAnswer?.marks ?? [] };
   }
   const b = body(req);
   if (b.objectionId) {
