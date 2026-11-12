@@ -1,0 +1,34 @@
+[
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300714
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 604399
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 911090
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 1223785
+  }
+]

@@ -1,0 +1,11 @@
+감사 claude-sonnet-5-5: 9판
+  m1-base-claude-sonnet-5-5-11121601-3: 1항목 (A 1) 23초
+  m1-base-claude-sonnet-5-5-11121600-2: 2항목 (A 0) 32초
+  m1-base-claude-sonnet-5-5-11121601-1: 3항목 (A 0) 34초
+  m1-careful-claude-sonnet-5-5-11121601-1: 0항목 (A 0) 13초
+  m1-careful-claude-sonnet-5-5-11121601-2: 0항목 (A 0) 13초
+  m1-careful-claude-sonnet-5-5-11121601-3: 0항목 (A 0) 14초
+  m1-rough-claude-sonnet-5-5-11121600-1: 1항목 (A 1) 16초
+  m1-rough-claude-sonnet-5-5-11121600-2: 2항목 (A 0) 23초
+  m1-rough-claude-sonnet-5-5-11121600-3: 2항목 (A 0) 24초
+이번 실행 추정 비용 $0.437

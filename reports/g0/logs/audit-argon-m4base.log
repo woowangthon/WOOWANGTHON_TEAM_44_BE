@@ -1,0 +1,11 @@
+감사 gemini-4-argon: 9판
+  m4-base-claude-sonnet-5-5-11121603-3: 0항목 (A 0) 50초
+  m4-base-claude-sonnet-5-5-11121604-2: 0항목 (A 0) 65초
+  m4-base-claude-sonnet-5-5-11121603-1: 0항목 (A 0) 78초
+  m4-base-gemini-3.8-flash-11121631-2: 0항목 (A 0) 76초
+  m4-base-gpt-6.1-sol-11121620-1: 0항목 (A 0) 79초
+  m4-base-gpt-6.1-sol-11121620-2: 0항목 (A 0) 59초
+  m4-base-gpt-6.1-sol-11121620-3: 0항목 (A 0) 55초
+  m4-base-gemini-3.8-flash-11121632-3: 7항목 (A 3) 524초
+  m4-base-gemini-3.8-flash-11121631-1 감사 실패: Gemini 연결: fetch failed
+이번 실행 추정 비용 $2.218

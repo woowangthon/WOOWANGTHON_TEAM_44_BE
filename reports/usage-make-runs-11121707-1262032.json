@@ -1,0 +1,298 @@
+[
+  {
+    "label": "m4-rough-anthropic-11121707-2 S1",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 5609,
+    "output": 3921,
+    "cost": 0.050428,
+    "ms": 30500,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m4-rough-openai-11121707-1 S1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 3311,
+    "output": 1432,
+    "cost": 0.020942,
+    "ms": 34353,
+    "stop": "stop"
+  },
+  {
+    "label": "m4-rough-anthropic-11121707-1 S1",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 5609,
+    "output": 4860,
+    "cost": 0.059818,
+    "ms": 36187,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-openai-11121707-1",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 9437,
+    "output": 1573,
+    "cost": 0.069208,
+    "ms": 16570,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-rough-openai-11121707-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 5264,
+    "output": 918,
+    "cost": 0.019708,
+    "ms": 28525,
+    "stop": "stop"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-anthropic-11121707-1",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 9518,
+    "output": 4035,
+    "cost": 0.118772,
+    "ms": 37516,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-anthropic-11121707-2",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 9543,
+    "output": 4555,
+    "cost": 0.129272,
+    "ms": 43631,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-openai-11121707-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 5535,
+    "output": 3583,
+    "cost": 0.0469,
+    "ms": 47661,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-anthropic-11121707-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 5683,
+    "output": 5322,
+    "cost": 0.064586,
+    "ms": 61724,
+    "stop": "STOP"
+  },
+  {
+    "label": "m4-rough-openai-11121707-2 S1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 3311,
+    "output": 1406,
+    "cost": 0.020682,
+    "ms": 34173,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-rough-openai-11121707-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 5347,
+    "output": 540,
+    "cost": 0.016094,
+    "ms": 19564,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-anthropic-11121707-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 5652,
+    "output": 9122,
+    "cost": 0.102524,
+    "ms": 104678,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-openai-11121707-2",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 9575,
+    "output": 2790,
+    "cost": 0.0941,
+    "ms": 27789,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-openai-11121707-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 5614,
+    "output": 4284,
+    "cost": 0.054068,
+    "ms": 47495,
+    "stop": "STOP"
+  },
+  {
+    "label": "m4-rough-google-11121707-1 S1",
+    "model": "gemini-3.8-flash",
+    "company": "Google",
+    "attempt": 1,
+    "input": 3280,
+    "output": 2093,
+    "cost": 0.01030875,
+    "ms": 18496,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-google-11121707-1",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 9160,
+    "output": 7168,
+    "cost": 0.18,
+    "ms": 65438,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-rough-anthropic-11121707-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 5359,
+    "output": 9549,
+    "cost": 0.106208,
+    "ms": 232747,
+    "stop": "stop"
+  },
+  {
+    "label": "m4-rough-google-11121707-2 S1",
+    "model": "gemini-3.8-flash",
+    "company": "Google",
+    "attempt": 1,
+    "input": 3280,
+    "output": 4432,
+    "cost": 0.01908,
+    "ms": 36805,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-rough-google-11121707-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 5100,
+    "output": 6286,
+    "cost": 0.07306,
+    "ms": 144147,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-rough-anthropic-11121707-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300624
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-google-11121707-2",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 9108,
+    "output": 7472,
+    "cost": 0.185872,
+    "ms": 66808,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-google-11121707-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300267
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-rough-anthropic-11121707-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 5372,
+    "output": 8039,
+    "cost": 0.091134,
+    "ms": 484738,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-rough-google-11121707-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 5081,
+    "output": 9991,
+    "cost": 0.110072,
+    "ms": 230099,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-google-11121707-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300631
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-google-11121707-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 603908
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-google-11121707-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 5334,
+    "output": 19043,
+    "cost": 0.201098,
+    "ms": 512493,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-rough-google-11121707-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 5352,
+    "output": 9937,
+    "cost": 0.110074,
+    "ms": 714767,
+    "stop": "STOP"
+  }
+]
