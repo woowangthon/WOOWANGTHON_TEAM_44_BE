@@ -38,6 +38,12 @@ test('검수 전: 일반 사용자 답안은 409, 만든 사람 풀이는 저장
   assert.equal((await call(review, { method: 'GET', query: { run: runId }, code: 'wrong' })).status, 403);
   const m = await call(play, { body: { ...ans, deviceId: 'dev-maker-001', maker: true, decision: 'reject', reason: '조건이 바뀜', marks: [{ uid: 'S1.e1' }] } });
   assert.equal(m.status, 200); assert.equal(m.body.pending, true);
+  // AI 1차 판정: 사람 검수 장부가 없으면 부르지 않는다(모델 호출 없음)
+  const tr = await call(play, { body: { action: 'triage', answerId: m.body.answerId } });
+  assert.equal(tr.status, 200); assert.equal(tr.body.triage.status, 'skipped');
+  // 검수 대기열: 판정 진행률이 붙는다(초안 없으면 null)
+  const qq = await call(review, { method: 'GET', code: 'test-code' });
+  assert.ok(qq.body.runs.every((r) => 'progress' in r));
 
   // 검수: 모든 항목 판정 + 직접 추가 → 확정
   const g = await call(review, { method: 'GET', query: { run: runId }, code: 'test-code' });
