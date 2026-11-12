@@ -105,3 +105,15 @@ test('선불 크레딧 바닥(402)인 회사는 라이브 경로에서 뺀다', 
   assert.equal(triageModel('Anthropic', new Set(['OpenAI'])), 'gemini-3.8-flash');
   assert.equal(triageModel('Anthropic', down), 'gpt-6.1-sol');
 });
+
+test('팀장 결과 표시: 감사 하나가 실패하면 실제 감사 수와 실패를 적는다', async () => {
+  const { auditLabel } = await import('../src/lead.js');
+  assert.equal(auditLabel({ phase: 'done', audits: [{ company: 'OpenAI' }], auditFailed: ['gemini-4-argon'] }), 'AI 감사(한 회사: OpenAI) · Google 감사 응답 실패 · 사람 확인 전');
+  assert.equal(auditLabel({ phase: 'done', audits: [{ company: 'OpenAI' }, { company: 'Google' }] }), 'AI 감사(2회사: OpenAI·Google) · 사람 확인 전');
+});
+
+test('반려로 막은 A: 다시 한 결과에 비슷한 문장이 남으면 세지 않는다', async () => {
+  const { coverOf } = await import('../src/lead.js');
+  assert.ok(coverOf('가능. 만 19~39세에 해당하고 학력·재학 조건이 없습니다.', '가능. 팀장 안내대로 만 21~25세로 보면 만 19~39세에 해당하고 학력·재학 조건이 없습니다.') >= 0.7);
+  assert.ok(coverOf('만 19~39세에 해당하고 학력 조건이 없습니다', '신청 불가: 초대졸 이상 미취업자 대상') < 0.7);
+});

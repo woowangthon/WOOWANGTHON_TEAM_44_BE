@@ -7,6 +7,7 @@ import { audit, buildLedger, ledgerCounts } from './audit.js';
 import { WORKERS, auditorsFor, available, COMPANIES, companyOf, downCompanies } from './llm.js';
 import { saveLiveRun, latestLedger, fixedRunIds, getRun } from './ledger.js';
 import { baselines } from './baseline.js';
+import { norm } from './text.js';
 
 const err = (m, status = 400) => Object.assign(new Error(m), { status });
 const TTL = 3 * 24 * 3600;
@@ -126,8 +127,19 @@ export async function auditStep(id) {
   const ledger = buildLedger(run, mission, docs, s.audits);
   const fk = finalKeys(s.stages);
   const counts = ledgerCounts(ledger, fk);
-  // 반려로 막은 A: 반려된 시도에만 있고 최종 시도에는 없는 A
-  const blocked = ledger.items.filter((x) => x.grade === 'A' && /#1\./.test(x.origin) && ![x.origin, ...x.spread].some((u) => !u.includes('#'))).length;
+  const inFinal = (x, keys) => [x.origin, ...x.spread].some((u) => keys.includes(u.split('.')[0]));
+  // 반려로 막은 A: 반려된 시도에서 나왔고, 최종 산출물 어디에도 같은 칸이 걸리지 않으며 틀린 구절도 남지 않은 것.
+  // 감사가 다시 한 결과에서 같은 문장을 다시 짚지 않을 수 있어(11/13 시험에서 4건) 구절이 남았는지는 코드로 본다
+  for (const it of ledger.items) {
+    const fromRejected = /#\d+\./.test(it.origin);
+    const inFinalUnits = [it.origin, ...it.spread].some((u) => !u.includes('#'));
+    // 같은 단계를 다시 한 결과에 틀린 구절의 글자쌍이 70% 이상 남아 있으면 「비슷한 문장이 남음」(막은 것으로 세지 않는다)
+    const st = s.stages.find((x) => x.key === it.origin.split('#')[0]);
+    const textRemains = fromRejected && norm(it.wrongText).length >= 4 && (st?.units ?? []).some((u) => coverOf(it.wrongText, u.text) >= 0.7);
+    it.fate = !fromRejected ? (inFinal(it, fk) ? 'final' : 'earlier') : inFinalUnits || textRemains ? 'remained' : 'blocked';
+  }
+  const blocked = ledger.items.filter((x) => x.grade === 'A' && x.fate === 'blocked').length;
+  const remained = ledger.items.filter((x) => x.grade === 'A' && x.fate === 'remained').length;
   // 사람이 확인한 함정과 같은가: 같은 미션의 사람 검수 장부에서, 같은 패턴이면서 같은 원자료 문단을 근거로 든 항목
   const anchors = await humanAnchors(s.missionId);
   for (const it of ledger.items) {
@@ -135,7 +147,7 @@ export async function auditStep(id) {
     it.matchesHuman = anchors.some((a) => a.pattern === it.pattern && a.pids.some((p) => pids.has(p)));
   }
   s.result = {
-    counts, blocked, humanMatchedA: ledger.items.filter((x) => x.grade === 'A' && x.matchesHuman).length,
+    counts, blocked, remainedAfterReject: remained, humanMatchedA: ledger.items.filter((x) => x.grade === 'A' && x.matchesHuman).length,
     sourceViews: s.sourceViews, calls: s.calls + s.audits.length, minutes: Math.round((Date.now() - Date.parse(s.startedAt)) / 6e4),
     habits: habits(s.plan), baseline: await baselines(s.missionId), auditors: s.audits.map((a) => ({ model: a.model, company: a.company, sec: a.sec, count: a.errors.length })), auditErrors: s.auditErrors ?? [],
   };
@@ -157,6 +169,19 @@ async function humanAnchors(missionId) {
   return out;
 }
 
+const bigr = (x) => { const t = norm(x).replace(/\s/g, ''); const o = new Set(); for (let i = 0; i < t.length - 1; i++) o.add(t.slice(i, i + 2)); return o; };
+/** 구절 a의 글자쌍 가운데 글 b에 있는 비율 */
+export const coverOf = (a, b) => { const A = bigr(a), B = bigr(b); let n = 0; for (const x of A) if (B.has(x)) n++; return A.size ? n / A.size : 0; };
+
+/** 실제로 끝난 감사 수대로 표시한다(하나가 실패하면 그렇게 적는다) */
+export function auditLabel(s) {
+  const done = (s.audits ?? []).map((a) => a.company);
+  const failed = (s.auditFailed ?? []).map(companyOf);
+  if (s.phase !== 'done') return 'AI 감사(두 회사) · 사람 확인 전';
+  const head = done.length >= 2 ? `AI 감사(${done.length}회사: ${done.join('·')})` : `AI 감사(한 회사: ${done.join('') || '없음'})`;
+  return `${head}${failed.length ? ` · ${failed.join('·')} 감사 응답 실패` : ''} · 사람 확인 전`;
+}
+
 /** 브라우저로 보내는 상태 */
 function view(s) {
   return {
@@ -166,7 +191,7 @@ function view(s) {
     stages: s.stages.map(({ key, name, kind, units, attempts }) => ({ key, name, kind, units, attempts: attempts.map((a) => ({ n: a.n, verdict: a.verdict, reason: a.reason ?? null })) })),
     signoff: s.signoff, auditors: s.auditors ?? auditorsFor(s.workerCompany), auditsDone: (s.audits ?? []).map((a) => ({ model: a.model, company: a.company, count: a.errors.length, sec: a.sec })), auditErrors: s.auditErrors ?? [],
     result: s.result ?? null, ledger: s.phase === 'done' ? s.ledger : null,
-    label: 'AI 감사(두 회사) · 사람 확인 전',
+    label: auditLabel(s),
   };
 }
 export const getLead = async (id) => view(await load(id));
