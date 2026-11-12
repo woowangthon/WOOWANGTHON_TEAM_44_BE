@@ -1,0 +1,467 @@
+{
+  "summary": {
+    "at": "2026-11-12T04:12:50.623Z",
+    "runs": 11,
+    "done": 11,
+    "secMedian": 33,
+    "secMax": 42.2,
+    "zeroError": 4,
+    "blindExtra": 0,
+    "calls": 66
+  },
+  "runs": [
+    {
+      "i": 1,
+      "mode": "pool",
+      "source": "fsc-household-loan-2611",
+      "status": "done",
+      "error": null,
+      "sec": 30.8,
+      "calls": 4,
+      "sentences": 6,
+      "planted": 0,
+      "types": [],
+      "blind": {
+        "caught": 0,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 26359,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2386,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 0,
+          "planned": 0,
+          "planted": 0
+        },
+        {
+          "step": "p5",
+          "ms": 2019
+        }
+      ]
+    },
+    {
+      "i": 2,
+      "mode": "pool",
+      "source": "kcs-direct-buy-2611",
+      "status": "done",
+      "error": null,
+      "sec": 33,
+      "calls": 8,
+      "sentences": 6,
+      "planted": 3,
+      "types": [
+        "direction",
+        "number",
+        "overclaim"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 8540,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2039,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 19832,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 2619
+        }
+      ]
+    },
+    {
+      "i": 3,
+      "mode": "pool",
+      "source": "mcst-ai-content-2611",
+      "status": "done",
+      "error": null,
+      "sec": 22,
+      "calls": 3,
+      "sentences": 6,
+      "planted": 0,
+      "types": [],
+      "blind": {
+        "caught": 0,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 17939,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2185,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 0,
+          "planned": 0,
+          "planted": 0
+        },
+        {
+          "step": "p5",
+          "ms": 1901
+        }
+      ]
+    },
+    {
+      "i": 4,
+      "mode": "pool",
+      "source": "moel-labor-edu-2611",
+      "status": "done",
+      "error": null,
+      "sec": 11.3,
+      "calls": 3,
+      "sentences": 6,
+      "planted": 0,
+      "types": [],
+      "blind": {
+        "caught": 0,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 6789,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 1831,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 0,
+          "planned": 0,
+          "planted": 0
+        },
+        {
+          "step": "p5",
+          "ms": 2706
+        }
+      ]
+    },
+    {
+      "i": 5,
+      "mode": "pool",
+      "source": "moel-polytech-2611",
+      "status": "done",
+      "error": null,
+      "sec": 32.9,
+      "calls": 6,
+      "sentences": 5,
+      "planted": 3,
+      "types": [
+        "number",
+        "unsupported",
+        "number"
+      ],
+      "blind": {
+        "caught": 3,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 15657,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 6237,
+          "passed": 5
+        },
+        {
+          "step": "p3",
+          "ms": 8013,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 2988
+        }
+      ]
+    },
+    {
+      "i": 6,
+      "mode": "pool",
+      "source": "mofa-oda-youth-2611",
+      "status": "done",
+      "error": null,
+      "sec": 41.5,
+      "calls": 7,
+      "sentences": 6,
+      "planted": 2,
+      "types": [
+        "unsupported",
+        "number"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 21447,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2199,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 14835,
+          "planned": 2,
+          "planted": 2
+        },
+        {
+          "step": "p5",
+          "ms": 2972
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "mode": "pool",
+      "source": "mofe-employment-2611",
+      "status": "done",
+      "error": null,
+      "sec": 37.3,
+      "calls": 4,
+      "sentences": 6,
+      "planted": 0,
+      "types": [],
+      "blind": {
+        "caught": 0,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 33430,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2193,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 0,
+          "planned": 0,
+          "planted": 0
+        },
+        {
+          "step": "p5",
+          "ms": 1705
+        }
+      ]
+    },
+    {
+      "i": 8,
+      "mode": "pool",
+      "source": "molit-jeonse-2611",
+      "status": "done",
+      "error": null,
+      "sec": 36.1,
+      "calls": 9,
+      "sentences": 6,
+      "planted": 2,
+      "types": [
+        "number",
+        "unsupported"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 7415,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 1413,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 24343,
+          "planned": 2,
+          "planted": 2
+        },
+        {
+          "step": "p5",
+          "ms": 2938
+        }
+      ]
+    },
+    {
+      "i": 9,
+      "mode": "pool",
+      "source": "mpm-psat-2611",
+      "status": "done",
+      "error": null,
+      "sec": 39.9,
+      "calls": 8,
+      "sentences": 6,
+      "planted": 2,
+      "types": [
+        "number",
+        "unsupported"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 14307,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2118,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 20712,
+          "planned": 2,
+          "planted": 2
+        },
+        {
+          "step": "p5",
+          "ms": 2767
+        }
+      ]
+    },
+    {
+      "i": 10,
+      "mode": "pool",
+      "source": "mss-ai-unicorn-2611",
+      "status": "done",
+      "error": null,
+      "sec": 42.2,
+      "calls": 8,
+      "sentences": 6,
+      "planted": 2,
+      "types": [
+        "unsupported",
+        "unit"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 15182,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2158,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 22121,
+          "planned": 2,
+          "planted": 2
+        },
+        {
+          "step": "p5",
+          "ms": 2772
+        }
+      ]
+    },
+    {
+      "i": 11,
+      "mode": "pool",
+      "source": "nts-stock-refund-2611",
+      "status": "done",
+      "error": null,
+      "sec": 30.2,
+      "calls": 6,
+      "sentences": 5,
+      "planted": 3,
+      "types": [
+        "unsupported",
+        "number",
+        "unit"
+      ],
+      "blind": {
+        "caught": 3,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 15387,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2813,
+          "passed": 5
+        },
+        {
+          "step": "p3",
+          "ms": 8842,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 3174
+        }
+      ]
+    }
+  ]
+}
