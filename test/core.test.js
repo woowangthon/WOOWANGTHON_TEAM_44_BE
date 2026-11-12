@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { numbers, hasNumber, missingNumbers, quoteIn, checkSentence, rng } from '../src/text.js';
 import { plantNumber, plantUnit, plantDirection, droppedHedges, altValues } from '../src/plant.js';
-import { grade } from '../src/grade.js';
+import { grade, gradeRounds, interim, pidLabel } from '../src/grade.js';
 
 const source = {
   paragraphs: [
@@ -104,11 +104,74 @@ test('채점: 오류 없는 과제는 아무것도 짚지 않고 승인하면 10
 test('채점: 오류가 있는데 승인하고 하나도 못 찾으면 0', () => {
   const g = grade(task, [], '승인');
   assert.equal(g.score, 0);
-  assert.match(g.headline, /오류 2개가 든 보고가 승인됐습니다/);
+  assert.match(g.headline, /틀린 문장 2개가 든 보고가 그대로 승인됐습니다/);
   assert.equal(g.tendency, '승인 쪽');
 });
 
 test('채점: 없는 sid와 중복 표시는 무시', () => {
   const g = grade(task, [{ sid: 's9' }, { sid: 's2' }, { sid: 's2' }], '반려');
   assert.equal(g.counts.marked, 1);
+});
+
+test('2차 결재: 1차 반려 뒤 수정본에는 놓친 오류만 남고, 남은 수는 알려 주지 않는다', () => {
+  const it = interim(task, [{ sid: 's2', reason: '숫자·단위' }, { sid: 's3' }]);
+  assert.equal(it.stage, 'revision');
+  assert.deepEqual(it.revision.map((s) => s.text), ['A', 'B', 'C', 'D틀림']);
+  assert.deepEqual(it.replies.map((r) => r.kind), ['fixed', 'defended']);
+  assert.doesNotMatch(JSON.stringify(it), /shipped|missed|D"/);
+});
+
+test('2차 결재: 남은 오류를 2차에서 잡으면 절반 점수, 판정은 반려·반려가 맞다', () => {
+  const g = gradeRounds(task, [{ marks: [{ sid: 's2' }], decision: '반려' }, { marks: [{ sid: 's4' }], decision: '반려' }]);
+  assert.deepEqual(g.found1, ['s2']);
+  assert.deepEqual(g.found2, ['s4']);
+  assert.deepEqual(g.missed, []);
+  assert.deepEqual(g.correctDecisions, ['반려', '반려']);
+  assert.equal(g.decisionOk, true);
+  assert.equal(g.score, Math.round(((1 + 0.5) / 2) * 50 + 30 + 20));
+  assert.deepEqual(g.final.map((f) => f.status), ['ok', 'fixed', 'ok', 'fixed']);
+});
+
+test('2차 결재: 1차에 다 잡았으면 수정본은 승인이 맞고, 고친 문장을 다시 짚으면 잘못 짚음', () => {
+  const ok = gradeRounds(task, [{ marks: [{ sid: 's2' }, { sid: 's4' }], decision: '반려' }, { marks: [], decision: '승인' }]);
+  assert.deepEqual(ok.correctDecisions, ['반려', '승인']);
+  assert.equal(ok.score, 100);
+  const bad = gradeRounds(task, [{ marks: [{ sid: 's2' }, { sid: 's4' }], decision: '반려' }, { marks: [{ sid: 's2' }], decision: '반려' }]);
+  assert.equal(bad.counts.falseAlarms, 1);
+  assert.equal(bad.decisionOks[1], false);
+  assert.equal(bad.replies.filter((r) => r.round === 2)[0].kind, 'defended');
+});
+
+test('2차 결재: 1차 승인 뒤 2차는 없다', () => {
+  assert.throws(() => gradeRounds(task, [{ marks: [], decision: '승인' }, { marks: [], decision: '승인' }]), /1차 반려 뒤/);
+});
+
+test('표 행 번호 표기', () => {
+  assert.equal(pidLabel('p3'), '3문단');
+  assert.equal(pidLabel('r2'), '표 2행');
+});
+
+test('라이브: 붙여 넣은 글을 원자료 모양으로, 길이 제한', async () => {
+  const { textSource, view, STEPS } = await import('../src/live.js');
+  assert.throws(() => textSource('짧다'), /300자/);
+  const s = textSource(`${'가'.repeat(200)}\n\n${'나'.repeat(150)}\n짧음`, '테스트');
+  assert.equal(s.paragraphs.length, 2);
+  assert.equal(s.paragraphs[1].pid, 'p2');
+  const v = view({ id: 'live-abc123', status: 'p2', public: [], source: s, n: 3, planted: [{ sid: 's1' }] });
+  assert.doesNotMatch(JSON.stringify(v), /planted|"n"/);
+  assert.equal(STEPS.length, 4);
+});
+
+test('방향 바꿈: 부호가 붙은 숫자가 있는 문장에는 심지 않는다(문장 안 모순으로 티가 남)', () => {
+  assert.equal(plantDirection('하향 이동은 전년 대비 -0.5%p로 가장 적게 감소했다.', ['-0.5%p 감소'], rng('d')), null);
+});
+
+test('숫자 뒤 조사 맞추기', async () => {
+  const { fixParticle } = await import('../src/plant.js');
+  const f = (text, num) => fixParticle(text, text.indexOf(num) + num.length, num);
+  assert.equal(f('40.4에서 39.5으로 감소했다', '39.5'), '40.4에서 39.5로 감소했다');
+  assert.equal(f('수치가 37로 늘었다', '37'), '수치가 37로 늘었다');
+  assert.equal(f('수치가 36로 늘었다', '36'), '수치가 36으로 늘었다');
+  assert.equal(f('값 2이 크다', '2'), '값 2가 크다');
+  assert.equal(f('값 2이다', '2'), '값 2이다');
 });

@@ -15,7 +15,7 @@ export async function recordPlay(task, g, { deviceId, elapsedSec, marks, maker }
     if (g.decisionOk) fields.push('decisionOk');
   }
   await hincrMany(aggKey(task, maker), fields);
-  if (first && !maker) {
+  if (first && !maker && task.origin === 'bank') {
     const tf = [];
     for (const p of task.answer.planted) {
       tf.push(`planted:${REASON_OF[p.type]}`);
@@ -29,6 +29,7 @@ export async function recordPlay(task, g, { deviceId, elapsedSec, marks, maker }
     at: new Date().toISOString(), taskId: task.id, version: task.version, device: deviceId ?? null, first, maker: !!maker,
     elapsedSec: Number.isFinite(elapsedSec) ? Math.round(elapsedSec) : null,
     marks: marks.map((m) => ({ sid: m.sid, reason: m.reason ?? null })), decision: g.decision,
+    origin: task.origin, rounds: g.rounds ?? 1, found1: g.counts?.found1 ?? g.found.length, found2: g.counts?.found2 ?? 0,
     found: g.found.length, missed: g.missed.length, falseAlarms: g.falseAlarms.length, score: g.score,
   });
   return { first };

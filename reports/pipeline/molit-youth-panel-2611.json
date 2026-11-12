@@ -1,0 +1,66 @@
+{
+  "id": "molit-youth-panel-2611",
+  "startedAt": "2026-11-12T01:04:45.828Z",
+  "difficulty": "0",
+  "plannedErrors": 0,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "molit-youth-panel-2611-1",
+      "p1": {
+        "kept": 7,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 7,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 0,
+        "log": []
+      },
+      "p5": {
+        "flags": [],
+        "decision": "승인",
+        "caught": 0,
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-12T01:05:12.421Z",
+  "usage": [
+    {
+      "label": "P1 작성",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 22092,
+      "input": 2076,
+      "output": 2467
+    },
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2228,
+      "input": 2068,
+      "output": 152
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2270,
+      "input": 2324,
+      "output": 136
+    }
+  ]
+}

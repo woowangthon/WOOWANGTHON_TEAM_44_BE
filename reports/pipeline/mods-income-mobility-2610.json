@@ -1,0 +1,203 @@
+{
+  "id": "mods-income-mobility-2610",
+  "startedAt": "2026-11-12T01:07:59.701Z",
+  "difficulty": "1",
+  "plannedErrors": 2,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "inc2-1",
+      "p1": {
+        "kept": 5,
+        "dropped": [],
+        "modelAttempts": 2
+      },
+      "p2": {
+        "passed": 5,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 2,
+        "log": [
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s5",
+            "ok": true,
+            "detail": "덧붙임: 이는 청년층의 잦은 이직과 비정규직 비중이 소득 하락 위험을 계속 높여 왔기 때문이다"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s5",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s2",
+            "ok": true,
+            "detail": "39.3 → 39.5"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s2",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s4",
+            "ok": true,
+            "detail": "0.6%p → 0.6%"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unit",
+            "sid": "s4",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "detail": "22.4% → 22.6%"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s3",
+            "ok": true
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s5",
+            "ok": true,
+            "problem": "-0.5%p로 다른 연령층보다 가장 적게 감소했다는 부분은 맞지만, 잦은 이직과 비정규직 비중 때문이라는 원인은 원자료에 없는 덧붙임이다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s2",
+            "ok": true,
+            "problem": "원자료의 청년층 소득이동은 전년 40.4에서 39.3으로 감소했는데, 결과물은 39.5로 잘못 적었다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unit",
+            "sid": "s4",
+            "ok": true,
+            "problem": "청년층 상향 이동의 전년 대비 감소폭은 -0.6%p인데, 결과물은 단위를 %로 써서 %p를 %로 바꿨다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "problem": "청년층 상향 이동은 원자료에서 22.4%인데, 결과물은 22.6%로 잘못 적었다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s2",
+            "reason": "숫자·단위",
+            "note": "원자료 표(r1)상 청년층 소득이동은 전년 40.4에서 39.3으로 감소했음(-1.1). 결과물의 39.5는 틀린 수치이며, s1의 39.3%와도 어긋남."
+          },
+          {
+            "sid": "s5",
+            "reason": "원자료에 없음",
+            "note": "청년층의 잦은 이직과 비정규직 비중이 소득 하락 위험을 높였다는 원인 설명은 원자료에 없음. 원자료는 감소 폭만 제시함."
+          }
+        ],
+        "decision": "반려",
+        "caught": 2,
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-12T01:08:12.249Z",
+  "usage": [
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2232,
+      "input": 1601,
+      "output": 112
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2802,
+      "input": 1286,
+      "output": 162
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3244,
+      "input": 1618,
+      "output": 333
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 4260,
+      "input": 1901,
+      "output": 218
+    }
+  ]
+}

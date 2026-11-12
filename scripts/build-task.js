@@ -2,10 +2,10 @@
 // 사용법: node --env-file=.env scripts/build-task.js data/sources/<id>.json [--difficulty 2] [--seed abc] [--tries 2]
 // 결과: data/tasks/<id>.json(과제), reports/pipeline/<id>.json(단계별 기록, 실패 포함), reports/human-check/<id>.md(사람 확인용 한 장)
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { p1Write, p2Verify, p3p4Plant, p5Blind, ERRORS_BY_DIFFICULTY, CRITERIA } from '../src/pipeline.js';
+import { p1Write, p2Verify, p3p4Plant, p5Blind, ERRORS_BY_DIFFICULTY } from '../src/pipeline.js';
+import { assembleTask } from '../src/assemble.js';
 import { ROLES, usageLog } from '../src/llm.js';
 import { REASON_OF } from '../src/plant.js';
-import { numbers, quoteIn, missingNumbers } from '../src/text.js';
 
 const args = process.argv.slice(2);
 const opt = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
@@ -15,6 +15,7 @@ if (!srcPath) { console.error('원자료 파일 경로가 필요합니다'); pro
 const source = JSON.parse(readFileSync(srcPath, 'utf8'));
 const difficulty = opt('difficulty', String(source.difficulty ?? 2));
 const n = ERRORS_BY_DIFFICULTY[difficulty];
+if (n === undefined) { console.error(`난이도는 ${Object.keys(ERRORS_BY_DIFFICULTY).join('·')} 가운데 하나입니다`); process.exit(1); }
 const count = Number(opt('sentences', difficulty === 'mini' ? 4 : 7));
 const tries = Number(opt('tries', 2));
 const seedBase = opt('seed', source.id);
@@ -55,45 +56,15 @@ for (let t = 1; t <= tries && !task; t++) {
     if (pl.planted.length < n) { at.result = `오류 ${pl.planted.length}/${n}개만 검증 통과`; continue; }
     const plantedBy = new Map(pl.planted.map((p) => [p.sid, p]));
     const sentences = clean.map((s) => ({ sid: s.sid, text: plantedBy.get(s.sid)?.after ?? s.text }));
-    // 나머지 문장이 바뀌지 않았는가
-    const untouched = clean.filter((s) => !plantedBy.has(s.sid)).every((s) => sentences.find((x) => x.sid === s.sid).text === s.text);
     // P5
     const blind = await p5Blind(source, source.brief, sentences);
-    const flagged = new Set(blind.flags.map((f) => f.sid));
-    const extra = blind.flags.filter((f) => !plantedBy.has(f.sid));
-    const caught = pl.planted.filter((p) => flagged.has(p.sid)).map((p) => p.sid);
-    at.p5 = { flags: blind.flags, decision: blind.decision, caught, extra };
-    console.log(`[${t}] P5 눈 가린 풀이: 심은 ${n}개 중 ${caught.length}개 짚음, 심지 않은 곳 ${extra.length}곳 짚음, 판정 ${blind.decision}`);
-
     // 실제로 판정한 모델(혼잡으로 대체 모델이 쓰였으면 함께 적는다)
     const used = (r) => [...new Set(usageLog.filter((u) => u.role === r && !u.failed).map((u) => u.model))].join(' + ');
     report.models = { writer: used('writer') || report.models.writer, checker: used('checker') || report.models.checker };
-    const allQuotes = clean.flatMap((s) => s.support);
-    // 깨끗한 문장의 숫자가 근거 문단에 같은 표기로 있는지 다시 센다(P1 코드 검사를 통과했어도 여기서 따로 센다)
-    const paraText = (pid) => source.paragraphs.find((p) => p.pid === pid)?.text ?? '';
-    const numTotal = clean.reduce((a, s) => a + numbers(s.text).length, 0);
-    const numOk = clean.reduce((a, s) => a + numbers(s.text).length - missingNumbers(s.text, s.support.map((q) => paraText(q.pid)).join('\n')).length, 0);
-    task = {
-      id: source.id, version: 1, track: source.track, difficulty: difficulty === 'mini' ? 1 : Number(difficulty), mini: difficulty === 'mini',
-      title: source.taskTitle ?? source.title, brief: source.brief, criteria: CRITERIA,
-      timeLimitSec: difficulty === 'mini' ? 60 : 240, origin: 'bank',
-      source: { title: source.title, publisher: source.publisher, url: source.url, license: source.license, retrievedAt: source.retrievedAt, excerptNote: source.excerptNote ?? '', paragraphs: source.paragraphs },
-      sentences,
-      answer: {
-        planted: pl.planted.map((p) => ({ sid: p.sid, type: p.type, before: p.before, after: p.after, evidence: p.evidence, why: p.why, detail: p.detail, guarantee: p.guarantee, checkerSaid: p.checkerSaid })),
-        clean: clean.filter((s) => !plantedBy.has(s.sid)).map((s) => ({ sid: s.sid, support: s.support })),
-        correctDecision: n ? '반려' : '승인',
-      },
-      verification: {
-        models: report.models,
-        numbersMatched: `${numOk}/${numTotal}`,
-        quotesMatched: `${allQuotes.filter((q) => quoteIn(q.quote, source.paragraphs.find((p) => p.pid === q.pid)?.text ?? '')).length}/${allQuotes.length}`,
-        plantedVerified: `${pl.planted.length}/${n}`,
-        othersUntouched: untouched,
-        blind: { caught: caught.length, of: n, extraFlags: extra.length, extra: extra.map((e) => ({ sid: e.sid, reason: e.reason, note: e.note })), decision: blind.decision },
-        humanChecked: null,
-      },
-    };
+    task = assembleTask({ source, difficulty, n, clean, planted: pl.planted, blind, models: report.models });
+    const vb = task.verification.blind;
+    at.p5 = { flags: blind.flags, decision: blind.decision, caught: vb.caught, extra: vb.extra };
+    console.log(`[${t}] P5 눈 가린 풀이: 심은 ${n}개 중 ${vb.caught}개 짚음, 심지 않은 곳 ${vb.extraFlags}곳 짚음, 판정 ${blind.decision}`);
     at.result = 'ok';
   } catch (e) {
     at.result = `오류: ${e.message}`;

@@ -1,0 +1,257 @@
+{
+  "id": "moip-youth-patent-2611",
+  "startedAt": "2026-11-12T01:05:12.558Z",
+  "difficulty": "2",
+  "plannedErrors": 3,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "moip-youth-patent-2611-1",
+      "p1": {
+        "kept": 6,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 6,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 3,
+        "log": [
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s4",
+            "ok": true,
+            "detail": "11월 → 9월"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s4",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": true,
+            "detail": "한정 표현 빠짐: 수 있"
+          },
+          {
+            "step": "P4 코드",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s6",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s6",
+            "ok": true,
+            "detail": "덧붙임: 해외 경쟁국보다 앞서 특허를 선점하려는 기업들의 요청이 잇따른 데 따라"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s6",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s1",
+            "ok": true,
+            "detail": "확대 → 축소"
+          },
+          {
+            "step": "P4 코드",
+            "type": "direction",
+            "sid": "s1",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s4",
+            "ok": true,
+            "problem": "시행일이 원자료에는 11월 1일인데 결과물은 9월 1일로 잘못 적었다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": true,
+            "problem": "원자료는 '모두의 아이디어나 모두의 창업과 같은 창업지원사업 등에 선정된' 청년이 '신청할 수 있다'고 했는데, 결과물은 '신청할 수 있다'는 가능성을 '신청한다'로 단정했다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s6",
+            "ok": true,
+            "problem": "기존 첨단기술 분야 지원기간 연장의 이유를 '해외 경쟁국보다 앞서 특허를 선점하려는 기업들의 요청이 잇따른 데 따라'라고 했으나, 원자료에는 그런 요청이나 원인이 없다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "direction",
+            "sid": "s1",
+            "ok": true,
+            "problem": "원자료는 초고속심사 대상을 '확대'한다고 했는데 결과물은 '축소'한다고 방향을 반대로 적었다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s4",
+            "reason": "숫자·단위",
+            "note": "원자료는 11월 1일부터 확대된다고 했는데 결과물은 '9월 1일'로 날짜를 잘못 적었다."
+          },
+          {
+            "sid": "s6",
+            "reason": "원자료에 없음",
+            "note": "지원기간 연장의 이유로 든 '해외 경쟁국보다 앞서 특허를 선점하려는 기업들의 요청이 잇따랐다'는 내용은 원자료에 없다. 원문은 우리 기업이 첨단기술 경쟁에서 시장을 선도할 기반을 마련하려는 것이라고만 한다."
+          }
+        ],
+        "decision": "반려",
+        "caught": 2,
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-12T01:05:35.246Z",
+  "usage": [
+    {
+      "label": "P1 작성",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 7964,
+      "input": 1884,
+      "output": 982
+    },
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 1836,
+      "input": 1957,
+      "output": 132
+    },
+    {
+      "label": "P3 근거보다 큰 결론",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 3264,
+      "input": 517,
+      "output": 72
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 3417,
+      "input": 1502,
+      "output": 187
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3404,
+      "input": 1894,
+      "output": 380
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2797,
+      "input": 2247,
+      "output": 240
+    }
+  ]
+}

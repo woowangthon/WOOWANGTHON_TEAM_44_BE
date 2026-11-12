@@ -1,0 +1,257 @@
+{
+  "id": "moel-scholarship-2609",
+  "startedAt": "2026-11-12T01:03:52.056Z",
+  "difficulty": "2",
+  "plannedErrors": 3,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "moel-scholarship-2609-1",
+      "p1": {
+        "kept": 6,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 6,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 3,
+        "log": [
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s2",
+            "ok": true,
+            "detail": "덧붙임: 지난 학기보다 선발 규모가 확대됐다"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s2",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s6",
+            "ok": true,
+            "detail": "한정 표현 빠짐: 예정"
+          },
+          {
+            "step": "P4 코드",
+            "type": "overclaim",
+            "sid": "s6",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s5",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "detail": "200만원 → 210만원"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s3",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s5",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s5",
+            "ok": true,
+            "detail": "50 → 60"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s5",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s2",
+            "ok": true,
+            "problem": "선발 인원 150명은 맞지만, 지난 학기보다 선발 규모가 확대되었다는 내용은 원자료에 없다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "overclaim",
+            "sid": "s6",
+            "ok": true,
+            "problem": "원자료는 선발 결과를 11월 중 안내할 '예정'이라고 했는데, 결과물은 '안내한다'로 계획을 단정했다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "problem": "1인당 지원액은 원자료에서 200만원인데 결과물에는 210만원으로 되어 있다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s5",
+            "ok": true,
+            "problem": "학자금 지원구간 배점은 원자료에서 50점인데 결과물에는 60점으로 되어 있다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s2",
+            "reason": "원자료에 없음",
+            "note": "'지난 학기보다 선발 규모가 확대됐다'는 내용은 원자료에 없다. 원자료에는 150명 선발이라는 사실만 있고 이전 학기와의 비교는 없다."
+          },
+          {
+            "sid": "s3",
+            "reason": "숫자·단위",
+            "note": "원자료는 1인당 200만원인데 결과물은 210만원으로 적었다. 금액은 틀리면 안 된다는 요청을 어겼다."
+          }
+        ],
+        "decision": "반려",
+        "caught": 2,
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-12T01:04:12.746Z",
+  "usage": [
+    {
+      "label": "P1 작성",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 7068,
+      "input": 1888,
+      "output": 791
+    },
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2308,
+      "input": 1910,
+      "output": 132
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2775,
+      "input": 1475,
+      "output": 108
+    },
+    {
+      "label": "P3 근거보다 큰 결론",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2461,
+      "input": 495,
+      "output": 51
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3097,
+      "input": 1775,
+      "output": 278
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2973,
+      "input": 2175,
+      "output": 196
+    }
+  ]
+}

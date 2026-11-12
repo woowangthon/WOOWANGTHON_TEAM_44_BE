@@ -1,0 +1,275 @@
+{
+  "id": "moel-jobskill-2609",
+  "startedAt": "2026-11-12T01:04:12.887Z",
+  "difficulty": "1",
+  "plannedErrors": 2,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "moel-jobskill-2609-1",
+      "p1": {
+        "kept": 7,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 7,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 2,
+        "log": [
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s5",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s7",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s6",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": true,
+            "detail": "한정 표현 빠짐: 최대 "
+          },
+          {
+            "step": "P4 코드",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s6",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s2",
+            "ok": true,
+            "detail": "28일 → 26일"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s2",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s7",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s6",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true,
+            "detail": "덧붙임: 공통 과정은 세대 간 경험 공유를 통해 서로의 취업 전략을 배울 수 있도록 마련됐다"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s6",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s7",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "detail": "10회 → 20회"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s3",
+            "ok": true
+          },
+          {
+            "step": "P4 점검",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": true,
+            "problem": "원자료는 회당 '최대 60명'이라고 했는데 결과물은 '최대'가 빠져 정원이 정확히 60명인 것처럼 단정했다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s2",
+            "ok": true,
+            "problem": "운영 시작일이 원자료에는 9월 28일인데 결과물에는 9월 26일로 잘못 적혀 있다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true,
+            "problem": "공통 과정이 세대 간 경험 공유를 통해 서로의 취업 전략을 배우도록 마련됐다는 목적은 원자료에 없다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "problem": "화상교육은 총 20회가 아니라 총 10회 실시된다고 원자료에 나와 있다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s2",
+            "reason": "숫자·단위",
+            "note": "원자료는 화상교육이 9월 28일(월)부터 시작한다고 했는데 결과물은 9월 26일로 적었다."
+          },
+          {
+            "sid": "s5",
+            "reason": "숫자·단위",
+            "note": "원자료는 회당 '최대 60명'인데 결과물은 '최대'를 빼고 정원을 60명으로 확정해 적었다. 정원 숫자를 정확히 하라는 요청에 어긋난다."
+          }
+        ],
+        "decision": "반려",
+        "caught": 2,
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-12T01:04:45.686Z",
+  "usage": [
+    {
+      "label": "P1 작성",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 19514,
+      "input": 2028,
+      "output": 2385
+    },
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2198,
+      "input": 2071,
+      "output": 152
+    },
+    {
+      "label": "P3 근거보다 큰 결론",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2406,
+      "input": 487,
+      "output": 44
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2987,
+      "input": 1612,
+      "output": 159
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2861,
+      "input": 1951,
+      "output": 293
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2824,
+      "input": 2315,
+      "output": 191
+    }
+  ]
+}

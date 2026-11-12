@@ -21,10 +21,15 @@ for (const row of list.body.tasks ?? []) {
   const raw = JSON.stringify(t.body);
   ok(t.status === 200 && t.body.sentences?.length > 0, `${row.id}: 과제 ${t.body.sentences?.length ?? 0}문장, 원자료 ${t.body.source?.paragraphs?.length ?? 0}문단`);
   ok(!/"(answer|planted|correctDecision|verification|before|why)"/.test(raw), `${row.id}: 채점 전 응답에 정답·검증 수치 없음`);
-  // 첫 문장만 표시하고 반려
-  const g = await post('/api/grade', { id: row.id, marks: [{ sid: t.body.sentences[0].sid, reason: '기타' }], decision: '반려', elapsedSec: 30, deviceId: device, maker: true });
-  ok(g.status === 200 && typeof g.body.score === 'number' && Array.isArray(g.body.replies) && g.body.final?.length === t.body.sentences.length,
-    `${row.id}: 채점 점수 ${g.body.score}, 답장 ${g.body.replies?.length}줄, 최종본 ${g.body.final?.length}문장`);
+  // 1차: 첫 문장만 표시하고 반려 → 수정본(남은 오류 수는 없어야 한다)
+  const m1 = [{ sid: t.body.sentences[0].sid, reason: '기타' }];
+  const it = await post('/api/grade', { id: row.id, marks: m1, decision: '반려', deviceId: device, maker: true });
+  ok(it.status === 200 && it.body.stage === 'revision' && it.body.revision?.length === t.body.sentences.length && !/"(missed|shipped|planted)"/.test(JSON.stringify(it.body)),
+    `${row.id}: 1차 반려 → 수정본 ${it.body.revision?.length}문장, 남은 오류 정보 없음`);
+  // 2차: 아무것도 짚지 않고 승인 → 최종 채점
+  const g = await post('/api/grade', { id: row.id, rounds: [{ marks: m1, decision: '반려' }, { marks: [], decision: '승인' }], elapsedSec: 30, deviceId: device, maker: true });
+  ok(g.status === 200 && g.body.stage === 'final' && typeof g.body.score === 'number' && g.body.final?.length === t.body.sentences.length,
+    `${row.id}: 2차 승인 → 점수 ${g.body.score}, 답 ${g.body.replies?.length}줄, 최종본 ${g.body.final?.length}문장`);
 }
 const bad = await post('/api/grade', { id: list.body.tasks?.[0]?.id, marks: [], decision: '보류' });
 ok(bad.status === 400, '잘못된 판정은 400');
@@ -32,5 +37,7 @@ const fb = await post('/api/feedback', { taskId: list.body.tasks?.[0]?.id, helpf
 ok(fb.status === 200, '반응 저장');
 const st = await get('/api/stats');
 ok(st.status === 200 && typeof st.body.makerPlays === 'number', `집계: 사용자 ${st.body.plays}판, 만든 사람 ${st.body.makerPlays}판`);
+const lv = await get('/api/live');
+ok(lv.status === 200 && lv.body.pool?.length >= 1, `라이브 원자료 묶음 ${lv.body.pool?.length ?? 0}건(모델은 부르지 않음)`);
 console.log(fail ? `실패 ${fail}건` : '모두 통과');
 process.exit(fail ? 1 : 0);

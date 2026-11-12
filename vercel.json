@@ -1,6 +1,6 @@
 {
   "regions": ["icn1"],
   "functions": {
-    "api/*.js": { "includeFiles": "data/tasks/**", "maxDuration": 60 }
+    "api/*.js": { "includeFiles": "data/**", "maxDuration": 300 }
   }
 }

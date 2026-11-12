@@ -55,6 +55,33 @@ export function altValues(value, kind) {
 
 const replaceAt = (s, index, from, to) => s.slice(0, index) + to + s.slice(index + from.length);
 
+/** 아라비아 숫자를 읽었을 때 끝소리: 'none'(받침 없음) | 'r'(ㄹ 받침) | 'c'(그 밖의 받침) */
+export function numberCoda(num) {
+  const d = String(num).replace(/,/g, '');
+  const last = d.at(-1);
+  if (d.includes('.') || !/0$/.test(d)) return { 0: 'c', 1: 'r', 2: 'none', 3: 'c', 4: 'none', 5: 'none', 6: 'c', 7: 'r', 8: 'r', 9: 'none' }[last] ?? 'c';
+  // 끝이 0인 정수: 10 십(ㅂ), 100 백(ㄱ), 1000 천(ㄴ), 10000 만(ㄴ), 0 영(ㅇ)
+  return 'c';
+}
+
+/** 숫자 바로 뒤 조사를 바뀐 숫자의 끝소리에 맞춘다(「39.5으로」 같은 티 나는 조사 방지) */
+export function fixParticle(sentence, endIndex, num) {
+  const coda = numberCoda(num);
+  const rest = sentence.slice(endIndex);
+  const pairs = [['으로', '로'], ['이', '가'], ['은', '는'], ['을', '를'], ['과', '와']];
+  for (const [withC, without] of pairs) {
+    const m = rest.match(new RegExp(`^(${withC}|${without})(?![가-힣]*[0-9])`));
+    if (!m) continue;
+    // 「으로/로」는 ㄹ 받침 뒤에 「로」
+    const want = withC === '으로' ? (coda === 'c' ? '으로' : '로') : coda === 'none' ? without : withC;
+    if (m[1] === want) return sentence;
+    // 「이다」「이었다」 같은 서술격은 건드리지 않는다
+    if (m[1] === '이' && /^이(다|었|며|고|라|므|나)/.test(rest)) return sentence;
+    return sentence.slice(0, endIndex) + want + rest.slice(m[1].length);
+  }
+  return sentence;
+}
+
 /**
  * 숫자 바꿈. 문장의 숫자 가운데 근거 문단에 있는 것 하나를 골라, 원자료 어디에도 같은 표기로 없는 값으로 바꾼다.
  * 돌려주는 값: { after, detail } 또는 null
@@ -70,7 +97,10 @@ export function plantNumber(sentence, source, rand) {
       if (hasNumber(cand, all)) continue;
       const numStr = t.raw.match(/^(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?/)[0];
       const newRaw = formatLike(numStr, v) + t.raw.slice(numStr.length);
-      return { after: replaceAt(sentence, t.index, t.raw, newRaw), detail: `${t.raw.trim()} → ${newRaw.trim()}` };
+      let after = replaceAt(sentence, t.index, t.raw, newRaw);
+      // 단위 없이 숫자 바로 뒤에 조사가 붙은 경우만 맞춘다
+      if (newRaw.trimEnd() === formatLike(numStr, v)) after = fixParticle(after, t.index + newRaw.trimEnd().length, v);
+      return { after, detail: `${t.raw.trim()} → ${newRaw.trim()}` };
     }
   }
   return null;
@@ -141,6 +171,8 @@ export function plantDirection(sentence, quotes, rand) {
   const qPols = new Set(directionWords(q).map((h) => h.pol));
   if (qPols.size !== 1) return null;
   const [pol] = qPols;
+  // 「-0.5%p로 … 증가」처럼 부호가 붙은 숫자가 있으면 방향을 바꿔도 문장 안에서 모순이 드러나 원자료 없이 티가 난다
+  if (/(^|[\s(])[-−+]\d/.test(sentence)) return null;
   // 개선↔악화는 「관행을 악화하는 데 중점」처럼 원자료 없이도 티 나는 문장을 만들기 쉬워 심지 않는다
   const cands = directionWords(sentence).filter((h) => h.pol === pol && !NO_PLANT.has(h.word));
   if (!cands.length) return null;

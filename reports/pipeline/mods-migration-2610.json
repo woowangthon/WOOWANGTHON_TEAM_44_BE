@@ -1,0 +1,231 @@
+{
+  "id": "mods-migration-2610",
+  "startedAt": "2026-11-12T01:06:08.089Z",
+  "difficulty": "2",
+  "plannedErrors": 3,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "mods-migration-2610-1",
+      "p1": {
+        "kept": 6,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 6,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 3,
+        "log": [
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "detail": "9월 → 11월"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s3",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s6",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s5",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s4",
+            "ok": true,
+            "detail": "0.6% → 0.6%p"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unit",
+            "sid": "s4",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s2",
+            "ok": true,
+            "detail": "감소 → 증가"
+          },
+          {
+            "step": "P4 코드",
+            "type": "direction",
+            "sid": "s2",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s6",
+            "ok": true,
+            "detail": "덧붙임: 인근 대전·충남으로의 전출이 이어지면서"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s6",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s5",
+            "ok": true,
+            "detail": "0.6% → 0.3%"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s5",
+            "ok": true
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s3",
+            "ok": true,
+            "problem": "원자료의 시점은 2026년 9월인데 결과물은 11월로 잘못 적었다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unit",
+            "sid": "s4",
+            "ok": true,
+            "problem": "충북 순이동률 0.6%는 맞지만 단위를 %p로 바꿨다. 원자료는 %이며, 순이동률은 %p로 표기할 대상이 아니다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "direction",
+            "sid": "s2",
+            "ok": true,
+            "problem": "시도내 이동자는 전년동월대비 8.9% 감소했는데 증가로 방향이 반대로 적혔다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s6",
+            "ok": true,
+            "problem": "세종의 순이동률 -0.9%와 순유출은 맞지만, 대전·충남으로의 전출이 이어졌다는 원인은 원자료에 없다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s5",
+            "ok": true,
+            "problem": "충남의 순유입 1,032명은 맞지만 순이동률은 0.6%인데 0.3%로 잘못 적었다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s2",
+            "reason": "방향·주체가 바뀜",
+            "note": "원자료는 시도내 이동자가 8.9% 감소했다고 했는데 결과물은 증가라고 썼다."
+          },
+          {
+            "sid": "s3",
+            "reason": "숫자·단위",
+            "note": "원자료의 시점은 2026년 9월인데 결과물은 11월이라고 썼다."
+          },
+          {
+            "sid": "s6",
+            "reason": "원자료에 없음",
+            "note": "세종이 대전·충남으로 전출이 이어졌다는 원인은 원자료에 없다. 세종의 순이동률 -0.9%와 순유출만 확인된다."
+          }
+        ],
+        "decision": "반려",
+        "caught": 3,
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-12T01:06:31.550Z",
+  "usage": [
+    {
+      "label": "P1 작성",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 12683,
+      "input": 1643,
+      "output": 1363
+    },
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 1890,
+      "input": 1559,
+      "output": 132
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2386,
+      "input": 1204,
+      "output": 82
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3432,
+      "input": 1531,
+      "output": 362
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3062,
+      "input": 1827,
+      "output": 234
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
+import { getJson } from '../src/store.js';
 
 const DIR = process.env.TASKS_DIR || join(process.cwd(), 'data', 'tasks');
 const cache = new Map();
@@ -11,6 +12,16 @@ export function loadTask(id) {
     catch { throw Object.assign(new Error('없는 과제'), { status: 404 }); }
   }
   return cache.get(id);
+}
+
+/** 은행 과제는 파일에서, 라이브 과제(live-…)는 KV에서(24시간 보관) */
+export async function getTask(id) {
+  if (/^live-[a-z0-9]{6,20}$/.test(id ?? '')) {
+    const t = await getJson(`ss:live:task:${id}`);
+    if (!t) throw Object.assign(new Error('없거나 기한(24시간)이 지난 과제'), { status: 404 });
+    return t;
+  }
+  return loadTask(id);
 }
 
 export const allTasks = () => readdirSync(DIR).filter((f) => f.endsWith('.json')).map((f) => loadTask(f.replace(/\.json$/, '')));

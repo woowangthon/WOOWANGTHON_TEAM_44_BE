@@ -26,7 +26,11 @@ test('목록 응답에 오류 수가 없다', async () => {
 });
 
 test('채점 → 기록 → 집계', async () => {
-  const req = (deviceId, marks) => ({ method: 'POST', body: { id: 'fx-01', marks, decision: '반려', deviceId, elapsedSec: 42 } });
+  const req = (deviceId, marks) => ({ method: 'POST', body: { id: 'fx-01', rounds: [{ marks, decision: '반려' }, { marks: [], decision: '승인' }], deviceId, elapsedSec: 42 } });
+  // 1차 반려만 보내면 중간 답(수정본)이 오고 기록하지 않는다
+  const it = await call('grade', { method: 'POST', body: { id: 'fx-01', marks: [{ sid: 's1' }], decision: '반려', deviceId: 'device-zzzz9' } });
+  assert.equal(it.body.stage, 'revision');
+  assert.ok(!JSON.stringify(it.body).includes('missed'));
   const a = await call('grade', req('device-aaaa1', [{ sid: 's1', reason: '방향·주체가 바뀜' }]));
   assert.equal(a.status, 200);
   assert.deepEqual(a.body.found, ['s1']);
