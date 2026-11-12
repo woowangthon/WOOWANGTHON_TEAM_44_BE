@@ -200,7 +200,8 @@ export async function p3p4Plant(source, sentences, { n, seed, types = ['number',
   };
   // 유형을 돌아가며 한 번씩, 그래도 모자라면 숫자부터 다시
   // only(약점 맞춤): 정한 유형만 여러 번 시도한다
-  const plan = only ? Array.from({ length: n + 2 }, (_, i) => typeQueue[i % typeQueue.length]) : [...typeQueue, 'number', 'direction', 'number'];
+  // 고른 유형으로 모자라면 다른 유형으로 채운다(약점 맞춤 보고서가 빈손이 되지 않게)
+  const plan = only ? [...Array.from({ length: n + 2 }, (_, i) => typeQueue[i % typeQueue.length]), 'number', 'unsupported', 'overclaim', 'number'] : [...typeQueue, 'number', 'direction', 'number'];
   for (const type of plan) {
     if (candidates.length >= n + 2) break;
     if (!only && candidates.filter((c) => c.type === type).length >= 2) continue;
@@ -237,6 +238,13 @@ export async function p3p4Plant(source, sentences, { n, seed, types = ['number',
   }
   // 고를 때는 서로 다른 유형을 먼저(같은 유형 둘이 들어가면 한 가지 눈만 연습하게 된다)
   const seen = new Set();
+  if (only) {
+    // 약점 맞춤: 고른 유형부터
+    for (const c of verified) if (planted.length < n && types.includes(c.type)) planted.push(c);
+    for (const c of verified) if (planted.length < n && !planted.includes(c)) planted.push(c);
+    planted.sort((a, b) => Number(a.sid.slice(1)) - Number(b.sid.slice(1)));
+    return { planted, log };
+  }
   for (const c of verified) if (planted.length < n && !seen.has(REASON_OF[c.type])) { planted.push(c); seen.add(REASON_OF[c.type]); }
   for (const c of verified) if (planted.length < n && !planted.includes(c)) planted.push(c);
   planted.sort((a, b) => Number(a.sid.slice(1)) - Number(b.sid.slice(1)));

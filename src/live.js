@@ -7,7 +7,8 @@ import { p1Write, p2Verify, p3p4Plant, p5Blind } from './pipeline.js';
 import { assembleTask } from './assemble.js';
 import { ROLES, capLeft } from './llm.js';
 import { getJson, setJson, incr } from './store.js';
-import { quoteIn } from './text.js';
+import { quoteIn, sourceText } from './text.js';
+import { directionWords, hedgesIn } from './plant.js';
 
 const DAY = 24 * 3600;
 export const LIVE_PER_DEVICE = 3;
@@ -72,7 +73,10 @@ export async function startJob({ mode, sourceId, text, title, deviceId, maker, f
   if (mode === 'text') source = textSource(text, title);
   else {
     const pool = poolSources();
-    source = (sourceId && pool.find((s) => s.id === sourceId)) || pool[Math.floor(Math.random() * pool.length)];
+    // 약점 맞춤이고 자료를 고르지 않았으면, 그 유형을 심을 거리가 있는 자료에서 고른다
+    const fits = (s) => !focus || (focus === '방향·주체가 바뀜' ? directionWords(sourceText(s)).length >= 2 : focus === '근거보다 큰 결론' ? hedgesIn(sourceText(s)).length >= 2 : true);
+    const cands = pool.filter(fits).length ? pool.filter(fits) : pool;
+    source = (sourceId && pool.find((s) => s.id === sourceId)) || cands[Math.floor(Math.random() * cands.length)];
     if (!source) throw Object.assign(new Error('원자료 묶음이 비어 있습니다'), { status: 500 });
   }
   await incr(`ss:live:dev:${kstDate()}:${deviceId}`, 1, 2 * DAY);
