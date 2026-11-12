@@ -1,0 +1,13 @@
+[
+  {
+    "label": "triage m4-base-anthropic-11121636-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 9097,
+    "output": 567,
+    "cost": 0.023864,
+    "ms": 8726,
+    "stop": "stop"
+  }
+]

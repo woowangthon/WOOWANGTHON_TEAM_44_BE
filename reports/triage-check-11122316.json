@@ -1,0 +1,126 @@
+{
+  "at": "2026-11-12T14:16:56.802Z",
+  "answerId": "ans-mwdjvfwk9o3nn",
+  "runId": "m4-base-anthropic-11121636-2",
+  "ledger": {
+    "file": "data/ledgers/m4-base-anthropic-11121636-2.v1.json",
+    "version": 1,
+    "status": "ai"
+  },
+  "model": "gpt-6.1-sol",
+  "sec": 9,
+  "cost": 0.023864,
+  "judgments": [
+    {
+      "uid": "S5.n5",
+      "kind": "same",
+      "verdict": "same",
+      "modelVerdict": "same",
+      "why": "관심 있는 학생으로 추천 대상을 좁혀야 한다는 메모는 장부의 L1과 같은 문제를 가리킵니다. 예산 소진에 관한 L4를 지적한 것은 아닙니다.",
+      "evidence": [
+        {
+          "ref": "D-p7",
+          "quote": "국토교통부 정책에 관심 있는 만 19~39세 청년이라면 누구나",
+          "found": true
+        }
+      ],
+      "items": [
+        "L1",
+        "L4"
+      ],
+      "note": "빨간 줄 그을 정도의 문제는 아닌가 싶긴 한데 3, 4학년 모두라는 표현이 좀 이상함. 관심 있는 3, 4학년 학생은 11월 22일 전에 신청하라고 하는 게 맞지 않나.",
+      "quote": null
+    },
+    {
+      "uid": "S5.n4",
+      "kind": "same",
+      "verdict": "different",
+      "modelVerdict": "different",
+      "why": "메모는 원서 접수와 결제 단계의 표현을 문제 삼았습니다. 장부의 지원 종료 단정이나 별도 마감일이 없다는 단정과는 다른 문제입니다.",
+      "evidence": [
+        {
+          "ref": "B-p2",
+          "quote": "원서를 접수하면 결제 단계에서 응시료 50% 할인이 자동으로 적용된다.",
+          "found": true
+        }
+      ],
+      "items": [
+        "L4",
+        "L5"
+      ],
+      "note": "큐넷에서 결제하면이 아니라 큐넷에서 원서를 접수하면 결제 단계에서 할인 아닌가, 통상적으로 문제 없을 거 같긴 한데 원서 접수처가 결제처와 별도로 존재할 가능성도 있잖아.",
+      "quote": null
+    },
+    {
+      "uid": "S4.b3",
+      "kind": "same",
+      "verdict": "different",
+      "modelVerdict": "different",
+      "why": "문맥상 위에서 지적한 큐넷 원서 접수·결제 표현의 출처를 표시한 것으로 보입니다. 이는 장부의 지원 종료 가능성이나 마감일 단정과는 다릅니다.",
+      "evidence": [],
+      "items": [
+        "L4",
+        "L5"
+      ],
+      "note": "위에서 표기한 문제표현의 출처",
+      "quote": null
+    },
+    {
+      "uid": "S4.b7",
+      "kind": "same",
+      "verdict": "same",
+      "modelVerdict": "same",
+      "why": "앞서 지적한 ‘3·4학년 모두’라는 일괄 추천 표현의 출처를 표시한 것으로, 장부의 관심 조건 누락과 같은 문제입니다.",
+      "evidence": [
+        {
+          "ref": "D-p7",
+          "quote": "국토교통부 정책에 관심 있는 만 19~39세 청년이라면 누구나",
+          "found": true
+        }
+      ],
+      "items": [
+        "L1"
+      ],
+      "note": "위에서 표기한 문제표현의 출처",
+      "quote": null
+    },
+    {
+      "uid": "S4.b4",
+      "kind": "same",
+      "verdict": "different",
+      "modelVerdict": "different",
+      "why": "메모는 폴리텍 전문기술과정의 재학생 지원 가능 여부를 다룹니다. 장부는 사이버진로교육센터의 대학생 이용 대상 명시를 놓친 문제이므로 서로 다릅니다.",
+      "evidence": [
+        {
+          "ref": "A-p3",
+          "quote": "전문기술과정은 만 15세 이상 구직자라면 학력·경력에 관계없이 지원할 수 있다.",
+          "found": true
+        }
+      ],
+      "items": [
+        "L3"
+      ],
+      "note": "전문기술과정은 만 15세 이상 구직자라면 학력, 경력에 관계없이 지원할 수 있다고 되어있는데 재학생, 졸업 예정자도 당연히 신청 가능한 거 아닌가?",
+      "quote": null
+    },
+    {
+      "uid": "S4.b5",
+      "kind": "same",
+      "verdict": "different",
+      "modelVerdict": "different",
+      "why": "메모는 E의 온라인 교육 안내 누락을 지적합니다. 장부 이유는 F의 현재 접수 여부를 단정한 문제이므로 관계없는 지적입니다.",
+      "evidence": [
+        {
+          "ref": "E-p2",
+          "quote": "사이버진로교육센터는 청소년·대학생 및 구직자에게 맞춤형 온라인 교육을 무료로 제공하는 교육 플랫폼으로",
+          "found": true
+        }
+      ],
+      "items": [
+        "L2"
+      ],
+      "note": "E의 온라인 교육 콘텐츠에 대한 안내는 왜 빼먹었지?",
+      "quote": null
+    }
+  ]
+}

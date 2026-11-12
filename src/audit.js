@@ -147,7 +147,7 @@ const refSet = (it) => new Set([normRef(it.origin), ...it.spread.map(normRef)]);
 const stageOrder = (uid) => { const m = /^S(\d+)(?:#(\d+))?\.(.+)$/.exec(uid); return m ? Number(m[1]) * 100 - (m[2] ? 50 - Number(m[2]) : 0) : 9999; };
 const RANK = { A: 0, B: 1, C: 2 };
 
-/** 감사별 항목을 묶는다: 가리키는 단위가 겹치면 같은 오류. 한 묶음에 감사마다 최대 한 항목 */
+/** 감사별 항목을 묶는다(v1, 11/12까지 만든 장부): 가리키는 단위가 겹치면 같은 오류. 묶음의 단위 집합이 커지며 다른 오류까지 끌어들일 수 있다 */
 export function cluster(audits) {
   const clusters = [];
   for (const a of audits) {
@@ -168,27 +168,85 @@ export function cluster(audits) {
   return clusters;
 }
 
-/** 장부 1판(AI 감사 그대로). 코드만 찾은 후보는 grade 없이 붙여 검수 화면에 올린다 */
-export function buildLedger(run, mission, docs, audits) {
+// ---- v2(11/13부터 새로 만드는 장부의 기본값) ----
+// 묶기: 번진 곳이 겹치는 것만으로는 묶지 않는다. 근원이 같거나(또는 한쪽 근원이 다른 쪽 번진 곳에 있고) 틀린 구절이 겹쳐야 같은 오류다.
+// 번진 곳: 두 감사 이상이 함께 댄 칸만 번진 곳(채점에 씀). 한 감사만 댄 칸은 spreadCandidates(검수 때 사람이 고름)
+const bigrams = (s) => { const t = norm(s).replace(/\s/g, ''); const out = new Set(); for (let i = 0; i < t.length - 1; i++) out.add(t.slice(i, i + 2)); return out; };
+const dice = (a, b) => { const A = bigrams(a), B = bigrams(b); if (!A.size || !B.size) return 0; let n = 0; for (const x of A) if (B.has(x)) n++; return (2 * n) / (A.size + B.size); };
+export function pairScore(e, f) {
+  const oe = normRef(e.origin), of = normRef(f.origin);
+  const re = refSet(e), rf = refSet(f);
+  const we = norm(e.wrong_text), wf = norm(f.wrong_text);
+  let s = 0;
+  if (oe === of) s += 2;
+  else if (rf.has(oe) || re.has(of)) s += 1;
+  if (we.length >= 4 && wf.length >= 4 && (we.includes(wf) || wf.includes(we))) s += 1.5;
+  else { const d = dice(we, wf); if (d >= 0.5) s += 1; else if (d >= 0.3) s += 0.5; }
+  if (fam(e.pattern) === fam(f.pattern)) s += 0.5;
+  const inter = [...re].filter((x) => rf.has(x)).length;
+  s += inter / new Set([...re, ...rf]).size;
+  return s;
+}
+export const PAIR_MIN = 2.5;
+export function clusterV2(audits) {
+  const clusters = [];
+  for (const a of audits) {
+    const cand = [];
+    a.errors.forEach((e, idx) => clusters.forEach((c, ci) => {
+      if (c.members.some((m) => m.model === a.model)) return;
+      const sc = Math.max(...c.members.map((m) => pairScore(e, m.item)));
+      if (sc >= PAIR_MIN) cand.push({ idx, ci, sc });
+    }));
+    // 점수가 높은 짝부터: 한 감사의 한 항목은 한 묶음에만, 한 묶음에는 감사마다 한 항목만
+    cand.sort((x, y) => y.sc - x.sc);
+    const usedE = new Set(), usedC = new Set();
+    for (const { idx, ci } of cand) {
+      if (usedE.has(idx) || usedC.has(ci)) continue;
+      usedE.add(idx); usedC.add(ci);
+      clusters[ci].members.push({ model: a.model, company: a.company, idx, item: a.errors[idx] });
+    }
+    a.errors.forEach((e, idx) => { if (!usedE.has(idx)) clusters.push({ members: [{ model: a.model, company: a.company, idx, item: e }] }); });
+  }
+  for (const c of clusters) c.refs = new Set(c.members.flatMap((m) => [...refSet(m.item)]));
+  return clusters;
+}
+/** 묶음의 번진 곳: 두 감사 이상이 댄 칸 / 한 감사만 댄 칸 */
+export function spreadSplit(members, origin, unitMap) {
+  const n = new Map();
+  for (const m of members) for (const r of refSet(m.item)) n.set(r, (n.get(r) ?? 0) + 1);
+  const ok = (r) => r !== origin && unitMap.has(r);
+  const order = (xs) => xs.sort((x, y) => stageOrder(x) - stageOrder(y));
+  return { spread: order([...n].filter(([r, k]) => k >= 2 && ok(r)).map(([r]) => r)), candidates: order([...n].filter(([r, k]) => k < 2 && ok(r)).map(([r]) => r)) };
+}
+
+/**
+ * 장부 1판(AI 감사 그대로). 코드만 찾은 후보는 grade 없이 붙여 검수 화면에 올린다.
+ * rule: 'v2'(기본, 새 장부) | 'v1'(11/12까지 만든 장부를 같은 규칙으로 다시 만들 때)
+ */
+export function buildLedger(run, mission, docs, audits, { rule = 'v2' } = {}) {
   const unitMap = new Map(auditUnits(run.stages).flatMap((s) => s.units.map((u) => [u.uid, u.text])));
-  const items = cluster(audits).map((c, i) => {
+  const groups = rule === 'v1' ? cluster(audits) : clusterV2(audits);
+  const items = groups.map((c, i) => {
     const origins = c.members.map((m) => normRef(m.item.origin)).sort((x, y) => stageOrder(x) - stageOrder(y));
     const origin = origins[0];
     const lead = c.members.find((m) => normRef(m.item.origin) === origin) ?? c.members[0];
     const grades = c.members.map((m) => m.item.grade);
     const grade = grades.sort((x, y) => RANK[x] - RANK[y])[0];
+    const sp = rule === 'v1'
+      ? { spread: [...c.refs].filter((r) => r !== origin && unitMap.has(r)).sort((x, y) => stageOrder(x) - stageOrder(y)), candidates: [] }
+      : spreadSplit(c.members, origin, unitMap);
     return {
-      id: `L${i + 1}`, origin, spread: [...c.refs].filter((r) => r !== origin && unitMap.has(r)).sort((x, y) => stageOrder(x) - stageOrder(y)),
+      id: `L${i + 1}`, origin, spread: sp.spread, ...(rule === 'v1' ? {} : { spreadCandidates: sp.candidates }),
       wrongText: lead.item.wrong_text, pattern: lead.item.pattern, grade, gradeSplit: new Set(grades).size > 1,
       evidence: lead.item.evidence, why: lead.item.why, fix: lead.item.fix, prevent: lead.item.prevent,
-      byAudit: Object.fromEntries(c.members.map((m) => [m.company, { model: m.model, origin: normRef(m.item.origin), grade: m.item.grade, pattern: m.item.pattern, why: m.item.why, fix: m.item.fix, prevent: m.item.prevent, code: codeCheck(m.item, docs, unitMap, mission) }])),
+      byAudit: Object.fromEntries(c.members.map((m) => [m.company, { model: m.model, origin: normRef(m.item.origin), grade: m.item.grade, pattern: m.item.pattern, why: m.item.why, fix: m.item.fix, prevent: m.item.prevent, ...(rule === 'v1' ? {} : { spread: m.item.spread.map(normRef) }), code: codeCheck(m.item, docs, unitMap, mission) }])),
       source: c.members.length >= 2 ? 'both' : 'one', review: 'pending',
     };
   });
-  const covered = new Set(items.flatMap((x) => [x.origin, ...x.spread]));
+  const covered = new Set(items.flatMap((x) => [x.origin, ...x.spread, ...(x.spreadCandidates ?? [])]));
   const codeOnly = codeScan(mission, docs, run.stages).filter((x) => !covered.has(x.uid));
   return {
-    runId: run.id, version: 1, status: 'ai', at: new Date().toISOString(),
+    runId: run.id, version: 1, status: 'ai', at: new Date().toISOString(), rule,
     audits: audits.map((a) => ({ model: a.model, company: a.company, at: a.at, sec: a.sec, count: a.errors.length, overall: a.overall })),
     items, codeOnly, deleted: [], reviewLog: [],
   };

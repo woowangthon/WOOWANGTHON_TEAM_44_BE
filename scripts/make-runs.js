@@ -24,9 +24,15 @@ const stamp = new Date(Date.now() + 9 * 3600e3).toISOString().slice(5, 16).repla
 
 // --redo OpenAI,Google: 그 회사 감사만 다시 하고 나머지는 저장된 감사 원문을 쓴다
 const REDO = arg('redo', '').split(',').filter(Boolean);
+const FIXED = new Set(existsSync(join(process.cwd(), 'data', 'fixed.json')) ? JSON.parse(readFileSync(join(process.cwd(), 'data', 'fixed.json'), 'utf8')).map((f) => f.runId) : []);
 async function auditRun(run) {
+  // 고정 판(사람이 풀고 검수 중인 판)의 장부 1판은 다시 만들지 않는다
+  if (FIXED.has(run.id) && !process.argv.includes('--include-fixed')) { console.log(`  ${run.id}: 고정 판이라 감사·장부를 다시 만들지 않음`); return; }
   const docs = loadDocs(mission);
   const f = join(LEDGERS, `${run.id}.audits.json`);
+  // 묶기 규칙: 이미 1판이 있으면 그 규칙(없으면 v1)을 이어 쓴다. 새 판은 v2(두 감사 교집합). --rule로 바꿀 수 있다
+  const v1f = join(LEDGERS, `${run.id}.v1.json`);
+  const rule = arg('rule') ?? (existsSync(v1f) ? (JSON.parse(readFileSync(v1f, 'utf8')).rule ?? 'v1') : 'v2');
   // --fill: 저장된 감사는 두고 빠진 회사만 채운다
   const saved = existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : [];
   const kept = REDO.length ? saved.filter((a) => !REDO.includes(a.company)) : process.argv.includes('--fill') ? saved : [];
@@ -34,7 +40,7 @@ async function auditRun(run) {
   const settled = await Promise.allSettled(auditors.map((m) => audit(m, mission, docs, run.stages, `audit ${m} ${run.id}`)));
   const audits = [...kept, ...settled.filter((s) => s.status === 'fulfilled').map((s) => s.value)];
   settled.filter((s) => s.status === 'rejected').forEach((s, i) => console.log(`  감사 실패 ${run.id}: ${s.reason.message}`));
-  const ledger = buildLedger(run, mission, docs, audits);
+  const ledger = buildLedger(run, mission, docs, audits, { rule });
   // 감사 원문도 남긴다(검증 수치·재계산용)
   writeFileSync(join(LEDGERS, `${run.id}.audits.json`), JSON.stringify(audits, null, 2));
   writeFileSync(join(LEDGERS, `${run.id}.v1.json`), JSON.stringify(ledger, null, 2));

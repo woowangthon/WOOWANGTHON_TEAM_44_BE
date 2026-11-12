@@ -3,11 +3,14 @@
 //   { action:'result', answerId }                         장부가 바뀌었으면 두 판으로 다시 계산
 //   { action:'objection', answerId?, runId, deviceId, kind:'missing'|'notError', uid, item?, evidence:[pid], reason }
 //   { action:'history', deviceId }                        내 기록
+//   { action:'triage', answerId }                         AI 1차 판정(표시만, 점수 무관). 한 답안에 한 번만 호출한다
 import { handler, body, deviceOk, err } from './_lib.js';
 import { getRun, latestLedger, ledgerVersions, addObjection } from '../src/ledger.js';
 import { scoreAnswer, rescore } from '../src/score.js';
 import { saveAnswer, getAnswer, deviceHistory } from '../src/record.js';
 import { habitOf } from '../src/patterns.js';
+import { triageAnswer, getTriage } from '../src/triage.js';
+import { loadMission, loadDocs } from '../src/mission.js';
 
 /** 결과 화면에 내보내는 장부(채점 뒤에만) */
 const revealLedger = (L) => ({
@@ -50,7 +53,17 @@ export default handler(async (req) => {
     const vs = await ledgerVersions(run.id);
     if (!vs.some((l) => l.status === 'reviewed')) return { pending: true, answer: a };
     const r = rescore(run, vs, a);
-    return { answer: a, result: r.now, before: r.before ?? null, changed: r.changed, ledger: revealLedger(vs.filter((l) => l.status === 'reviewed').at(-1)) };
+    return { answer: a, result: r.now, before: r.before ?? null, changed: r.changed, ledger: revealLedger(vs.filter((l) => l.status === 'reviewed').at(-1)), triage: await getTriage(a.id) };
+  }
+  if (b.action === 'triage') {
+    // 채점이 끝난 답안만(사람 검수 장부가 있어야 「장부에 없는 칸」이 정해진다). 실패해도 결과 화면은 그대로다
+    const a = await getAnswer(b.answerId);
+    if (!a) throw err('없는 답안', 404);
+    const run = await getRun(a.runId);
+    const L = await latestLedger(run.id, { reviewed: true });
+    if (!L) return { triage: { status: 'skipped', reason: '사람 검수 전' } };
+    const m = loadMission(run.missionId);
+    return { triage: await triageAnswer({ answer: a, run, mission: m, docs: loadDocs(m), ledger: L }) };
   }
   if (b.action === 'objection') {
     if (!['missing', 'notError'].includes(b.kind)) throw err('이의 종류가 잘못됐습니다');

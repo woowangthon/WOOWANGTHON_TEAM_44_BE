@@ -1,0 +1,864 @@
+{
+  "rows": [
+    {
+      "id": "m3-base-anthropic-11121624-1",
+      "style": "base",
+      "worker": "Anthropic",
+      "audits": "A3 O3",
+      "total": 78,
+      "v1": {
+        "items": 4,
+        "both": 2,
+        "A": 2,
+        "Aboth": 1,
+        "Afinal": 1,
+        "spreadSum": 9,
+        "spreadMax": 7,
+        "cover": 13,
+        "cand": 0
+      },
+      "v2": {
+        "items": 4,
+        "both": 2,
+        "A": 2,
+        "Aboth": 1,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 4,
+        "cand": 9
+      }
+    },
+    {
+      "id": "m3-base-anthropic-11121624-2",
+      "style": "base",
+      "worker": "Anthropic",
+      "audits": "A1 O2",
+      "total": 77,
+      "v1": {
+        "items": 2,
+        "both": 1,
+        "A": 1,
+        "Aboth": 1,
+        "Afinal": 1,
+        "spreadSum": 11,
+        "spreadMax": 10,
+        "cover": 13,
+        "cand": 0
+      },
+      "v2": {
+        "items": 2,
+        "both": 1,
+        "A": 1,
+        "Aboth": 1,
+        "Afinal": 1,
+        "spreadSum": 10,
+        "spreadMax": 10,
+        "cover": 12,
+        "cand": 1
+      }
+    },
+    {
+      "id": "m3-base-openai-11121624-1",
+      "style": "base",
+      "worker": "OpenAI",
+      "audits": "A0 O0",
+      "total": 80,
+      "v1": {
+        "items": 0,
+        "both": 0,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 0,
+        "cand": 0
+      },
+      "v2": {
+        "items": 0,
+        "both": 0,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 0,
+        "cand": 0
+      }
+    },
+    {
+      "id": "m3-base-openai-11121624-2",
+      "style": "base",
+      "worker": "OpenAI",
+      "audits": "A1 O2",
+      "total": 78,
+      "v1": {
+        "items": 2,
+        "both": 1,
+        "A": 2,
+        "Aboth": 0,
+        "Afinal": 1,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 2,
+        "cand": 0
+      },
+      "v2": {
+        "items": 2,
+        "both": 1,
+        "A": 2,
+        "Aboth": 0,
+        "Afinal": 1,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 2,
+        "cand": 0
+      }
+    },
+    {
+      "id": "m4-base-anthropic-11121636-1",
+      "style": "base",
+      "worker": "Anthropic",
+      "audits": "A5 G0 O12",
+      "total": 40,
+      "v1": {
+        "items": 12,
+        "both": 5,
+        "A": 9,
+        "Aboth": 1,
+        "Afinal": 8,
+        "spreadSum": 31,
+        "spreadMax": 9,
+        "cover": 23,
+        "cand": 0
+      },
+      "v2": {
+        "items": 13,
+        "both": 4,
+        "A": 10,
+        "Aboth": 0,
+        "Afinal": 2,
+        "spreadSum": 4,
+        "spreadMax": 4,
+        "cover": 12,
+        "cand": 27
+      }
+    },
+    {
+      "id": "m4-base-anthropic-11121636-2",
+      "style": "base",
+      "worker": "Anthropic",
+      "audits": "A6 G0 O7",
+      "total": 34,
+      "v1": {
+        "items": 7,
+        "both": 6,
+        "A": 6,
+        "Aboth": 2,
+        "Afinal": 6,
+        "spreadSum": 40,
+        "spreadMax": 19,
+        "cover": 31,
+        "cand": 0
+      },
+      "v2": {
+        "items": 9,
+        "both": 4,
+        "A": 7,
+        "Aboth": 1,
+        "Afinal": 4,
+        "spreadSum": 7,
+        "spreadMax": 3,
+        "cover": 14,
+        "cand": 34
+      }
+    },
+    {
+      "id": "m4-base-google-11121636-1",
+      "style": "base",
+      "worker": "Google",
+      "audits": "A8 O16",
+      "total": 34,
+      "v1": {
+        "items": 16,
+        "both": 8,
+        "A": 16,
+        "Aboth": 2,
+        "Afinal": 7,
+        "spreadSum": 41,
+        "spreadMax": 13,
+        "cover": 30,
+        "cand": 0
+      },
+      "v2": {
+        "items": 17,
+        "both": 7,
+        "A": 17,
+        "Aboth": 1,
+        "Afinal": 5,
+        "spreadSum": 10,
+        "spreadMax": 3,
+        "cover": 21,
+        "cand": 30
+      }
+    },
+    {
+      "id": "m4-base-google-11121636-2",
+      "style": "base",
+      "worker": "Google",
+      "audits": "A6 G6 O18",
+      "total": 34,
+      "v1": {
+        "items": 19,
+        "both": 8,
+        "A": 16,
+        "Aboth": 4,
+        "Afinal": 9,
+        "spreadSum": 36,
+        "spreadMax": 7,
+        "cover": 28,
+        "cand": 0
+      },
+      "v2": {
+        "items": 21,
+        "both": 7,
+        "A": 17,
+        "Aboth": 4,
+        "Afinal": 7,
+        "spreadSum": 15,
+        "spreadMax": 4,
+        "cover": 26,
+        "cand": 20
+      }
+    },
+    {
+      "id": "m4-base-openai-11121636-1",
+      "style": "base",
+      "worker": "OpenAI",
+      "audits": "A2 O2 G2",
+      "total": 48,
+      "v1": {
+        "items": 2,
+        "both": 2,
+        "A": 1,
+        "Aboth": 1,
+        "Afinal": 1,
+        "spreadSum": 3,
+        "spreadMax": 2,
+        "cover": 3,
+        "cand": 0
+      },
+      "v2": {
+        "items": 3,
+        "both": 2,
+        "A": 1,
+        "Aboth": 1,
+        "Afinal": 1,
+        "spreadSum": 1,
+        "spreadMax": 1,
+        "cover": 3,
+        "cand": 2
+      }
+    },
+    {
+      "id": "m4-base-openai-11121636-2",
+      "style": "base",
+      "worker": "OpenAI",
+      "audits": "A4 O1 G0",
+      "total": 46,
+      "v1": {
+        "items": 4,
+        "both": 1,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 3,
+        "spreadMax": 1,
+        "cover": 3,
+        "cand": 0
+      },
+      "v2": {
+        "items": 4,
+        "both": 1,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 2,
+        "cand": 3
+      }
+    },
+    {
+      "id": "m4-careful-anthropic-11121707-1",
+      "style": "careful",
+      "worker": "Anthropic",
+      "audits": "A7 O11 G0",
+      "total": 36,
+      "v1": {
+        "items": 12,
+        "both": 6,
+        "A": 7,
+        "Aboth": 1,
+        "Afinal": 5,
+        "spreadSum": 21,
+        "spreadMax": 8,
+        "cover": 22,
+        "cand": 0
+      },
+      "v2": {
+        "items": 13,
+        "both": 5,
+        "A": 7,
+        "Aboth": 1,
+        "Afinal": 2,
+        "spreadSum": 5,
+        "spreadMax": 2,
+        "cover": 15,
+        "cand": 18
+      }
+    },
+    {
+      "id": "m4-careful-anthropic-11121707-2",
+      "style": "careful",
+      "worker": "Anthropic",
+      "audits": "A3 O7 G0",
+      "total": 40,
+      "v1": {
+        "items": 7,
+        "both": 3,
+        "A": 5,
+        "Aboth": 0,
+        "Afinal": 3,
+        "spreadSum": 13,
+        "spreadMax": 8,
+        "cover": 16,
+        "cand": 0
+      },
+      "v2": {
+        "items": 8,
+        "both": 2,
+        "A": 5,
+        "Aboth": 0,
+        "Afinal": 2,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 8,
+        "cand": 13
+      }
+    },
+    {
+      "id": "m4-careful-google-11121707-1",
+      "style": "careful",
+      "worker": "Google",
+      "audits": "A4 O12 G4",
+      "total": 33,
+      "v1": {
+        "items": 12,
+        "both": 6,
+        "A": 10,
+        "Aboth": 2,
+        "Afinal": 6,
+        "spreadSum": 13,
+        "spreadMax": 6,
+        "cover": 20,
+        "cand": 0
+      },
+      "v2": {
+        "items": 12,
+        "both": 5,
+        "A": 10,
+        "Aboth": 2,
+        "Afinal": 4,
+        "spreadSum": 8,
+        "spreadMax": 6,
+        "cover": 18,
+        "cand": 5
+      }
+    },
+    {
+      "id": "m4-careful-google-11121707-2",
+      "style": "careful",
+      "worker": "Google",
+      "audits": "A2 O10 G2",
+      "total": 36,
+      "v1": {
+        "items": 10,
+        "both": 3,
+        "A": 9,
+        "Aboth": 1,
+        "Afinal": 9,
+        "spreadSum": 34,
+        "spreadMax": 8,
+        "cover": 25,
+        "cand": 0
+      },
+      "v2": {
+        "items": 10,
+        "both": 2,
+        "A": 9,
+        "Aboth": 1,
+        "Afinal": 1,
+        "spreadSum": 8,
+        "spreadMax": 8,
+        "cover": 15,
+        "cand": 26
+      }
+    },
+    {
+      "id": "m4-careful-openai-11121707-1",
+      "style": "careful",
+      "worker": "OpenAI",
+      "audits": "A1 O2 G0",
+      "total": 50,
+      "v1": {
+        "items": 2,
+        "both": 1,
+        "A": 1,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 1,
+        "spreadMax": 1,
+        "cover": 3,
+        "cand": 0
+      },
+      "v2": {
+        "items": 2,
+        "both": 1,
+        "A": 1,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 1,
+        "spreadMax": 1,
+        "cover": 3,
+        "cand": 0
+      }
+    },
+    {
+      "id": "m4-careful-openai-11121707-2",
+      "style": "careful",
+      "worker": "OpenAI",
+      "audits": "A0 O2 G0",
+      "total": 52,
+      "v1": {
+        "items": 2,
+        "both": 0,
+        "A": 1,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 1,
+        "spreadMax": 1,
+        "cover": 3,
+        "cand": 0
+      },
+      "v2": {
+        "items": 2,
+        "both": 0,
+        "A": 1,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 2,
+        "cand": 1
+      }
+    },
+    {
+      "id": "m4-rough-anthropic-11121707-1",
+      "style": "rough",
+      "worker": "Anthropic",
+      "audits": "A3 O3 G0",
+      "total": 14,
+      "v1": {
+        "items": 3,
+        "both": 3,
+        "A": 2,
+        "Aboth": 0,
+        "Afinal": 2,
+        "spreadSum": 7,
+        "spreadMax": 3,
+        "cover": 8,
+        "cand": 0
+      },
+      "v2": {
+        "items": 4,
+        "both": 2,
+        "A": 2,
+        "Aboth": 0,
+        "Afinal": 2,
+        "spreadSum": 1,
+        "spreadMax": 1,
+        "cover": 4,
+        "cand": 6
+      }
+    },
+    {
+      "id": "m4-rough-anthropic-11121707-2",
+      "style": "rough",
+      "worker": "Anthropic",
+      "audits": "A3 O7 G0",
+      "total": 14,
+      "v1": {
+        "items": 7,
+        "both": 3,
+        "A": 6,
+        "Aboth": 0,
+        "Afinal": 6,
+        "spreadSum": 8,
+        "spreadMax": 3,
+        "cover": 6,
+        "cand": 0
+      },
+      "v2": {
+        "items": 8,
+        "both": 2,
+        "A": 6,
+        "Aboth": 0,
+        "Afinal": 6,
+        "spreadSum": 1,
+        "spreadMax": 1,
+        "cover": 6,
+        "cand": 9
+      }
+    },
+    {
+      "id": "m4-rough-google-11121707-1",
+      "style": "rough",
+      "worker": "Google",
+      "audits": "A6 O5 G0",
+      "total": 13,
+      "v1": {
+        "items": 7,
+        "both": 4,
+        "A": 5,
+        "Aboth": 1,
+        "Afinal": 5,
+        "spreadSum": 5,
+        "spreadMax": 2,
+        "cover": 8,
+        "cand": 0
+      },
+      "v2": {
+        "items": 7,
+        "both": 4,
+        "A": 5,
+        "Aboth": 1,
+        "Afinal": 5,
+        "spreadSum": 1,
+        "spreadMax": 1,
+        "cover": 5,
+        "cand": 5
+      }
+    },
+    {
+      "id": "m4-rough-google-11121707-2",
+      "style": "rough",
+      "worker": "Google",
+      "audits": "A8 O9 G5",
+      "total": 13,
+      "v1": {
+        "items": 11,
+        "both": 7,
+        "A": 9,
+        "Aboth": 3,
+        "Afinal": 9,
+        "spreadSum": 4,
+        "spreadMax": 2,
+        "cover": 8,
+        "cand": 0
+      },
+      "v2": {
+        "items": 11,
+        "both": 7,
+        "A": 9,
+        "Aboth": 3,
+        "Afinal": 9,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 7,
+        "cand": 4
+      }
+    },
+    {
+      "id": "m4-rough-openai-11121707-1",
+      "style": "rough",
+      "worker": "OpenAI",
+      "audits": "A0 O0 G0",
+      "total": 14,
+      "v1": {
+        "items": 0,
+        "both": 0,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 0,
+        "cand": 0
+      },
+      "v2": {
+        "items": 0,
+        "both": 0,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 0,
+        "cand": 0
+      }
+    },
+    {
+      "id": "m4-rough-openai-11121707-2",
+      "style": "rough",
+      "worker": "OpenAI",
+      "audits": "A0 O0 G0",
+      "total": 14,
+      "v1": {
+        "items": 0,
+        "both": 0,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 0,
+        "cand": 0
+      },
+      "v2": {
+        "items": 0,
+        "both": 0,
+        "A": 0,
+        "Aboth": 0,
+        "Afinal": 0,
+        "spreadSum": 0,
+        "spreadMax": 0,
+        "cover": 0,
+        "cand": 0
+      }
+    }
+  ],
+  "g1": {
+    "id": "m4-base-anthropic-11121636-2",
+    "marks": [
+      {
+        "uid": "S5.n5",
+        "note": "빨간 줄 그을 정도의 문제는 아닌가 싶긴 한데 3, 4학년 모두라는 표현",
+        "v1": [
+          "L1(A)",
+          "L4(A)"
+        ],
+        "v2": [],
+        "v2cand": [
+          "L8",
+          "L9"
+        ]
+      },
+      {
+        "uid": "S5.n4",
+        "note": "큐넷에서 결제하면이 아니라 큐넷에서 원서를 접수하면 결제 단계에서 할인 ",
+        "v1": [
+          "L4(A)",
+          "L5(A)"
+        ],
+        "v2": [
+          "L5(A)"
+        ],
+        "v2cand": [
+          "L4",
+          "L9"
+        ]
+      },
+      {
+        "uid": "S4.b3",
+        "note": "위에서 표기한 문제표현의 출처",
+        "v1": [
+          "L4(A)",
+          "L5(A)"
+        ],
+        "v2": [
+          "L5(A)"
+        ],
+        "v2cand": [
+          "L4",
+          "L9"
+        ]
+      },
+      {
+        "uid": "S4.b7",
+        "note": "위에서 표기한 문제표현의 출처",
+        "v1": [
+          "L1(A)"
+        ],
+        "v2": [],
+        "v2cand": [
+          "L8"
+        ]
+      },
+      {
+        "uid": "S4.b4",
+        "note": "전문기술과정은 만 15세 이상 구직자라면 학력, 경력에 관계없이 지원할 ",
+        "v1": [
+          "L3(A)"
+        ],
+        "v2": [
+          "L3(A)"
+        ],
+        "v2cand": []
+      },
+      {
+        "uid": "S4.b5",
+        "note": "E의 온라인 교육 콘텐츠에 대한 안내는 왜 빼먹었지?",
+        "v1": [
+          "L2(A)"
+        ],
+        "v2": [],
+        "v2cand": [
+          "L7"
+        ]
+      }
+    ],
+    "v1Items": [
+      {
+        "id": "L1",
+        "grade": "A",
+        "origin": "S2.r4",
+        "n": 8,
+        "src": "Anthropic+OpenAI",
+        "w": "만 19~39세 청년이면 지원할 수 있고 재학·학년 제"
+      },
+      {
+        "id": "L2",
+        "grade": "A",
+        "origin": "S1.e7",
+        "n": 19,
+        "src": "Anthropic+OpenAI",
+        "w": "현재 접수 중인 사업은 아니며"
+      },
+      {
+        "id": "L3",
+        "grade": "A",
+        "origin": "S3.i4",
+        "n": 1,
+        "src": "Anthropic+OpenAI",
+        "w": "재학생·졸업예정자의 지원 가능 여부와 신청 기간이 자료"
+      },
+      {
+        "id": "L4",
+        "grade": "A",
+        "origin": "S1.e2",
+        "n": 6,
+        "src": "Anthropic+OpenAI",
+        "w": "예산 소진 시 해당 연도 지원 종료"
+      },
+      {
+        "id": "L5",
+        "grade": "A",
+        "origin": "S2.r2",
+        "n": 3,
+        "src": "Anthropic+OpenAI",
+        "w": "별도 마감일 없음(예산 소진 시 해당 연도 지원 종료)"
+      },
+      {
+        "id": "L6",
+        "grade": "B",
+        "origin": "S1.e7",
+        "n": 0,
+        "src": "Anthropic+OpenAI",
+        "w": "원서 접수는 응시 수수료 없음"
+      },
+      {
+        "id": "L7",
+        "grade": "A",
+        "origin": "S1.e7",
+        "n": 3,
+        "src": "OpenAI",
+        "w": "현재 접수 중인 사업은 아니며 접수 기간이 공지되면 확"
+      }
+    ],
+    "v2Items": [
+      {
+        "id": "L1",
+        "grade": "A",
+        "origin": "S5.n2",
+        "n": 0,
+        "cand": 1,
+        "src": "Anthropic",
+        "w": "마감 11월 22일(일) (D-10)"
+      },
+      {
+        "id": "L2",
+        "grade": "A",
+        "origin": "S1.e7",
+        "n": 3,
+        "cand": 0,
+        "src": "Anthropic+OpenAI",
+        "w": "현재 접수 중인 사업은 아니며"
+      },
+      {
+        "id": "L3",
+        "grade": "A",
+        "origin": "S3.i4",
+        "n": 1,
+        "cand": 0,
+        "src": "Anthropic+OpenAI",
+        "w": "재학생·졸업예정자의 지원 가능 여부와 신청 기간이 자료"
+      },
+      {
+        "id": "L4",
+        "grade": "B",
+        "origin": "S1.e2",
+        "n": 0,
+        "cand": 4,
+        "src": "Anthropic",
+        "w": "예산 소진 시 해당 연도 지원 종료"
+      },
+      {
+        "id": "L5",
+        "grade": "A",
+        "origin": "S2.r2",
+        "n": 3,
+        "cand": 0,
+        "src": "Anthropic+OpenAI",
+        "w": "별도 마감일 없음(예산 소진 시 해당 연도 지원 종료)"
+      },
+      {
+        "id": "L6",
+        "grade": "B",
+        "origin": "S1.e7",
+        "n": 0,
+        "cand": 0,
+        "src": "Anthropic+OpenAI",
+        "w": "원서 접수는 응시 수수료 없음"
+      },
+      {
+        "id": "L7",
+        "grade": "A",
+        "origin": "S1.e3",
+        "n": 0,
+        "cand": 18,
+        "src": "OpenAI",
+        "w": "오늘 11월 12일 기준 20일 경과"
+      },
+      {
+        "id": "L8",
+        "grade": "A",
+        "origin": "S2.r4",
+        "n": 0,
+        "cand": 7,
+        "src": "OpenAI",
+        "w": "만 19~39세 청년이면 지원할 수 있고 재학·학년 제"
+      },
+      {
+        "id": "L9",
+        "grade": "A",
+        "origin": "S3.i2",
+        "n": 0,
+        "cand": 4,
+        "src": "OpenAI",
+        "w": "B는 만 34세 이하 청년이면 큐넷 결제 때 응시료 5"
+      }
+    ]
+  }
+}
