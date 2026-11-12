@@ -3,7 +3,7 @@
 //  (나) 장부 항목과 같은 칸의 빨간 줄: 메모·구절이 그 항목의 이유와 같은 문제를 가리키는지(same / different / unclear)
 // 근거가 있다고 본 (가)는 이의 대기열에 「자동 판정」(source: auto)으로 넣어 만든 사람이 확인한다.
 // 점수(score.js)는 바꾸지 않는다. 실패하거나 상한에 걸리면 판정 없이 결과를 보여 준다.
-import { callJson, companyOf, available } from './llm.js';
+import { callJson, companyOf, available, downCompanies } from './llm.js';
 import { docsBlock } from './mission.js';
 import { auditUnits } from './audit.js';
 import { quoteIn } from './text.js';
@@ -39,9 +39,9 @@ export function splitMarks(ledger, marks) {
 }
 
 /** 판정 모델: 작업 모델과 다른 회사 가운데 먼저 쓸 수 있는 것(없으면 아무거나). 바꾸려면 TRIAGE_MODELS */
-export function triageModel(workerCompany) {
+export function triageModel(workerCompany, down = new Set()) {
   const list = (process.env.TRIAGE_MODELS || 'claude-sonnet-5-5,gpt-6.1-sol,gemini-3.8-flash').split(',').map((x) => x.trim()).filter(Boolean);
-  const ok = list.filter((m) => available(companyOf(m)));
+  const ok = list.filter((m) => available(companyOf(m)) && !down.has(companyOf(m)));
   return ok.find((m) => companyOf(m) !== workerCompany) ?? ok[0] ?? null;
 }
 const EFFORT = { Anthropic: 'medium', OpenAI: 'low', Google: 'low' };
@@ -91,7 +91,7 @@ export async function judgeMarks({ mission, docs, run, ledger, marks, model }) {
   // 한 번에 보는 칸 수를 묶어 둔다(빨간 줄을 수백 개 그어도 호출 한 번의 크기가 정해지게)
   const split = { fresh: s0.fresh.slice(0, 15), same: s0.same.slice(0, 15) };
   if (!split.fresh.length && !split.same.length) return { model: null, judgments: [], cost: 0, sec: 0 };
-  const m = model ?? triageModel(run.workerCompany);
+  const m = model ?? triageModel(run.workerCompany, await downCompanies());
   if (!m) throw Object.assign(new Error('판정에 쓸 모델이 없습니다'), { status: 503 });
   const want = new Set([...split.fresh, ...split.same].map((x) => x.uid));
   const t0 = Date.now();

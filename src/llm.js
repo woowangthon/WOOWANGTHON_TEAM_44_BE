@@ -4,7 +4,7 @@
 // - 회사별 하루 금액 상한과 전체 하루 호출 상한을 KV에서 센다(서버 인스턴스가 여러 개여도 함께 센다).
 // - 호출마다 회사·모델·토큰·추정 비용·시간·용도를 남긴다. 키 값은 어디에도 내지 않는다.
 import { validate } from './schema.js';
-import { incr } from './store.js';
+import { incr, getJson, setJson } from './store.js';
 
 /** 공식 가격표(2026-11-12 확인), 백만 토큰당 [입력, 출력] 달러 */
 export const PRICE = {
@@ -33,6 +33,16 @@ export function auditorsFor(workerCompany, { all = false } = {}) {
   const A = AUDITORS();
   return COMPANIES.filter((c) => (all || c !== workerCompany) && available(c)).map((c) => A[c]);
 }
+
+// 선불 크레딧이 바닥나면(402) 그 회사를 6시간 동안 라이브 경로에서 뺀다(팀장 모드가 그 회사를 고르면 매번 실패하므로)
+const DOWN_MS = 6 * 3600e3;
+const downKey = (c) => `ss2:down:${c}`;
+export async function downCompanies() {
+  const out = new Set();
+  for (const c of COMPANIES) { const d = await getJson(downKey(c)); if (d && Date.now() - Date.parse(d.at) < DOWN_MS) out.add(c); }
+  return out;
+}
+export const markDown = (company, msg) => setJson(downKey(company), { at: new Date().toISOString(), msg: String(msg).slice(0, 160) }, DOWN_MS / 1000);
 
 export class LlmError extends Error { constructor(m, status, retry = false) { super(m); this.name = 'LlmError'; this.httpStatus = status; this.retry = retry; } }
 
@@ -175,6 +185,7 @@ export async function callJson({ model, system, user, schema, check = () => [], 
       try { res = await fn(model, { system, user: prompt, schema, maxTokens, effort, timeoutMs }); break; }
       catch (e) {
         usageLog.push({ label, model, company, attempt, failed: String(e.message).slice(0, 160), ms: Date.now() - t0 });
+        if (e.httpStatus === 402) await markDown(company, e.message).catch(() => {});
         if (!e.retry || net >= retries) throw e;
         await sleep(retryWait * 2 ** net);
       }

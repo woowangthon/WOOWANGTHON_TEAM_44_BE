@@ -1,0 +1,10 @@
+[
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 402: { \"error\": { \"code\": 402, \"message\": \"Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your proj",
+    "ms": 541
+  }
+]

@@ -3,6 +3,8 @@
 import { callJson, companyOf } from './llm.js';
 import { docsBlock } from './mission.js';
 import { numbers, quoteIn, norm } from './text.js';
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 export const PATTERNS = ['숫자·계산 틀림', '단위·기준 시점 혼동', '날짜·기간 오류', '방향·주체 바뀜', '한정어·조건 탈락', '근거보다 큰 결론', '원자료에 없는 내용', '원자료에 없는 인용', '지시 누락', '중요 정보 누락', '기타'];
 const obj = (properties) => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
@@ -250,6 +252,30 @@ export function buildLedger(run, mission, docs, audits, { rule = 'v2' } = {}) {
     audits: audits.map((a) => ({ model: a.model, company: a.company, at: a.at, sec: a.sec, count: a.errors.length, overall: a.overall })),
     items, codeOnly, deleted: [], reviewLog: [],
   };
+}
+
+/**
+ * 검수 화면용: 항목마다 번진 곳을 「두 감사 이상이 댄 칸」과 「한 감사만 댄 칸」으로 나눈다(읽기만).
+ * v2 장부는 항목에 감사별 spread가 있다. v1 장부는 저장된 감사 원문(data/ledgers/<판>.audits.json)에서 같은 회사·근원·이유인 항목을 찾아 센다.
+ */
+export function auditSpreadOf(runId, ledger) {
+  let raw = null;
+  const f = join(process.env.DATA_ROOT || process.cwd(), 'data', 'ledgers', `${runId}.audits.json`);
+  try { if (existsSync(f)) raw = JSON.parse(readFileSync(f, 'utf8')); } catch { raw = null; }
+  const out = {};
+  for (const it of ledger?.items ?? []) {
+    const lists = Object.entries(it.byAudit ?? {}).map(([company, b]) => {
+      if (b.spread) return [b.origin, ...b.spread];
+      const e = raw?.find((a) => a.company === company)?.errors.find((x) => normRef(x.origin) === b.origin && x.why === b.why);
+      return e ? [normRef(e.origin), ...e.spread.map(normRef)] : null;
+    }).filter(Boolean);
+    if (!lists.length) continue;
+    const n = new Map();
+    for (const l of lists) for (const r of new Set(l)) n.set(r, (n.get(r) ?? 0) + 1);
+    const cells = [...new Set([...(it.spread ?? []), ...(it.spreadCandidates ?? [])])];
+    out[it.id] = { audits: lists.length, both: cells.filter((r) => (n.get(r) ?? 0) >= 2), one: cells.filter((r) => (n.get(r) ?? 0) < 2) };
+  }
+  return out;
 }
 
 /** 장부 요약(라이브 결과·기준 분포용) */

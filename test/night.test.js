@@ -92,3 +92,16 @@ test('AI 1차 판정 저장: 근거 있음은 이의 대기열에 자동(source 
   assert.equal(f.status, 'failed'); assert.equal(f.cap, true);
   assert.equal((await getTriage('ans-a3')).status, 'failed');
 });
+
+test('선불 크레딧 바닥(402)인 회사는 라이브 경로에서 뺀다', async () => {
+  _memReset();
+  const { markDown, downCompanies } = await import('../src/llm.js');
+  const { triageModel } = await import('../src/triage.js');
+  process.env.ANTHROPIC_API_KEY ||= 'x'; process.env.OPENAI_API_KEY ||= 'x'; process.env.GEMINI_API_KEY ||= 'x';
+  assert.equal((await downCompanies()).size, 0);
+  await markDown('Google', 'Gemini 402');
+  const down = await downCompanies();
+  assert.ok(down.has('Google'));
+  assert.equal(triageModel('Anthropic', new Set(['OpenAI'])), 'gemini-3.8-flash');
+  assert.equal(triageModel('Anthropic', down), 'gpt-6.1-sol');
+});

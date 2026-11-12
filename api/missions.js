@@ -8,7 +8,8 @@ import { getRun, latestLedger, fixedRunIds } from '../src/ledger.js';
 import { baselines } from '../src/baseline.js';
 
 const fixedList = () => {
-  const f = join(process.cwd(), 'data', 'fixed.json');
+  // 시험용 서버는 FIXED_FILE로 다른 목록을 줄 수 있다(운영·미영 서버는 data/fixed.json)
+  const f = process.env.FIXED_FILE || join(process.cwd(), 'data', 'fixed.json');
   return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : [];
 };
 

@@ -4,7 +4,7 @@
 import { getJson, setJson, incr } from './store.js';
 import { loadMission, loadDocs, planOf, runStage, ctxOf, finalKeys } from './mission.js';
 import { audit, buildLedger, ledgerCounts } from './audit.js';
-import { WORKERS, auditorsFor, available, COMPANIES, companyOf } from './llm.js';
+import { WORKERS, auditorsFor, available, COMPANIES, companyOf, downCompanies } from './llm.js';
 import { saveLiveRun, latestLedger, fixedRunIds, getRun } from './ledger.js';
 import { baselines } from './baseline.js';
 
@@ -45,7 +45,8 @@ export async function start({ missionId, plan, workerCompany, deviceId, maker })
   const mine = await incr(`ss2:leadcount:${kst()}:${deviceId}`, 1, TTL);
   if (mine > (maker ? LIMITS.maker() : LIMITS.device())) throw err(`이 기기의 오늘 라이브 횟수(${maker ? LIMITS.maker() : LIMITS.device()}번)를 다 썼습니다`, 429);
   await incr(`ss2:leadcount:${kst()}`, 1, TTL);
-  const companies = COMPANIES.filter(available).filter((c) => auditorsFor(c).length >= 1);
+  const down = await downCompanies();
+  const companies = COMPANIES.filter(available).filter((c) => !down.has(c)).filter((c) => auditorsFor(c).filter((m) => !down.has(companyOf(m))).length >= 1);
   const company = workerCompany && companies.includes(workerCompany) ? workerCompany : companies[Math.floor(Math.random() * companies.length)];
   if (!company) throw err('쓸 수 있는 작업 모델이 없습니다', 503);
   const id = `live-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
@@ -99,7 +100,9 @@ export async function signoff(id, { checked, unchecked, sourceViews }) {
   s.sourceViews += Math.max(0, Math.min(500, Number(sourceViews) || 0));
   s.signoff = { checked: String(checked ?? '').slice(0, 800), unchecked: String(unchecked ?? '').slice(0, 800), at: new Date().toISOString() };
   s.phase = 'audit';
-  s.auditors = auditorsFor(s.workerCompany);
+  const down = await downCompanies();
+  const ok = auditorsFor(s.workerCompany).filter((m) => !down.has(companyOf(m)));
+  s.auditors = ok.length ? ok : auditorsFor(s.workerCompany);
   await save(s);
   return view(s);
 }
