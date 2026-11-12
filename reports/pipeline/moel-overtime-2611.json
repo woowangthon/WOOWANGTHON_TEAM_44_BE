@@ -1,0 +1,265 @@
+{
+  "id": "moel-overtime-2611",
+  "startedAt": "2026-11-11T17:43:50.474Z",
+  "difficulty": "2",
+  "plannedErrors": 3,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "c-1",
+      "p1": {
+        "kept": 7,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 7,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 3,
+        "log": [
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s7",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s6",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s5",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s5",
+            "ok": true,
+            "detail": "감소 → 증가"
+          },
+          {
+            "step": "P4 코드",
+            "type": "direction",
+            "sid": "s5",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true,
+            "detail": "덧붙임: 이들 사업장에서 과로로 인한 산업재해가 실제로 늘고 있다는 점이 이번 점검의 직접적인 계기가 되었다"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s7",
+            "ok": true,
+            "detail": "한정 표현 빠짐: 계획"
+          },
+          {
+            "step": "P4 코드",
+            "type": "overclaim",
+            "sid": "s7",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s1",
+            "ok": true,
+            "detail": "100개 → 200개"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s1",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s6",
+            "ok": true,
+            "detail": "10월 → 12월"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s6",
+            "ok": true
+          },
+          {
+            "step": "P4 점검",
+            "type": "direction",
+            "sid": "s5",
+            "ok": true,
+            "problem": "원자료는 실노동시간이 지속적으로 감소하고 있다고 하는데 결과물은 증가한다고 방향을 반대로 썼다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true,
+            "problem": "과로로 인한 산업재해가 실제로 늘고 있다는 점이 점검의 직접적 계기라는 내용은 원자료에 없으며, 원자료는 건강보호·산재 예방 관리 필요성이 제기되었다고만 한다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "overclaim",
+            "sid": "s7",
+            "ok": false,
+            "problem": ""
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s1",
+            "ok": true,
+            "problem": "감독 대상은 전국 100개 사업장인데 결과물은 200개로 적었다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s6",
+            "ok": true,
+            "problem": "국정감사 날짜는 10월 13일인데 결과물은 12월 13일로 적었다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s1",
+            "reason": "숫자·단위",
+            "note": "원자료는 전국 100개 사업장 대상인데 200개로 잘못 적었다."
+          },
+          {
+            "sid": "s4",
+            "reason": "원자료에 없음",
+            "note": "특별연장근로 사업장에서 과로 산재가 실제로 늘고 있고 그것이 점검의 직접 계기라는 내용은 원자료에 없다. 원자료는 국정감사에서 관리 필요성이 제기됐다고만 한다."
+          },
+          {
+            "sid": "s5",
+            "reason": "방향·주체가 바뀜",
+            "note": "원자료는 실노동시간이 지속적으로 감소하고 있다고 하는데 증가로 반대로 적었다."
+          }
+        ],
+        "decision": "반려",
+        "caught": [
+          "s1",
+          "s4",
+          "s5"
+        ],
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-11T17:44:06.781Z",
+  "usage": [
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3026,
+      "input": 2153,
+      "output": 152
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 3549,
+      "input": 1653,
+      "output": 194
+    },
+    {
+      "label": "P3 근거보다 큰 결론",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2408,
+      "input": 516,
+      "output": 72
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3414,
+      "input": 2111,
+      "output": 322
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3902,
+      "input": 2461,
+      "output": 262
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "id": "mois-exam-fee-2610",
+  "startedAt": "2026-11-11T17:46:59.155Z",
+  "difficulty": "mini",
+  "plannedErrors": 1,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "mois-exam-fee-2610-1",
+      "p1": {
+        "kept": 4,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 4,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 1,
+        "log": [
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s3",
+            "ok": true,
+            "detail": "한정 표현 빠짐: 까지, 수 있"
+          },
+          {
+            "step": "P4 코드",
+            "type": "overclaim",
+            "sid": "s3",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s1",
+            "ok": true,
+            "detail": "50% → 60%"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s1",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true,
+            "detail": "덧붙임: 응시 수요가 몰리는 상반기에 예산이 조기 소진되는 경우가 많아"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true
+          },
+          {
+            "step": "P4 점검",
+            "type": "overclaim",
+            "sid": "s3",
+            "ok": false,
+            "problem": ""
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s1",
+            "ok": true,
+            "problem": "원자료는 응시료의 50%를 지원한다고 했는데 결과물은 60%로 바꿔 적었다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s4",
+            "ok": true,
+            "problem": "원자료에 없는 '응시 수요가 몰리는 상반기에 예산이 조기 소진되는 경우가 많다'는 내용이 덧붙었다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s1",
+            "reason": "숫자·단위",
+            "note": "원자료는 응시료의 50%를 지원한다고 했는데 결과물은 60%로 적었다. s3의 50% 할인과도 맞지 않는다."
+          }
+        ],
+        "decision": "반려",
+        "caught": [
+          "s1"
+        ],
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-11T17:47:18.641Z",
+  "usage": [
+    {
+      "label": "P1 작성",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 5351,
+      "input": 1410,
+      "output": 638
+    },
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2192,
+      "input": 1411,
+      "output": 92
+    },
+    {
+      "label": "P3 근거보다 큰 결론",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 4273,
+      "input": 535,
+      "output": 83
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2790,
+      "input": 1039,
+      "output": 137
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2511,
+      "input": 1388,
+      "output": 172
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2359,
+      "input": 1614,
+      "output": 99
+    }
+  ]
+}

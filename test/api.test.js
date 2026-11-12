@@ -1,64 +1,51 @@
-// /api 핸들러 형태 확인 (AI 호출 없는 경로만)
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import scenarios from '../api/scenarios.js';
-import session from '../api/session.js';
+import { fileURLToPath } from 'node:url';
+process.env.TASKS_DIR = fileURLToPath(new URL('./fixtures/tasks', import.meta.url));
+delete process.env.KV_REST_API_URL; delete process.env.UPSTASH_REDIS_REST_URL;
+const call = async (mod, req) => {
+  const fn = (await import(`../api/${mod}.js`)).default;
+  let out;
+  const res = { statusCode: 200, setHeader() {}, status(c) { this.statusCode = c; return this; }, json(x) { out = { status: this.statusCode, body: x }; }, end() { out = { status: this.statusCode }; } };
+  await fn({ method: 'GET', headers: {}, query: {}, ...req }, res);
+  return out;
+};
 
-function call(fn, { method = 'GET', query = {}, body } = {}) {
-  return new Promise((resolve) => {
-    const res = {
-      code: 200, headers: {},
-      setHeader(k, v) { this.headers[k] = v; },
-      status(c) { this.code = c; return this; },
-      json(x) { resolve({ code: this.code, body: x }); },
-      end() { resolve({ code: this.code }); },
-    };
-    fn({ method, query, body }, res);
-  });
-}
-
-test('시나리오 목록과 상세(정답 제외)', async () => {
-  const list = await call(scenarios);
-  assert.ok(list.body.some((s) => s.id === 'cheongju-20260709'));
-  const one = await call(scenarios, { query: { id: 'cheongju-20260709' } });
-  assert.equal(one.body.expected, undefined);
-  assert.equal(one.body.synthetic, true);
-  assert.equal((await call(scenarios, { query: { id: '../x' } })).code, 400);
+test('과제 응답에 정답과 오류 수가 없다', async () => {
+  const r = await call('task', { query: { id: 'fx-01' } });
+  assert.equal(r.status, 200);
+  const s = JSON.stringify(r.body);
+  for (const k of ['answer', 'planted', 'before', 'plantedVerified', 'correctDecision', 'verification', 'why']) assert.ok(!s.includes(`"${k}"`), k);
+  assert.deepEqual(Object.keys(r.body.sentences[0]).sort(), ['sid', 'text']);
 });
 
-test('세션 시작 → 결정 검증 오류는 400', async () => {
-  const s = await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-20260709' } });
-  assert.equal(s.body.state.cursor, 0);
-  const bad = await call(session, { method: 'POST', body: { op: 'decide', scenario_id: 'cheongju-20260709', state: s.body.state, incident_id: 'I1', action: 'report', reason: 'x', recipients: ['K2'] } });
-  assert.equal(bad.code, 400);
-  assert.match(bad.body.error, /없는 사건/);
+test('목록 응답에 오류 수가 없다', async () => {
+  const r = await call('tasks');
+  assert.equal(r.body.tasks.length, 1);
+  assert.ok(!JSON.stringify(r.body).includes('planted'));
 });
 
-test('체험 접속 기간과 접속 코드', async () => {
-  const { default: access } = await import('../api/access.js');
-  const { openAccess } = await import('../api/_lib.js');
-  const keep = { u: process.env.OPEN_ACCESS_UNTIL, c: process.env.DEMO_ACCESS_CODE };
-  process.env.DEMO_ACCESS_CODE = 'test-code';
-  process.env.OPEN_ACCESS_UNTIL = '2099-01-01';
-  assert.equal(openAccess().open, true);
-  assert.equal((await call(access)).body.open, true);
-  // 체험 기간에는 코드 없이 AI 경로가 열린다(start는 AI를 부르지 않는다)
-  assert.equal((await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-live' } })).code, 200);
-  process.env.OPEN_ACCESS_UNTIL = '2020-01-01';
-  assert.equal(openAccess().open, false);
-  assert.equal((await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-live' } })).code, 401);
-  assert.equal((await call(access, { method: 'POST', body: { code: 'nope' } })).code, 401);
-  process.env.OPEN_ACCESS_UNTIL = '2099-01-01';
-  assert.equal((await call(access, { method: 'POST', body: { code: 'nope' } })).code, 401);
-  assert.equal((await call(access, { method: 'POST', body: { code: 'test-code' } })).body.ok, true);
-  for (const [k, v] of [['OPEN_ACCESS_UNTIL', keep.u], ['DEMO_ACCESS_CODE', keep.c]]) { if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+test('채점 → 기록 → 집계', async () => {
+  const req = (deviceId, marks) => ({ method: 'POST', body: { id: 'fx-01', marks, decision: '반려', deviceId, elapsedSec: 42 } });
+  const a = await call('grade', req('device-aaaa1', [{ sid: 's1', reason: '방향·주체가 바뀜' }]));
+  assert.equal(a.status, 200);
+  assert.deepEqual(a.body.found, ['s1']);
+  assert.equal(a.body.replies[0].kind, 'fixed');
+  assert.equal(a.body.peers.firstPlays, 1);
+  const b = await call('grade', req('device-aaaa1', []));
+  assert.equal(b.body.first, false);
+  assert.equal(b.body.peers.firstPlays, 1);
+  const c = await call('grade', req('device-bbbb2', []));
+  assert.equal(c.body.peers.firstPlays, 2);
+  assert.equal(c.body.peers.planted.s1.found, 1);
+  const st = await call('stats');
+  assert.equal(st.body.plays, 3);
+  assert.deepEqual(st.body.types['방향·주체가 바뀜'], { planted: 2, found: 1 });
 });
 
-test('실시간 기지는 신호 없이 시작하고 목록에 live로 표시된다', async () => {
-  const list = await call(scenarios);
-  const live = list.body.find((s) => s.id === 'cheongju-live');
-  assert.equal(live.live, true);
-  assert.equal(live.signals, 0);
-  const s = await call(session, { method: 'POST', body: { op: 'start', scenario_id: 'cheongju-live' } });
-  assert.equal(s.body.state.signals.length, 0);
+test('잘못된 입력', async () => {
+  assert.equal((await call('task', { query: { id: '../x' } })).status, 400);
+  assert.equal((await call('task', { query: { id: 'nope' } })).status, 404);
+  assert.equal((await call('grade', { method: 'POST', body: { id: 'fx-01', marks: [], decision: '보류' } })).status, 400);
+  assert.equal((await call('feedback', { method: 'POST', body: { taskId: 'fx-01', helpful: true, note: 'x'.repeat(500) } })).status, 200);
 });

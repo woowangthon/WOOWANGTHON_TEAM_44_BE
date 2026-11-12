@@ -1,0 +1,13 @@
+{
+  "id": "fx-01", "version": 1, "track": "문서", "difficulty": 1, "mini": false, "title": "시험용 과제", "brief": "요약", "criteria": "기준",
+  "timeLimitSec": 60, "origin": "bank",
+  "source": { "title": "시험 자료", "publisher": "시험", "url": "https://example.invalid", "license": "직접 작성", "retrievedAt": "2026-11-12",
+    "paragraphs": [{ "pid": "p1", "text": "일자리는 3년간 21.1만 개 줄었다." }, { "pid": "p2", "text": "고용률은 0.5%p 상승했다." }] },
+  "sentences": [{ "sid": "s1", "text": "일자리는 3년간 21.1만 개 늘었다." }, { "sid": "s2", "text": "고용률은 0.5%p 상승했다." }],
+  "answer": {
+    "planted": [{ "sid": "s1", "type": "direction", "before": "일자리는 3년간 21.1만 개 줄었다.", "after": "일자리는 3년간 21.1만 개 늘었다.", "evidence": { "pid": "p1", "quote": "3년간 21.1만 개 줄었다" }, "why": "방향", "guarantee": "code+model" }],
+    "clean": [{ "sid": "s2", "support": [{ "pid": "p2", "quote": "고용률은 0.5%p 상승했다" }] }],
+    "correctDecision": "반려"
+  },
+  "verification": { "models": { "writer": "w", "checker": "c" }, "plantedVerified": "1/1", "humanChecked": null }
+}

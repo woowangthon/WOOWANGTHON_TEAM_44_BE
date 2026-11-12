@@ -1,0 +1,244 @@
+{
+  "id": "msit-academy-2610",
+  "startedAt": "2026-11-11T17:46:24.005Z",
+  "difficulty": "2",
+  "plannedErrors": 3,
+  "models": {
+    "writer": "claude-opus-5-5",
+    "checker": "claude-sonnet-5-5"
+  },
+  "attempts": [
+    {
+      "try": 1,
+      "seed": "msit-academy-2610-1",
+      "p1": {
+        "kept": 7,
+        "dropped": [],
+        "modelAttempts": 1
+      },
+      "p2": {
+        "passed": 7,
+        "failed": []
+      },
+      "p3p4": {
+        "planted": 3,
+        "log": [
+          {
+            "step": "P3",
+            "type": "unsupported",
+            "sid": "s5",
+            "ok": true,
+            "detail": "덧붙임: 지역 기업들의 인공지능 인력 수요가 급증한 데 따라"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unsupported",
+            "sid": "s5",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "overclaim",
+            "sid": "s6",
+            "ok": true,
+            "detail": "한정 표현 빠짐: 예정"
+          },
+          {
+            "step": "P4 코드",
+            "type": "overclaim",
+            "sid": "s6",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s2",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s1",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s3",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s7",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "direction",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "unit",
+            "sid": "s3",
+            "ok": true,
+            "detail": "83.1% → 83.1%p"
+          },
+          {
+            "step": "P4 코드",
+            "type": "unit",
+            "sid": "s3",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s7",
+            "ok": true,
+            "detail": "40개 → 50개"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s7",
+            "ok": true
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s4",
+            "ok": false
+          },
+          {
+            "step": "P3",
+            "type": "number",
+            "sid": "s1",
+            "ok": true,
+            "detail": "28일 → 26일"
+          },
+          {
+            "step": "P4 코드",
+            "type": "number",
+            "sid": "s1",
+            "ok": true
+          },
+          {
+            "step": "P4 점검",
+            "type": "unsupported",
+            "sid": "s5",
+            "ok": true,
+            "problem": "원자료에는 7월부터 5개월 과정을 시작했다는 내용만 있고, 지역 기업들의 인공지능 인력 수요 급증이라는 원인은 나오지 않는다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "overclaim",
+            "sid": "s6",
+            "ok": true,
+            "problem": "원자료는 10월부터 시작할 '예정'이라고 했는데 결과물은 '시작한다'고 단정했고, 최대 18개월이라는 한정도 빠졌다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "unit",
+            "sid": "s3",
+            "ok": true,
+            "problem": "취업률은 83.1%인데 결과물은 단위를 %p로 잘못 썼다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s7",
+            "ok": true,
+            "problem": "원자료에는 실전 문제 기반 학습이 40개인데 결과물은 50개로 썼다."
+          },
+          {
+            "step": "P4 점검",
+            "type": "number",
+            "sid": "s1",
+            "ok": true,
+            "problem": "원자료의 개소식 날짜는 10월 28일(수)인데 결과물은 10월 26일로 썼다."
+          }
+        ]
+      },
+      "p5": {
+        "flags": [
+          {
+            "sid": "s3",
+            "reason": "숫자·단위",
+            "note": "원자료는 취업률 83.1%라고 했는데 결과물은 83.1%p로 단위를 바꿨다."
+          },
+          {
+            "sid": "s5",
+            "reason": "원자료에 없음",
+            "note": "지역 기업들의 인공지능 인력 수요가 급증했다는 이유는 원자료에 없는 내용이다. 원자료에는 7월부터 과정을 시작했다는 사실만 있다."
+          }
+        ],
+        "decision": "반려",
+        "caught": [
+          "s3",
+          "s5"
+        ],
+        "extra": []
+      },
+      "result": "ok"
+    }
+  ],
+  "finishedAt": "2026-11-11T17:46:59.065Z",
+  "usage": [
+    {
+      "label": "P1 작성",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 20014,
+      "input": 1972,
+      "output": 2363
+    },
+    {
+      "label": "P2 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2426,
+      "input": 2086,
+      "output": 152
+    },
+    {
+      "label": "P3 원자료에 없음",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 2978,
+      "input": 1568,
+      "output": 132
+    },
+    {
+      "label": "P3 근거보다 큰 결론",
+      "role": "writer",
+      "model": "claude-opus-5-5",
+      "attempt": 1,
+      "ms": 3072,
+      "input": 525,
+      "output": 81
+    },
+    {
+      "label": "P4 점검",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 3581,
+      "input": 2011,
+      "output": 358
+    },
+    {
+      "label": "P5 눈 가린 풀이",
+      "role": "checker",
+      "model": "claude-sonnet-5-5",
+      "attempt": 1,
+      "ms": 2981,
+      "input": 2359,
+      "output": 181
+    }
+  ]
+}
