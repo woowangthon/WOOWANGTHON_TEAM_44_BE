@@ -23,6 +23,10 @@ async function runMeta(runId) {
 
 export default handler(async (req) => {
   const runId = req.query?.run;
+  if (req.query?.mission) {
+    const m = loadMission(req.query.mission);
+    return { mission: { id: m.id, title: m.title, brief: m.brief, today: m.today, stages: m.stages.map(({ key, name, kind, inputs }) => ({ key, name, kind, inputs })) }, docs: loadDocs(m) };
+  }
   if (runId) {
     const r = await getRun(runId);
     if (r.origin === 'live') throw err('라이브 판은 팀장 모드에서 엽니다', 404);

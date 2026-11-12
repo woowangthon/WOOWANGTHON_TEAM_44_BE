@@ -1,0 +1,102 @@
+[
+  {
+    "label": "testset gemini-4-argon mods-income-mobility-2610",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2128,
+    "output": 3495,
+    "ms": 40952,
+    "stop": "STOP",
+    "cost": 0.039206
+  },
+  {
+    "label": "testset gemini-4-argon mods-migration-2610",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2189,
+    "output": 4435,
+    "ms": 49946,
+    "stop": "STOP",
+    "cost": 0.048728
+  },
+  {
+    "label": "testset gemini-4-argon moel-overtime-2611",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2250,
+    "output": 3615,
+    "ms": 42661,
+    "stop": "STOP",
+    "cost": 0.04065
+  },
+  {
+    "label": "testset gemini-4-argon moel-workforce-2610",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2178,
+    "output": 1878,
+    "ms": 23328,
+    "stop": "STOP",
+    "cost": 0.023136
+  },
+  {
+    "label": "testset gemini-4-argon moel-jobskill-2609",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2169,
+    "output": 9687,
+    "ms": 116294,
+    "stop": "STOP",
+    "cost": 0.101208
+  },
+  {
+    "label": "testset gemini-4-argon mois-exam-fee-2610",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 1782,
+    "output": 1985,
+    "ms": 26062,
+    "stop": "STOP",
+    "cost": 0.023414
+  },
+  {
+    "label": "testset gemini-4-argon moip-youth-patent-2611",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2113,
+    "output": 3733,
+    "ms": 40802,
+    "stop": "STOP",
+    "cost": 0.041556
+  },
+  {
+    "label": "testset gemini-4-argon moel-scholarship-2609",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2152,
+    "output": 10155,
+    "ms": 108325,
+    "stop": "STOP",
+    "cost": 0.105854
+  },
+  {
+    "label": "testset gemini-4-argon molit-youth-panel-2611",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2240,
+    "output": 1335,
+    "ms": 25914,
+    "stop": "STOP",
+    "cost": 0.01783
+  },
+  {
+    "label": "testset gemini-4-argon msit-academy-2610",
+    "model": "gemini-4-argon",
+    "attempt": 1,
+    "input": 2205,
+    "output": 11505,
+    "ms": 129697,
+    "stop": "STOP",
+    "cost": 0.11946
+  }
+]

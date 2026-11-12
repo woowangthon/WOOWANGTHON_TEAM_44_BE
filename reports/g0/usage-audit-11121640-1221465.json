@@ -1,0 +1,88 @@
+[
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300700
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300702
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121603-1",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300733
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300686
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300683
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121603-1",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300681
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121603-1",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 9227,
+    "output": 10571,
+    "ms": 238691,
+    "stop": "stop",
+    "cost": 0.124164
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300702
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300700
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 8967,
+    "output": 12136,
+    "ms": 254397,
+    "stop": "stop",
+    "cost": 0.139294
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 9644,
+    "output": 12422,
+    "ms": 264551,
+    "stop": "stop",
+    "cost": 0.143508
+  }
+]

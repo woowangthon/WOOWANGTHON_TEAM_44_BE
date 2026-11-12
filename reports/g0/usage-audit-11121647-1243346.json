@@ -1,0 +1,68 @@
+[
+  {
+    "label": "audit claude-opus-5-5 m4-base-gemini-3.8-flash-11121632-3",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 12659,
+    "output": 8927,
+    "cost": 0.229176,
+    "ms": 78885,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-gemini-3.8-flash-11121632-3",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 12659,
+    "output": 8927,
+    "cost": 0.229176,
+    "ms": 78885,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-gemini-3.8-flash-11121631-1",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 12321,
+    "output": 8865,
+    "cost": 0.226584,
+    "ms": 79112,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-gemini-3.8-flash-11121632-3",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 12659,
+    "output": 8927,
+    "cost": 0.229176,
+    "ms": 78885,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-gemini-3.8-flash-11121631-1",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 12321,
+    "output": 8865,
+    "cost": 0.226584,
+    "ms": 79112,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-gemini-3.8-flash-11121631-2",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 13083,
+    "output": 9827,
+    "cost": 0.248872,
+    "ms": 85030,
+    "stop": "end_turn"
+  }
+]

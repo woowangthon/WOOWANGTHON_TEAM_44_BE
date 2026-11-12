@@ -47,10 +47,13 @@ export function auditUser(mission, docs, stages) {
   return `${docsBlock(docs)}\n\n<미션>\n${mission.brief}\n</미션>\n\n<업무 기록>\n${st}\n</업무 기록>\n\n오류 장부를 만드세요.`;
 }
 
-export async function audit(auditor, mission, docs, stages, label = '') {
+/** live = 라이브(함수 300초 안): OpenAI는 effort medium, 재시도 1번. 고정 판(스크립트)은 high, 시간 넉넉히 */
+export const auditEffort = (auditor, live) => (live && companyOf(auditor) === 'OpenAI' ? 'medium' : 'high');
+export async function audit(auditor, mission, docs, stages, label = '', { live = false } = {}) {
   const t0 = Date.now();
-  const { output } = await callJson({ model: auditor, system: auditSystem(mission), user: auditUser(mission, docs, stages), schema: AUDIT_SCHEMA, maxTokens: 32000, effort: 'high', label, retryWait: 3000 });
-  return { model: auditor, company: companyOf(auditor), at: new Date().toISOString(), sec: Math.round((Date.now() - t0) / 1000), errors: output.errors, overall: output.overall };
+  const { output } = await callJson({ model: auditor, system: auditSystem(mission), user: auditUser(mission, docs, stages), schema: AUDIT_SCHEMA, maxTokens: 32000, effort: auditEffort(auditor, live), label, retryWait: 3000,
+    ...(live ? { timeoutMs: 270e3, retries: 0 } : { timeoutMs: Number(process.env.AUDIT_TIMEOUT_MS || 900e3) }) });
+  return { model: auditor, company: companyOf(auditor), effort: auditEffort(auditor, live), at: new Date().toISOString(), sec: Math.round((Date.now() - t0) / 1000), errors: output.errors, overall: output.overall };
 }
 
 // ---------------- 코드 대조 ----------------
@@ -60,11 +63,11 @@ const pad = (n) => String(n).padStart(2, '0');
 export const normDates = (s) => String(s ?? '')
   .replace(/[‘’'`](\d{2})년/g, '20$1년')
   .replace(/[‘’'`](\d{2})\.\s?(\d{1,2})월/g, '20$1년 $2월')
-  .replace(/[‘’'`](\d{2})(?![\d년])/g, '20$1년')
+  .replace(/[‘’'`](\d{2})(?=\s?[→~∼.,)\-]|\s|$)/g, '20$1년')
   .replace(/(\d{4})[-.]\s?(\d{1,2})[-.]\s?(\d{1,2})\.?/g, (_, y, m, d) => `${y}년 ${Number(m)}월 ${Number(d)}일`)
   .replace(/(?<![\d/])(\d{1,2})\/(\d{1,2})(?![\d/])/g, (_, m, d) => `${Number(m)}월 ${Number(d)}일`);
 // 계산한 남은 날(「10일 남음」「D-10」「20일 경과」)은 원자료 숫자와 견주지 않고 따로 검산한다
-const DDAY_RE = /(\d+)\s?일\s?(남|경과|지났|지남|전)|D-(\d+)/g;
+const DDAY_RE = /(\d+)\s?일(?:이|가)?\s?(남|경과|지났|지남|지난|전|후|째)|(?:까지|기준|각각|오늘)\s?(?:각각\s?)?\d+\s?일(?:[·,]\s?\d+\s?일)*|D-(\d+)/g;
 const stripDday = (s) => s.replace(DDAY_RE, ' ');
 
 const dayNum = (iso) => Math.round(Date.parse(`${iso}T00:00:00Z`) / 864e5);
@@ -75,10 +78,11 @@ export function ddayChecks(text, mission) {
   const today = dayNum(mission.todayISO);
   const post = mission.postDateISO ? dayNum(mission.postDateISO) : null;
   const year0 = Number(mission.todayISO.slice(0, 4));
-  for (const m of t.matchAll(/(?:(\d{4})년\s?)?(\d{1,2})월\s?(\d{1,2})일[^.\n|;]{0,40}?(\d+)\s?일\s?(남|경과|지)/g)) {
+  for (const m of t.matchAll(/(?:(\d{4})년\s?)?(\d{1,2})월\s?(\d{1,2})일[^\d.\n|;]{0,18}?(\d+)\s?일(?:이|가)?\s?(남|경과|지)/g)) {
     const [, y, mo, d, n, kind] = m;
     let year = y ? Number(y) : year0;
     let target = dayNum(`${year}-${pad(mo)}-${pad(d)}`);
+    if (target === today || target === post) continue;
     if (!y && kind === '남' && target < today) target = dayNum(`${year + 1}-${pad(mo)}-${pad(d)}`);
     const sign = kind === '남' ? 1 : -1;
     const fromToday = sign * (target - today);
@@ -96,9 +100,15 @@ const sourceText = (docs, mission) => [...Object.values(docs).flatMap((d) => d.p
  */
 export function unitMissingNumbers(text, src) {
   const have = numbers(normDates(src));
-  const found = (t) => have.some((h) => h.value === t.value && (h.mag === t.mag || !h.mag) && (h.kind === t.kind || h.kind === 'n'));
-  return numbers(stripDday(normDates(text)))
+  // 자릿수 단위를 풀어 값으로 견준다(20,748천명 = 2,074.8만 명 = 2074만 8천명은 아니어도 앞의 둘은 같다)
+  const MAGV = { 조: 1e12, 억: 1e8, 만: 1e4, 천: 1e3 };
+  const val = (x) => Math.round(Number(x.value) * (MAGV[x.mag] ?? 1) * 1000) / 1000;
+  const found = (t) => have.some((h) => (h.value === t.value && (h.mag === t.mag || !h.mag)) || val(h) === val(t)) && have.some((h) => (h.value === t.value || val(h) === val(t)) && (h.kind === t.kind || h.kind === 'n' || t.kind === 'n'));
+  const t0 = stripDday(normDates(text));
+  return numbers(t0)
     .filter((t) => !(t.kind === 'n' && !t.unit && !t.mag && Number(t.value) < 10))
+    // 범위의 앞 숫자(「12~16일」의 12)는 뒤 숫자와 단위를 같이 쓴다
+    .filter((t, i, all) => !(!t.unit && !t.mag && /^\s?[~∼\-]/.test(t0.slice(t.index + t.raw.length))))
     .filter((t) => !found(t)).map((t) => t.raw.trim());
 }
 
@@ -120,9 +130,11 @@ export function codeCheck(item, docs, unitMap, mission) {
 export function codeScan(mission, docs, stages) {
   const src = sourceText(docs, mission);
   const out = [];
+  const finals = new Set(stages.slice(-2).map((s) => s.key));
   for (const u of auditUnits(stages).flatMap((s) => s.units)) {
     const missing = unitMissingNumbers(u.text, src);
-    const dd = ddayChecks(u.text, mission).filter((x) => !x.ok || x.todayBased);
+    const isFinal = finals.has(u.uid.split('.')[0]);
+    const dd = ddayChecks(u.text, mission).filter((x) => !x.ok || (x.todayBased && isFinal));
     if (missing.length || dd.length) out.push({ uid: u.uid, missing, dday: dd });
   }
   return out;

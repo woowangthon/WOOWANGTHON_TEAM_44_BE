@@ -77,32 +77,15 @@ async function geminiCall(model, { system, user, schema, maxTokens, effort }) {
 
 const CALL = { Anthropic: anthropicCall, OpenAI: openaiCall, Google: geminiCall };
 
-/** JSON 하나를 받는다. 형식이 틀리면 사유를 붙여 한 번 다시 요청한다. 내용은 고치지 않는다. */
+/** JSON 하나를 받는다. 11/12 16:45부터는 제품과 같은 호출 모듈(src/llm.js, OpenAI 스트리밍)로 보낸다 */
+import { callJson as prodCall, usageLog as prodUsage } from '../../src/llm.js';
 export async function callJson({ model, system, user, schema, maxTokens = 8000, effort, label }) {
-  const fn = CALL[companyOf(model)];
-  if (!fn) throw new Error(`모르는 모델 ${model}`);
-  let prompt = user;
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    if (spent > BUDGET) throw new Error(`실험 예산 $${BUDGET}을 넘었습니다`);
-    let res;
-    for (let net = 0; ; net++) {
-      const t0 = Date.now();
-      try { res = await fn(model, { system, user: prompt, schema, maxTokens, effort }); res.ms = Date.now() - t0; break; }
-      catch (e) {
-        usage.push({ label, model, attempt, failed: e.message.slice(0, 160), ms: Date.now() - t0 });
-        if (!e.retry || net >= 3) throw e;
-        await sleep(5000 * 2 ** net);
-      }
-    }
-    const p = PRICE[model] ?? [0, 0];
-    const cost = (res.input * p[0] + res.output * p[1]) / 1e6;
-    spent += cost;
-    usage.push({ label, model, attempt, input: res.input, output: res.output, ms: res.ms, stop: res.stop, cost });
-    let out = null, probs;
-    try { const s = res.text.indexOf('{'); out = JSON.parse(res.text.slice(s, res.text.lastIndexOf('}') + 1)); probs = validate(schema, out); } catch { probs = ['JSON 아님']; }
-    if (!probs.length) return { out, model, ms: res.ms };
-    if (/max_tokens|length|MAX_TOKENS/.test(String(res.stop))) probs.push('길이 상한에서 잘림');
-    prompt = `${user}\n\n[앞선 답의 형식 문제. 내용은 그대로 두고 형식만 고쳐 다시 답하세요]\n- ${probs.slice(0, 8).join('\n- ')}`;
+  if (spent > BUDGET) throw new Error(`실험 예산 $${BUDGET}을 넘었습니다`);
+  const before = prodUsage.length;
+  try {
+    const r = await prodCall({ model, system, user, schema, maxTokens, effort, label, timeoutMs: 900e3 });
+    return { out: r.output, model, ms: r.ms };
+  } finally {
+    for (const u of prodUsage.slice(before)) { usage.push(u); spent += u.cost ?? 0; }
   }
-  throw new Error(`${label}: 두 번 모두 형식이 맞지 않았습니다`);
 }

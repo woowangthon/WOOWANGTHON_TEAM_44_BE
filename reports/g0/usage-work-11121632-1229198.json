@@ -1,0 +1,162 @@
+[
+  {
+    "label": "m4 base R1 S1",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 3269,
+    "output": 1123,
+    "ms": 9405,
+    "stop": "STOP",
+    "cost": 0.006663
+  },
+  {
+    "label": "m4 base R3 S1",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 3269,
+    "output": 3025,
+    "ms": 22838,
+    "stop": "STOP",
+    "cost": 0.0137955
+  },
+  {
+    "label": "m4 base R2 S1",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 3269,
+    "output": 3447,
+    "ms": 23478,
+    "stop": "STOP",
+    "cost": 0.015378
+  },
+  {
+    "label": "m4 base R1 S2",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 1389,
+    "output": 4469,
+    "ms": 34149,
+    "stop": "STOP",
+    "cost": 0.0178005
+  },
+  {
+    "label": "m4 base R2 S2",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 1702,
+    "output": 3823,
+    "ms": 27499,
+    "stop": "STOP",
+    "cost": 0.01561275
+  },
+  {
+    "label": "m4 base R1 S3",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 838,
+    "output": 850,
+    "ms": 9275,
+    "stop": "STOP",
+    "cost": 0.003816
+  },
+  {
+    "label": "m4 base R2 S3",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 995,
+    "output": 651,
+    "ms": 7232,
+    "stop": "STOP",
+    "cost": 0.0031875
+  },
+  {
+    "label": "m4 base R1 S4",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 1246,
+    "output": 1926,
+    "ms": 15812,
+    "stop": "STOP",
+    "cost": 0.008157
+  },
+  {
+    "label": "m4 base R2 S4",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 1390,
+    "output": 1613,
+    "ms": 14295,
+    "stop": "STOP",
+    "cost": 0.00709125
+  },
+  {
+    "label": "m4 base R2 S5",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 590,
+    "output": 1383,
+    "ms": 10751,
+    "stop": "STOP",
+    "cost": 0.00562875
+  },
+  {
+    "label": "m4 base R1 S5",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 583,
+    "output": 1948,
+    "ms": 14959,
+    "stop": "STOP",
+    "cost": 0.00774225
+  },
+  {
+    "label": "m4 base R3 S2",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 1474,
+    "output": 7986,
+    "ms": 62717,
+    "stop": "MAX_TOKENS",
+    "cost": 0.031053
+  },
+  {
+    "label": "m4 base R3 S2",
+    "model": "gemini-3.8-flash",
+    "attempt": 2,
+    "input": 1507,
+    "output": 2508,
+    "ms": 19716,
+    "stop": "STOP",
+    "cost": 0.01053525
+  },
+  {
+    "label": "m4 base R3 S3",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 922,
+    "output": 1434,
+    "ms": 11443,
+    "stop": "STOP",
+    "cost": 0.006069
+  },
+  {
+    "label": "m4 base R3 S4",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 1312,
+    "output": 1724,
+    "ms": 15890,
+    "stop": "STOP",
+    "cost": 0.007449
+  },
+  {
+    "label": "m4 base R3 S5",
+    "model": "gemini-3.8-flash",
+    "attempt": 1,
+    "input": 648,
+    "output": 1791,
+    "ms": 13438,
+    "stop": "STOP",
+    "cost": 0.00720225
+  }
+]

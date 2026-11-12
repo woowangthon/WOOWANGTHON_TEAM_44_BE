@@ -113,7 +113,7 @@ export async function auditStep(id) {
   const docs = loadDocs(mission);
   const nextModel = s.auditors.find((m) => !s.audits.some((a) => a.model === m) && !(s.auditFailed ?? []).includes(m));
   if (nextModel) {
-    try { s.audits.push(await audit(nextModel, mission, docs, s.stages, `${id} audit ${nextModel}`)); }
+    try { s.audits.push(await audit(nextModel, mission, docs, s.stages, `${id} audit ${nextModel}`, { live: true })); }
     catch (e) { (s.auditFailed ??= []).push(nextModel); s.auditErrors = [...(s.auditErrors ?? []), `${companyOf(nextModel)}: ${e.message.slice(0, 120)}`]; }
     await save(s);
     if (s.auditors.some((m) => !s.audits.some((a) => a.model === m) && !(s.auditFailed ?? []).includes(m))) return view(s);

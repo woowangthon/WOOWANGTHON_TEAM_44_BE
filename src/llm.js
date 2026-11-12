@@ -61,13 +61,13 @@ async function takeCall(company) {
 
 // ---------------- 회사별 호출 ----------------
 let anthropic;
-async function anthropicCall(model, { system, user, schema, maxTokens, effort }) {
-  if (!anthropic) { const { default: A } = await import('@anthropic-ai/sdk'); anthropic = new A({ maxRetries: 0, timeout: 280e3 }); }
+async function anthropicCall(model, { system, user, schema, maxTokens, effort, timeoutMs }) {
+  if (!anthropic) { const { default: A } = await import('@anthropic-ai/sdk'); anthropic = new A({ maxRetries: 0 }); }
   try {
     const res = await anthropic.messages.create({
       model, max_tokens: maxTokens, system, messages: [{ role: 'user', content: user }],
       output_config: { format: { type: 'json_schema', schema }, ...(effort ? { effort } : {}) },
-    });
+    }, { timeout: timeoutMs });
     if (res.stop_reason === 'refusal') throw new LlmError('모델이 응답을 거절했습니다', 502);
     return { text: res.content.filter((b) => b.type === 'text').map((b) => b.text).join(''), input: res.usage?.input_tokens ?? 0, output: res.usage?.output_tokens ?? 0, stop: res.stop_reason };
   } catch (e) {
@@ -76,27 +76,46 @@ async function anthropicCall(model, { system, user, schema, maxTokens, effort })
   }
 }
 
-async function openaiCall(model, { system, user, schema, maxTokens, effort }) {
+async function openaiCall(model, { system, user, schema, maxTokens, effort, timeoutMs }) {
+  // 스트리밍으로 받는다: 추론이 길면(감사 high 4~5분) 머리글이 늦게 와서 Node fetch의 기본 대기 한도(300초)에 끊기기 때문이다
   const r = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST', signal: AbortSignal.timeout(280e3),
+    method: 'POST', signal: AbortSignal.timeout(timeoutMs),
     headers: { 'content-type': 'application/json', authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
     body: JSON.stringify({
-      model, max_completion_tokens: maxTokens,
+      model, max_completion_tokens: maxTokens, stream: true, stream_options: { include_usage: true },
       messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
       response_format: { type: 'json_schema', json_schema: { name: 'out', strict: true, schema } },
       ...(effort ? { reasoning_effort: effort } : {}),
     }),
   }).catch((e) => { throw new LlmError(`OpenAI 연결: ${e.message}`, 0, true); });
   if (!r.ok) { const t = (await r.text()).replace(/\s+/g, ' ').slice(0, 200); throw new LlmError(`OpenAI ${r.status}: ${t}`, r.status, r.status === 429 || r.status >= 500); }
-  const j = await r.json();
-  const c = j.choices?.[0];
-  if (c?.message?.refusal) throw new LlmError('모델이 응답을 거절했습니다', 502);
-  return { text: c?.message?.content ?? '', input: j.usage?.prompt_tokens ?? 0, output: j.usage?.completion_tokens ?? 0, stop: c?.finish_reason };
+  let text = '', usage = {}, stop = null, refusal = '', buf = '';
+  const dec = new TextDecoder();
+  try {
+    for await (const chunk of r.body) {
+      buf += dec.decode(chunk, { stream: true });
+      let i;
+      while ((i = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+        if (!line.startsWith('data:')) continue;
+        const data = line.slice(5).trim();
+        if (data === '[DONE]') continue;
+        const j = JSON.parse(data);
+        if (j.usage) usage = j.usage;
+        const c = j.choices?.[0];
+        if (c?.delta?.content) text += c.delta.content;
+        if (c?.delta?.refusal) refusal += c.delta.refusal;
+        if (c?.finish_reason) stop = c.finish_reason;
+      }
+    }
+  } catch (e) { throw new LlmError(`OpenAI 스트림 끊김: ${e.message}`, 0, true); }
+  if (refusal) throw new LlmError('모델이 응답을 거절했습니다', 502);
+  return { text, input: usage.prompt_tokens ?? 0, output: usage.completion_tokens ?? 0, stop };
 }
 
-async function geminiCall(model, { system, user, schema, maxTokens, effort }) {
+async function geminiCall(model, { system, user, schema, maxTokens, effort, timeoutMs }) {
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-    method: 'POST', signal: AbortSignal.timeout(280e3),
+    method: 'POST', signal: AbortSignal.timeout(timeoutMs),
     headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system }] },
@@ -124,7 +143,8 @@ const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
  * JSON 하나를 받는다. check(output) → 문제 목록(비면 통과).
  * 두 번째에도 문제가 있으면 { output, problems }를 그대로 돌려 호출한 쪽이 버릴지 정한다. 형식부터 깨지면 던진다.
  */
-export async function callJson({ model, system, user, schema, check = () => [], maxTokens = 8000, effort, label = '', retryWait = 4000 }) {
+// timeoutMs: 서버(Vercel 함수 300초) 안에서는 기본 270초. 스크립트는 길게 줄 수 있다(G0: 감사 high는 4~5분)
+export async function callJson({ model, system, user, schema, check = () => [], maxTokens = 8000, effort, label = '', retryWait = 4000, timeoutMs = Number(process.env.LLM_TIMEOUT_MS || 270e3), retries = 3 }) {
   const company = companyOf(model);
   const fn = CALL[company];
   if (!fn) throw new LlmError(`모르는 모델 ${model}`, 500);
@@ -136,10 +156,10 @@ export async function callJson({ model, system, user, schema, check = () => [], 
     let res;
     const t0 = Date.now();
     for (let net = 0; ; net++) {
-      try { res = await fn(model, { system, user: prompt, schema, maxTokens, effort }); break; }
+      try { res = await fn(model, { system, user: prompt, schema, maxTokens, effort, timeoutMs }); break; }
       catch (e) {
         usageLog.push({ label, model, company, attempt, failed: String(e.message).slice(0, 160), ms: Date.now() - t0 });
-        if (!e.retry || net >= 3) throw e;
+        if (!e.retry || net >= retries) throw e;
         await sleep(retryWait * 2 ** net);
       }
     }
