@@ -1,0 +1,434 @@
+{
+  "summary": {
+    "at": "2026-11-12T01:13:48.557Z",
+    "runs": 10,
+    "done": 10,
+    "secMedian": 28.2,
+    "secMax": 39.5,
+    "zeroError": 2,
+    "blindExtra": 1,
+    "calls": 54
+  },
+  "runs": [
+    {
+      "i": 1,
+      "mode": "pool",
+      "source": "mods-income-mobility-2610",
+      "status": "done",
+      "error": null,
+      "sec": 29.7,
+      "calls": 5,
+      "sentences": 6,
+      "planted": 3,
+      "types": [
+        "direction",
+        "number",
+        "unsupported"
+      ],
+      "blind": {
+        "caught": 3,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 15492,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 3462,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 6912,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 3837
+        }
+      ]
+    },
+    {
+      "i": 2,
+      "mode": "pool",
+      "source": "mods-migration-2610",
+      "status": "done",
+      "error": null,
+      "sec": 24.1,
+      "calls": 5,
+      "sentences": 6,
+      "planted": 3,
+      "types": [
+        "direction",
+        "unsupported",
+        "unit"
+      ],
+      "blind": {
+        "caught": 3,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 13249,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2214,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 5496,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 3104
+        }
+      ]
+    },
+    {
+      "i": 3,
+      "mode": "pool",
+      "source": "moel-jobskill-2609",
+      "status": "done",
+      "error": null,
+      "sec": 39.5,
+      "calls": 7,
+      "sentences": 6,
+      "planted": 3,
+      "types": [
+        "number",
+        "number",
+        "unsupported"
+      ],
+      "blind": {
+        "caught": 3,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 19025,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2183,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 15038,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 3227
+        }
+      ]
+    },
+    {
+      "i": 4,
+      "mode": "pool",
+      "source": "moel-overtime-2611",
+      "status": "done",
+      "error": null,
+      "sec": 27.5,
+      "calls": 3,
+      "sentences": 6,
+      "planted": 0,
+      "types": [],
+      "blind": {
+        "caught": 0,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 18372,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2052,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 0,
+          "planned": 0,
+          "planted": 0
+        },
+        {
+          "step": "p5",
+          "ms": 7031
+        }
+      ]
+    },
+    {
+      "i": 5,
+      "mode": "pool",
+      "source": "moel-scholarship-2609",
+      "status": "done",
+      "error": null,
+      "sec": 32.1,
+      "calls": 8,
+      "sentences": 6,
+      "planted": 3,
+      "types": [
+        "unsupported",
+        "number",
+        "overclaim"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 13957,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2121,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 13841,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 2215
+        }
+      ]
+    },
+    {
+      "i": 6,
+      "mode": "pool",
+      "source": "moel-workforce-2610",
+      "status": "done",
+      "error": null,
+      "sec": 30.1,
+      "calls": 6,
+      "sentences": 6,
+      "planted": 3,
+      "types": [
+        "number",
+        "unsupported",
+        "overclaim"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 1
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 14726,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2106,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 8485,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 4794
+        }
+      ]
+    },
+    {
+      "i": 7,
+      "mode": "pool",
+      "source": "moip-youth-patent-2611",
+      "status": "done",
+      "error": null,
+      "sec": 22.5,
+      "calls": 6,
+      "sentences": 6,
+      "planted": 3,
+      "types": [
+        "direction",
+        "unsupported",
+        "number"
+      ],
+      "blind": {
+        "caught": 3,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 7892,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2192,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 9087,
+          "planned": 3,
+          "planted": 3
+        },
+        {
+          "step": "p5",
+          "ms": 3302
+        }
+      ]
+    },
+    {
+      "i": 8,
+      "mode": "pool",
+      "source": "molit-youth-panel-2611",
+      "status": "done",
+      "error": null,
+      "sec": 28.2,
+      "calls": 6,
+      "sentences": 6,
+      "planted": 2,
+      "types": [
+        "unsupported",
+        "unit"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 15564,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2154,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 7814,
+          "planned": 2,
+          "planted": 2
+        },
+        {
+          "step": "p5",
+          "ms": 2711
+        }
+      ]
+    },
+    {
+      "i": 9,
+      "mode": "pool",
+      "source": "msit-academy-2610",
+      "status": "done",
+      "error": null,
+      "sec": 19.5,
+      "calls": 3,
+      "sentences": 6,
+      "planted": 0,
+      "types": [],
+      "blind": {
+        "caught": 0,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 15132,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 2277,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 0,
+          "planned": 0,
+          "planted": 0
+        },
+        {
+          "step": "p5",
+          "ms": 2047
+        }
+      ]
+    },
+    {
+      "i": 10,
+      "mode": "pool",
+      "source": "mods-income-mobility-2610",
+      "status": "done",
+      "error": null,
+      "sec": 26.7,
+      "calls": 5,
+      "sentences": 6,
+      "planted": 2,
+      "types": [
+        "number",
+        "unsupported"
+      ],
+      "blind": {
+        "caught": 2,
+        "extra": 0
+      },
+      "steps": [
+        {
+          "step": "p1",
+          "ms": 17012,
+          "kept": 6,
+          "dropped": 0
+        },
+        {
+          "step": "p2",
+          "ms": 1847,
+          "passed": 6
+        },
+        {
+          "step": "p3",
+          "ms": 5127,
+          "planned": 2,
+          "planted": 2
+        },
+        {
+          "step": "p5",
+          "ms": 2761
+        }
+      ]
+    }
+  ]
+}

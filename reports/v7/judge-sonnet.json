@@ -1,0 +1,259 @@
+{
+  "judge": "sonnet",
+  "at": "2026-11-12T01:09:20.451Z",
+  "naive": {
+    "tasks": 9,
+    "sentences": 63,
+    "claimed": 27,
+    "fake": 0,
+    "hidden": 2,
+    "tasksBad": 2
+  },
+  "pipeline": {
+    "tasks": 9,
+    "sentences": 57,
+    "claimed": 19,
+    "fake": 0,
+    "hidden": 1,
+    "tasksBad": 1
+  },
+  "rows": [
+    {
+      "kind": "한 번에",
+      "id": "mods-income-mobility-2610",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "한 번에",
+      "id": "mods-migration-2610",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "한 번에",
+      "id": "moel-jobskill-2609",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 1,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": [
+        {
+          "n": 6,
+          "kind": "숨은 오류",
+          "text": "화상교육 참여 후 만족도 설문까지 완료한 참여자에게는 커피 기프티콘이 제공된다.",
+          "judge": "원자료는 커피 기프티콘 제공을 '유도할 계획'으로 밝혔는데 결과물은 계획이라는 한정 없이 제공된다고 단정했다."
+        }
+      ]
+    },
+    {
+      "kind": "한 번에",
+      "id": "moel-overtime-2611",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "한 번에",
+      "id": "moel-scholarship-2609",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 1,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": [
+        {
+          "n": 7,
+          "kind": "숨은 오류",
+          "text": "신청방법 등 자세한 사항은 건설e음(eum.cw.or.kr)에서 확인할 수 있으며, 선발 결과는 11월 중 공제회 홈페이지 및 개별 연락을 통해 안내된다.",
+          "judge": "원자료는 선발 결과를 11월 중 안내할 '예정'이라고 했는데, 결과물은 '안내된다'로 단정했다."
+        }
+      ]
+    },
+    {
+      "kind": "한 번에",
+      "id": "moel-workforce-2610",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "한 번에",
+      "id": "moip-youth-patent-2611",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "한 번에",
+      "id": "molit-youth-panel-2611",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "한 번에",
+      "id": "msit-academy-2610",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "mods-income-mobility-2610",
+      "sentences": 5,
+      "claimed": 2,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "mods-migration-2610",
+      "sentences": 6,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "moel-jobskill-2609",
+      "sentences": 7,
+      "claimed": 2,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "moel-overtime-2611",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "moel-scholarship-2609",
+      "sentences": 6,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "moel-workforce-2610",
+      "sentences": 6,
+      "claimed": 0,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "moip-youth-patent-2611",
+      "sentences": 6,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "molit-youth-panel-2611",
+      "sentences": 7,
+      "claimed": 0,
+      "fake": 0,
+      "hidden": 0,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": []
+    },
+    {
+      "kind": "파이프라인",
+      "id": "msit-academy-2610",
+      "sentences": 7,
+      "claimed": 3,
+      "fake": 0,
+      "hidden": 1,
+      "models": [
+        "claude-sonnet-5-5"
+      ],
+      "detail": [
+        {
+          "n": 7,
+          "kind": "숨은 오류",
+          "text": "‘인공지능 집중(AI 올인원)’ 과정 교육생들은 40개의 실전 문제 기반 학습과 4회의 집중 팀 과제(프로젝트)를 수행한다.",
+          "judge": "원자료는 '최대 18개월 동안' 수행한다고 했는데 이 기간 한정이 빠졌다."
+        }
+      ]
+    }
+  ]
+}
