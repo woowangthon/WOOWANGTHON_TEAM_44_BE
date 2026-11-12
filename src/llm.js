@@ -114,7 +114,8 @@ async function openaiCall(model, { system, user, schema, maxTokens, effort, time
 }
 
 async function geminiCall(model, { system, user, schema, maxTokens, effort, timeoutMs }) {
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+  // 스트리밍(SSE)으로 받는다: 긴 감사가 Node fetch의 기본 대기 한도(300초)에 끊기지 않게
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`, {
     method: 'POST', signal: AbortSignal.timeout(timeoutMs),
     headers: { 'content-type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
     body: JSON.stringify({
@@ -128,9 +129,24 @@ async function geminiCall(model, { system, user, schema, maxTokens, effort, time
     const quota = r.status === 429 && /RESOURCE_EXHAUSTED|quota/i.test(t);
     throw new LlmError(`Gemini ${r.status}: ${t}`, r.status, !quota && (r.status === 429 || r.status >= 500));
   }
-  const j = await r.json();
-  const c = j.candidates?.[0];
-  return { text: c?.content?.parts?.filter((p) => !p.thought).map((p) => p.text ?? '').join('') ?? '', input: j.usageMetadata?.promptTokenCount ?? 0, output: (j.usageMetadata?.candidatesTokenCount ?? 0) + (j.usageMetadata?.thoughtsTokenCount ?? 0), stop: c?.finishReason };
+  let text = '', meta = {}, stop = null, buf = '';
+  const dec = new TextDecoder();
+  try {
+    for await (const chunk of r.body) {
+      buf += dec.decode(chunk, { stream: true });
+      let i;
+      while ((i = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, i).trim(); buf = buf.slice(i + 1);
+        if (!line.startsWith('data:')) continue;
+        const j = JSON.parse(line.slice(5).trim());
+        if (j.usageMetadata) meta = j.usageMetadata;
+        const c = j.candidates?.[0];
+        for (const p of c?.content?.parts ?? []) if (!p.thought && p.text) text += p.text;
+        if (c?.finishReason) stop = c.finishReason;
+      }
+    }
+  } catch (e) { throw new LlmError(`Gemini 스트림 끊김: ${e.message}`, 0, true); }
+  return { text, input: meta.promptTokenCount ?? 0, output: (meta.candidatesTokenCount ?? 0) + (meta.thoughtsTokenCount ?? 0), stop };
 }
 
 const CALL = { Anthropic: anthropicCall, OpenAI: openaiCall, Google: geminiCall };

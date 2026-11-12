@@ -1,18 +1,1 @@
-[
-  {
-    "runId": "m3-base-anthropic-11121624-1",
-    "missionId": "m3"
-  },
-  {
-    "runId": "m3-base-anthropic-11121624-2",
-    "missionId": "m3"
-  },
-  {
-    "runId": "m3-base-openai-11121624-1",
-    "missionId": "m3"
-  },
-  {
-    "runId": "m3-base-openai-11121624-2",
-    "missionId": "m3"
-  }
-]
+[{ "runId": "m4-base-anthropic-11121636-2", "missionId": "m4" }]

@@ -1,0 +1,311 @@
+[
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9145,
+    "output": 3947,
+    "cost": 0.05776,
+    "ms": 49770,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9145,
+    "output": 3947,
+    "cost": 0.05776,
+    "ms": 49770,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9930,
+    "output": 6189,
+    "cost": 0.08175,
+    "ms": 65432,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9145,
+    "output": 3947,
+    "cost": 0.05776,
+    "ms": 49770,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9930,
+    "output": 6189,
+    "cost": 0.08175,
+    "ms": 65432,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121603-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9545,
+    "output": 7781,
+    "cost": 0.0969,
+    "ms": 77865,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121603-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9545,
+    "output": 7781,
+    "cost": 0.0969,
+    "ms": 77865,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 7864,
+    "output": 7563,
+    "cost": 0.091358,
+    "ms": 75976,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10929,
+    "output": 6942,
+    "cost": 0.091278,
+    "ms": 79318,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10975,
+    "output": 5125,
+    "cost": 0.0732,
+    "ms": 58537,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10690,
+    "output": 5233,
+    "cost": 0.07371,
+    "ms": 55444,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 7864,
+    "output": 7563,
+    "cost": 0.091358,
+    "ms": 75976,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10929,
+    "output": 6942,
+    "cost": 0.091278,
+    "ms": 79318,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10975,
+    "output": 5125,
+    "cost": 0.0732,
+    "ms": 58537,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10690,
+    "output": 5233,
+    "cost": 0.07371,
+    "ms": 55444,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300359
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121632-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300256
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121632-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 7701,
+    "output": 24482,
+    "cost": 0.260222,
+    "ms": 523518,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9930,
+    "output": 6189,
+    "cost": 0.08175,
+    "ms": 65432,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-claude-sonnet-5-5-11121603-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 9545,
+    "output": 7781,
+    "cost": 0.0969,
+    "ms": 77865,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 7864,
+    "output": 7563,
+    "cost": 0.091358,
+    "ms": 75976,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10929,
+    "output": 6942,
+    "cost": 0.091278,
+    "ms": 79318,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10975,
+    "output": 5125,
+    "cost": 0.0732,
+    "ms": 58537,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gpt-6.1-sol-11121620-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 10690,
+    "output": 5233,
+    "cost": 0.07371,
+    "ms": 55444,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300359
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121632-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300256
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121632-3",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "input": 7701,
+    "output": 24482,
+    "cost": 0.260222,
+    "ms": 523518,
+    "stop": "STOP"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 605046
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 913736
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 1230422
+  }
+]

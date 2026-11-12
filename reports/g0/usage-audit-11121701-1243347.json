@@ -1,0 +1,100 @@
+[
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300666
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7239,
+    "output": 14825,
+    "cost": 0.162728,
+    "ms": 315093,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300666
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7239,
+    "output": 14825,
+    "cost": 0.162728,
+    "ms": 315093,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121632-3",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7442,
+    "output": 15668,
+    "cost": 0.171564,
+    "ms": 329232,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300666
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7239,
+    "output": 14825,
+    "cost": 0.162728,
+    "ms": 315093,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121632-3",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7442,
+    "output": 15668,
+    "cost": 0.171564,
+    "ms": 329232,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 605331
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-gemini-3.8-flash-11121631-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7629,
+    "output": 16654,
+    "cost": 0.181798,
+    "ms": 960676,
+    "stop": "stop"
+  }
+]

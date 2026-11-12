@@ -22,6 +22,22 @@ async function pipeline(cmds) {
 const mem = { kv: new Map(), hash: new Map(), set: new Map(), list: new Map() };
 export const _memReset = () => Object.values(mem).forEach((m) => m.clear());
 
+// 로컬 개발: STORE_FILE을 주면 메모리 저장소를 파일에 남긴다(서버를 다시 띄워도 풀이·검수가 남게). 배포에서는 쓰지 않는다
+import { readFileSync, writeFileSync, existsSync, renameSync } from 'node:fs';
+const FILE = process.env.STORE_FILE;
+if (FILE && existsSync(FILE)) {
+  const j = JSON.parse(readFileSync(FILE, 'utf8'));
+  for (const [k, v] of j.kv ?? []) mem.kv.set(k, v);
+  for (const [k, v] of j.hash ?? []) mem.hash.set(k, v);
+  for (const [k, v] of j.set ?? []) mem.set.set(k, new Set(v));
+  for (const [k, v] of j.list ?? []) mem.list.set(k, v);
+}
+function persist() {
+  if (!FILE) return;
+  const j = { kv: [...mem.kv], hash: [...mem.hash], set: [...mem.set].map(([k, v]) => [k, [...v]]), list: [...mem.list] };
+  writeFileSync(`${FILE}.tmp`, JSON.stringify(j)); renameSync(`${FILE}.tmp`, FILE);
+}
+
 export async function getJson(key, fallback = null) {
   if (storeKind() === 'memory') return mem.kv.has(key) ? structuredClone(mem.kv.get(key)) : fallback;
   const v = await redis(['GET', key]);
@@ -29,25 +45,25 @@ export async function getJson(key, fallback = null) {
 }
 
 export async function setJson(key, value, ttlSec = TTL) {
-  if (storeKind() === 'memory') { mem.kv.set(key, structuredClone(value)); return; }
+  if (storeKind() === 'memory') { mem.kv.set(key, structuredClone(value)); persist(); return; }
   await redis(['SET', key, JSON.stringify(value), 'EX', String(ttlSec)]);
 }
 
 export async function del(key) {
-  if (storeKind() === 'memory') { mem.kv.delete(key); return; }
+  if (storeKind() === 'memory') { mem.kv.delete(key); persist(); return; }
   await redis(['DEL', key]);
 }
 
 /** 정수 카운터 +n, 새 값을 돌려준다 */
 export async function incr(key, n = 1, ttlSec = TTL) {
-  if (storeKind() === 'memory') { const v = (mem.kv.get(key) ?? 0) + n; mem.kv.set(key, v); return v; }
+  if (storeKind() === 'memory') { const v = (mem.kv.get(key) ?? 0) + n; mem.kv.set(key, v); if (n) persist(); return v; }
   const [v] = await pipeline([['INCRBY', key, String(n)], ['EXPIRE', key, String(ttlSec)]]);
   return Number(v);
 }
 
 /** 집합에 넣고, 새로 들어갔으면 true */
 export async function sadd(key, member) {
-  if (storeKind() === 'memory') { const s = mem.set.get(key) ?? new Set(); const isNew = !s.has(member); s.add(member); mem.set.set(key, s); return isNew; }
+  if (storeKind() === 'memory') { const s = mem.set.get(key) ?? new Set(); const isNew = !s.has(member); s.add(member); mem.set.set(key, s); persist(); return isNew; }
   const [v] = await pipeline([['SADD', key, member], ['EXPIRE', key, TTL]]);
   return Number(v) === 1;
 }
@@ -59,6 +75,7 @@ export async function hincrMany(key, fields) {
     const h = mem.hash.get(key) ?? {};
     for (const f of fields) h[f] = (h[f] ?? 0) + 1;
     mem.hash.set(key, h);
+    persist();
     return;
   }
   await pipeline([...fields.map((f) => ['HINCRBY', key, f, '1']), ['EXPIRE', key, TTL]]);
@@ -75,7 +92,7 @@ export async function hgetall(key) {
 /** 목록 앞에 넣고 최근 max개만 남긴다 */
 export async function lpushCapped(key, value, max = 5000) {
   const s = JSON.stringify(value);
-  if (storeKind() === 'memory') { const l = mem.list.get(key) ?? []; l.unshift(s); mem.list.set(key, l.slice(0, max)); return; }
+  if (storeKind() === 'memory') { const l = mem.list.get(key) ?? []; l.unshift(s); mem.list.set(key, l.slice(0, max)); persist(); return; }
   await pipeline([['LPUSH', key, s], ['LTRIM', key, '0', String(max - 1)], ['EXPIRE', key, TTL]]);
 }
 

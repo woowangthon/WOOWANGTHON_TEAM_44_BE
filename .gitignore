@@ -6,3 +6,5 @@ node_modules/
 dist/
 coverage/
 eval/out/
+
+.local-store.json*

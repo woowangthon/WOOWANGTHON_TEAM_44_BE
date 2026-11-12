@@ -1,0 +1,75 @@
+[
+  {
+    "label": "audit gpt-6.1-sol m4-base-google-11121636-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "failed": "OpenAI 연결: fetch failed",
+    "ms": 300677
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 300679
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-anthropic-11121636-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 8629,
+    "output": 13630,
+    "cost": 0.153558,
+    "ms": 309947,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-anthropic-11121636-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 9359,
+    "output": 14977,
+    "cost": 0.168488,
+    "ms": 329207,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 604337
+  },
+  {
+    "label": "audit gpt-6.1-sol m4-base-google-11121636-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7618,
+    "output": 15702,
+    "cost": 0.172256,
+    "ms": 666369,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 910893
+  },
+  {
+    "label": "audit gemini-4-argon m4-base-google-11121636-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 연결: fetch failed",
+    "ms": 1223589
+  }
+]
