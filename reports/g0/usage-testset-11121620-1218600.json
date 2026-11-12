@@ -1,0 +1,102 @@
+[
+  {
+    "label": "testset gpt-6-astra mods-income-mobility-2610",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1677,
+    "output": 905,
+    "ms": 19473,
+    "stop": "stop",
+    "cost": 0.06202
+  },
+  {
+    "label": "testset gpt-6-astra mods-migration-2610",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1650,
+    "output": 1313,
+    "ms": 27978,
+    "stop": "stop",
+    "cost": 0.08215
+  },
+  {
+    "label": "testset gpt-6-astra moel-overtime-2611",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1880,
+    "output": 1349,
+    "ms": 28277,
+    "stop": "stop",
+    "cost": 0.08625
+  },
+  {
+    "label": "testset gpt-6-astra moel-jobskill-2609",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1772,
+    "output": 2465,
+    "ms": 57509,
+    "stop": "stop",
+    "cost": 0.14097
+  },
+  {
+    "label": "testset gpt-6-astra moel-workforce-2610",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1662,
+    "output": 338,
+    "ms": 10792,
+    "stop": "stop",
+    "cost": 0.03352
+  },
+  {
+    "label": "testset gpt-6-astra mois-exam-fee-2610",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1366,
+    "output": 436,
+    "ms": 10287,
+    "stop": "stop",
+    "cost": 0.03546
+  },
+  {
+    "label": "testset gpt-6-astra molit-youth-panel-2611",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1836,
+    "output": 243,
+    "ms": 7956,
+    "stop": "stop",
+    "cost": 0.03051
+  },
+  {
+    "label": "testset gpt-6-astra moip-youth-patent-2611",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1771,
+    "output": 1191,
+    "ms": 23039,
+    "stop": "stop",
+    "cost": 0.07726
+  },
+  {
+    "label": "testset gpt-6-astra moel-scholarship-2609",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1768,
+    "output": 3338,
+    "ms": 83926,
+    "stop": "stop",
+    "cost": 0.18458
+  },
+  {
+    "label": "testset gpt-6-astra msit-academy-2610",
+    "model": "gpt-6-astra",
+    "attempt": 1,
+    "input": 1870,
+    "output": 1867,
+    "ms": 40452,
+    "stop": "stop",
+    "cost": 0.11205
+  }
+]

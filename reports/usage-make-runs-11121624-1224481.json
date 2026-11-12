@@ -1,0 +1,342 @@
+[
+  {
+    "label": "m3-base-anthropic-11121624-2 S1",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 1893,
+    "output": 2978,
+    "cost": 0.033566,
+    "ms": 17876,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-1 S1",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 1893,
+    "output": 3353,
+    "cost": 0.037316,
+    "ms": 20290,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-openai-11121624-1 S1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 1250,
+    "output": 1833,
+    "cost": 0.02083,
+    "ms": 26039,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-openai-11121624-2 S1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 1250,
+    "output": 2163,
+    "cost": 0.02413,
+    "ms": 29324,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-1 S2",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 2897,
+    "output": 2814,
+    "cost": 0.033934,
+    "ms": 15331,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-2 S2",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 2841,
+    "output": 3104,
+    "cost": 0.036722,
+    "ms": 17876,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-2 S3",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 2439,
+    "output": 668,
+    "cost": 0.011558,
+    "ms": 5485,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-1 S3",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 2308,
+    "output": 699,
+    "cost": 0.011606,
+    "ms": 6049,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-openai-11121624-1 S2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 1856,
+    "output": 2065,
+    "cost": 0.024362,
+    "ms": 20488,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-openai-11121624-2 S2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 2158,
+    "output": 1657,
+    "cost": 0.020886,
+    "ms": 17194,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-openai-11121624-1 S3",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 1775,
+    "output": 365,
+    "cost": 0.0072,
+    "ms": 7844,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-openai-11121624-2 S3",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 1710,
+    "output": 398,
+    "cost": 0.0074,
+    "ms": 8183,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-2 S4",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 3333,
+    "output": 2202,
+    "cost": 0.028686,
+    "ms": 15056,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-2 S5",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 1391,
+    "output": 314,
+    "cost": 0.005922,
+    "ms": 3590,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gemini-4-argon m3-base-anthropic-11121624-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this erro",
+    "ms": 443
+  },
+  {
+    "label": "m3-base-anthropic-11121624-1 S4",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 3233,
+    "output": 2864,
+    "cost": 0.035106,
+    "ms": 19860,
+    "stop": "end_turn"
+  },
+  {
+    "label": "m3-base-anthropic-11121624-1 S5",
+    "model": "claude-sonnet-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 1462,
+    "output": 271,
+    "cost": 0.005634,
+    "ms": 2733,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gemini-4-argon m3-base-anthropic-11121624-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this erro",
+    "ms": 324
+  },
+  {
+    "label": "m3-base-openai-11121624-2 S4",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 2234,
+    "output": 846,
+    "cost": 0.012928,
+    "ms": 15939,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-openai-11121624-1 S4",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 2266,
+    "output": 939,
+    "cost": 0.013922,
+    "ms": 18379,
+    "stop": "stop"
+  },
+  {
+    "label": "m3-base-openai-11121624-2 S5",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 745,
+    "output": 160,
+    "cost": 0.00309,
+    "ms": 5529,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gemini-4-argon m3-base-openai-11121624-2",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this erro",
+    "ms": 361
+  },
+  {
+    "label": "m3-base-openai-11121624-1 S5",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 812,
+    "output": 149,
+    "cost": 0.003114,
+    "ms": 4129,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gemini-4-argon m3-base-openai-11121624-1",
+    "model": "gemini-4-argon",
+    "company": "Google",
+    "attempt": 1,
+    "failed": "Gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this erro",
+    "ms": 275
+  },
+  {
+    "label": "audit gpt-6.1-sol m3-base-openai-11121624-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7204,
+    "output": 770,
+    "cost": 0.022108,
+    "ms": 17507,
+    "stop": "stop"
+  },
+  {
+    "label": "audit claude-opus-5-5 m3-base-openai-11121624-1",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 11344,
+    "output": 1807,
+    "cost": 0.081516,
+    "ms": 17996,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m3-base-anthropic-11121624-2",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 11319,
+    "output": 4108,
+    "cost": 0.127436,
+    "ms": 37702,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m3-base-anthropic-11121624-1",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 11312,
+    "output": 4125,
+    "cost": 0.127748,
+    "ms": 36821,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit claude-opus-5-5 m3-base-openai-11121624-2",
+    "model": "claude-opus-5-5",
+    "company": "Anthropic",
+    "attempt": 1,
+    "input": 11718,
+    "output": 2677,
+    "cost": 0.100412,
+    "ms": 27815,
+    "stop": "end_turn"
+  },
+  {
+    "label": "audit gpt-6.1-sol m3-base-anthropic-11121624-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7294,
+    "output": 4713,
+    "cost": 0.061718,
+    "ms": 98221,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m3-base-anthropic-11121624-1",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7240,
+    "output": 4951,
+    "cost": 0.06399,
+    "ms": 99786,
+    "stop": "stop"
+  },
+  {
+    "label": "audit gpt-6.1-sol m3-base-openai-11121624-2",
+    "model": "gpt-6.1-sol",
+    "company": "OpenAI",
+    "attempt": 1,
+    "input": 7379,
+    "output": 4288,
+    "cost": 0.057638,
+    "ms": 97889,
+    "stop": "stop"
+  }
+]

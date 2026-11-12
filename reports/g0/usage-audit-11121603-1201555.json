@@ -1,0 +1,92 @@
+[
+  {
+    "label": "audit claude-sonnet-5-5 m1-base-claude-sonnet-5-5-11121601-3",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 9896,
+    "output": 3160,
+    "ms": 23373,
+    "stop": "end_turn",
+    "cost": 0.051392
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-base-claude-sonnet-5-5-11121600-2",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 10029,
+    "output": 4406,
+    "ms": 32266,
+    "stop": "end_turn",
+    "cost": 0.064118
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-base-claude-sonnet-5-5-11121601-1",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 10233,
+    "output": 4677,
+    "ms": 34461,
+    "stop": "end_turn",
+    "cost": 0.067236
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-careful-claude-sonnet-5-5-11121601-1",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 13445,
+    "output": 1631,
+    "ms": 13165,
+    "stop": "end_turn",
+    "cost": 0.0432
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-careful-claude-sonnet-5-5-11121601-2",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 13488,
+    "output": 1507,
+    "ms": 12703,
+    "stop": "end_turn",
+    "cost": 0.042046
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-careful-claude-sonnet-5-5-11121601-3",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 13750,
+    "output": 1642,
+    "ms": 13774,
+    "stop": "end_turn",
+    "cost": 0.04392
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-rough-claude-sonnet-5-5-11121600-1",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 6425,
+    "output": 2141,
+    "ms": 16212,
+    "stop": "end_turn",
+    "cost": 0.03426
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-rough-claude-sonnet-5-5-11121600-2",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 6364,
+    "output": 3230,
+    "ms": 22609,
+    "stop": "end_turn",
+    "cost": 0.045028
+  },
+  {
+    "label": "audit claude-sonnet-5-5 m1-rough-claude-sonnet-5-5-11121600-3",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 6458,
+    "output": 3288,
+    "ms": 24066,
+    "stop": "end_turn",
+    "cost": 0.045796
+  }
+]

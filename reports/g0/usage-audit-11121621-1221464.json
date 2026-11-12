@@ -1,0 +1,32 @@
+[
+  {
+    "label": "audit claude-opus-5-5 m4-base-gpt-6.1-sol-11121620-1",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 18032,
+    "output": 3713,
+    "ms": 35460,
+    "stop": "end_turn",
+    "cost": 0.146388
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-gpt-6.1-sol-11121620-2",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 17853,
+    "output": 4173,
+    "ms": 38167,
+    "stop": "end_turn",
+    "cost": 0.154872
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-gpt-6.1-sol-11121620-3",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 17575,
+    "output": 5874,
+    "ms": 53065,
+    "stop": "end_turn",
+    "cost": 0.18778
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "label": "m4 rough R2",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 5600,
+    "output": 4194,
+    "ms": 31514,
+    "stop": "end_turn",
+    "cost": 0.05314
+  },
+  {
+    "label": "m4 rough R3",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 5600,
+    "output": 4403,
+    "ms": 31760,
+    "stop": "end_turn",
+    "cost": 0.05523
+  },
+  {
+    "label": "m4 rough R1",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 5600,
+    "output": 4840,
+    "ms": 34669,
+    "stop": "end_turn",
+    "cost": 0.0596
+  }
+]

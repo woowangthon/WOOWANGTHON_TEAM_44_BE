@@ -1,0 +1,102 @@
+[
+  {
+    "label": "testset claude-opus-5-5 mods-income-mobility-2610",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3492,
+    "output": 1216,
+    "ms": 13189,
+    "stop": "end_turn",
+    "cost": 0.038288
+  },
+  {
+    "label": "testset claude-opus-5-5 mods-migration-2610",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3418,
+    "output": 1435,
+    "ms": 15008,
+    "stop": "end_turn",
+    "cost": 0.042372
+  },
+  {
+    "label": "testset claude-opus-5-5 moel-jobskill-2609",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3896,
+    "output": 2408,
+    "ms": 24584,
+    "stop": "end_turn",
+    "cost": 0.063744
+  },
+  {
+    "label": "testset claude-opus-5-5 moel-overtime-2611",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 4045,
+    "output": 1650,
+    "ms": 14939,
+    "stop": "end_turn",
+    "cost": 0.04918
+  },
+  {
+    "label": "testset claude-opus-5-5 moel-workforce-2610",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3526,
+    "output": 446,
+    "ms": 6108,
+    "stop": "end_turn",
+    "cost": 0.023024
+  },
+  {
+    "label": "testset claude-opus-5-5 moel-scholarship-2609",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3753,
+    "output": 2462,
+    "ms": 22735,
+    "stop": "end_turn",
+    "cost": 0.064252
+  },
+  {
+    "label": "testset claude-opus-5-5 mois-exam-fee-2610",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3136,
+    "output": 671,
+    "ms": 7658,
+    "stop": "end_turn",
+    "cost": 0.025964
+  },
+  {
+    "label": "testset claude-opus-5-5 moip-youth-patent-2611",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3826,
+    "output": 1723,
+    "ms": 15079,
+    "stop": "end_turn",
+    "cost": 0.049764
+  },
+  {
+    "label": "testset claude-opus-5-5 molit-youth-panel-2611",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3920,
+    "output": 585,
+    "ms": 7268,
+    "stop": "end_turn",
+    "cost": 0.02738
+  },
+  {
+    "label": "testset claude-opus-5-5 msit-academy-2610",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 3940,
+    "output": 2009,
+    "ms": 19258,
+    "stop": "end_turn",
+    "cost": 0.05594
+  }
+]

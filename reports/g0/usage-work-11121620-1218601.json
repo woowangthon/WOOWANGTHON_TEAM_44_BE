@@ -1,0 +1,152 @@
+[
+  {
+    "label": "m4 base R1 S1",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 3258,
+    "output": 3694,
+    "ms": 66073,
+    "stop": "stop",
+    "cost": 0.043456
+  },
+  {
+    "label": "m4 base R2 S1",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 3258,
+    "output": 3487,
+    "ms": 68106,
+    "stop": "stop",
+    "cost": 0.041386
+  },
+  {
+    "label": "m4 base R3 S1",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 3258,
+    "output": 3620,
+    "ms": 69136,
+    "stop": "stop",
+    "cost": 0.042716
+  },
+  {
+    "label": "m4 base R1 S2",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 3602,
+    "output": 1981,
+    "ms": 24670,
+    "stop": "stop",
+    "cost": 0.027014
+  },
+  {
+    "label": "m4 base R3 S2",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 3435,
+    "output": 1970,
+    "ms": 23894,
+    "stop": "stop",
+    "cost": 0.02657
+  },
+  {
+    "label": "m4 base R2 S2",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 3422,
+    "output": 2265,
+    "ms": 27806,
+    "stop": "stop",
+    "cost": 0.029494
+  },
+  {
+    "label": "m4 base R1 S3",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1652,
+    "output": 386,
+    "ms": 9459,
+    "stop": "stop",
+    "cost": 0.007164
+  },
+  {
+    "label": "m4 base R3 S3",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1621,
+    "output": 351,
+    "ms": 8996,
+    "stop": "stop",
+    "cost": 0.006752
+  },
+  {
+    "label": "m4 base R2 S3",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1899,
+    "output": 358,
+    "ms": 8485,
+    "stop": "stop",
+    "cost": 0.007378
+  },
+  {
+    "label": "m4 base R3 S4",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 2127,
+    "output": 1117,
+    "ms": 21693,
+    "stop": "stop",
+    "cost": 0.015424
+  },
+  {
+    "label": "m4 base R1 S4",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 2192,
+    "output": 1196,
+    "ms": 24581,
+    "stop": "stop",
+    "cost": 0.016344
+  },
+  {
+    "label": "m4 base R2 S4",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 2412,
+    "output": 1102,
+    "ms": 22783,
+    "stop": "stop",
+    "cost": 0.015844
+  },
+  {
+    "label": "m4 base R2 S5",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 969,
+    "output": 295,
+    "ms": 8252,
+    "stop": "stop",
+    "cost": 0.004888
+  },
+  {
+    "label": "m4 base R3 S5",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1021,
+    "output": 423,
+    "ms": 11815,
+    "stop": "stop",
+    "cost": 0.006272
+  },
+  {
+    "label": "m4 base R1 S5",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1063,
+    "output": 396,
+    "ms": 10901,
+    "stop": "stop",
+    "cost": 0.006086
+  }
+]

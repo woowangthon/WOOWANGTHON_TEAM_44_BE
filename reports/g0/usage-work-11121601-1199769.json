@@ -1,0 +1,152 @@
+[
+  {
+    "label": "m1 base R3 S1",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 2635,
+    "output": 2161,
+    "ms": 14462,
+    "stop": "end_turn",
+    "cost": 0.02688
+  },
+  {
+    "label": "m1 base R2 S1",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 2635,
+    "output": 2454,
+    "ms": 15824,
+    "stop": "end_turn",
+    "cost": 0.02981
+  },
+  {
+    "label": "m1 base R1 S1",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 2635,
+    "output": 2438,
+    "ms": 16050,
+    "stop": "end_turn",
+    "cost": 0.02965
+  },
+  {
+    "label": "m1 base R2 S2",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1877,
+    "output": 1084,
+    "ms": 7071,
+    "stop": "end_turn",
+    "cost": 0.014594
+  },
+  {
+    "label": "m1 base R1 S2",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1926,
+    "output": 1080,
+    "ms": 10062,
+    "stop": "end_turn",
+    "cost": 0.014652
+  },
+  {
+    "label": "m1 base R3 S2",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1826,
+    "output": 1064,
+    "ms": 14307,
+    "stop": "end_turn",
+    "cost": 0.014292
+  },
+  {
+    "label": "m1 base R2 S3",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1505,
+    "output": 928,
+    "ms": 8038,
+    "stop": "end_turn",
+    "cost": 0.01229
+  },
+  {
+    "label": "m1 base R1 S3",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1502,
+    "output": 679,
+    "ms": 7193,
+    "stop": "end_turn",
+    "cost": 0.009794
+  },
+  {
+    "label": "m1 base R3 S3",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1491,
+    "output": 988,
+    "ms": 8093,
+    "stop": "end_turn",
+    "cost": 0.012862
+  },
+  {
+    "label": "m1 base R2 S4",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 2325,
+    "output": 1830,
+    "ms": 13442,
+    "stop": "end_turn",
+    "cost": 0.02295
+  },
+  {
+    "label": "m1 base R2 S5",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1472,
+    "output": 547,
+    "ms": 5066,
+    "stop": "end_turn",
+    "cost": 0.008414
+  },
+  {
+    "label": "m1 base R1 S4",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 2411,
+    "output": 2512,
+    "ms": 17639,
+    "stop": "end_turn",
+    "cost": 0.029942
+  },
+  {
+    "label": "m1 base R3 S4",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 2323,
+    "output": 2224,
+    "ms": 15312,
+    "stop": "end_turn",
+    "cost": 0.026886
+  },
+  {
+    "label": "m1 base R3 S5",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1414,
+    "output": 547,
+    "ms": 4407,
+    "stop": "end_turn",
+    "cost": 0.008298
+  },
+  {
+    "label": "m1 base R1 S5",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 1591,
+    "output": 891,
+    "ms": 7905,
+    "stop": "end_turn",
+    "cost": 0.012092
+  }
+]

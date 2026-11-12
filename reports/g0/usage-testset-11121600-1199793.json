@@ -1,0 +1,102 @@
+[
+  {
+    "label": "testset claude-sonnet-5-5 mods-income-mobility-2610",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3492,
+    "output": 805,
+    "ms": 8684,
+    "stop": "end_turn",
+    "cost": 0.015034
+  },
+  {
+    "label": "testset claude-sonnet-5-5 moel-jobskill-2609",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3896,
+    "output": 832,
+    "ms": 8770,
+    "stop": "end_turn",
+    "cost": 0.016112
+  },
+  {
+    "label": "testset claude-sonnet-5-5 mods-migration-2610",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3418,
+    "output": 1288,
+    "ms": 11528,
+    "stop": "end_turn",
+    "cost": 0.019716
+  },
+  {
+    "label": "testset claude-sonnet-5-5 moel-overtime-2611",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 4045,
+    "output": 1049,
+    "ms": 8059,
+    "stop": "end_turn",
+    "cost": 0.01858
+  },
+  {
+    "label": "testset claude-sonnet-5-5 moel-workforce-2610",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3526,
+    "output": 586,
+    "ms": 7169,
+    "stop": "end_turn",
+    "cost": 0.012912
+  },
+  {
+    "label": "testset claude-sonnet-5-5 moel-scholarship-2609",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3753,
+    "output": 1528,
+    "ms": 10886,
+    "stop": "end_turn",
+    "cost": 0.022786
+  },
+  {
+    "label": "testset claude-sonnet-5-5 molit-youth-panel-2611",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3920,
+    "output": 555,
+    "ms": 6030,
+    "stop": "end_turn",
+    "cost": 0.01339
+  },
+  {
+    "label": "testset claude-sonnet-5-5 moip-youth-patent-2611",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3826,
+    "output": 1320,
+    "ms": 9651,
+    "stop": "end_turn",
+    "cost": 0.020852
+  },
+  {
+    "label": "testset claude-sonnet-5-5 mois-exam-fee-2610",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3136,
+    "output": 518,
+    "ms": 11775,
+    "stop": "end_turn",
+    "cost": 0.011452
+  },
+  {
+    "label": "testset claude-sonnet-5-5 msit-academy-2610",
+    "model": "claude-sonnet-5-5",
+    "attempt": 1,
+    "input": 3940,
+    "output": 1670,
+    "ms": 11571,
+    "stop": "end_turn",
+    "cost": 0.02458
+  }
+]

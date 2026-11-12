@@ -1,78 +1,46 @@
-// 플레이 기록과 집계. 이름·연락처·자유 입력은 저장하지 않는다. 기기 ID는 브라우저가 만든 무작위 값이다.
-// 같은 기기의 같은 과제는 첫 판만 적중률에 넣는다. 만든 사람의 플레이(maker)는 따로 센다.
-import { sadd, hincrMany, hgetall, lpushCapped, lrange, incr } from './store.js';
-import { REASON_OF } from './plant.js';
+// 답안·기록. 이름·연락처는 저장하지 않는다. 기기 ID는 브라우저가 만든 무작위 값이다.
+// 만든 사람 기기(maker)의 기록은 통계에서 뺀다. 같은 기기의 같은 판은 첫 판만 「처음 푼 기록」으로 센다.
+import { getJson, setJson, sadd, lpushCapped, lrange, incr } from './store.js';
 
-const aggKey = (t, maker) => `ss:${maker ? 'aggm' : 'agg'}:${t.id}:v${t.version}`;
+const LONG = 400 * 24 * 3600;
+const rid = (p) => `${p}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
 
-export async function recordPlay(task, g, { deviceId, elapsedSec, marks, maker }) {
-  const first = deviceId ? await sadd(`ss:seen:${task.id}:v${task.version}`, deviceId) : false;
-  const fields = ['plays', `dec:${g.decision}`];
-  if (first) {
-    fields.push('first', `firstdec:${g.decision}`);
-    for (const m of marks) fields.push(`mark:${m.sid}`);
-    for (const sid of g.found) fields.push(`found:${sid}`);
-    if (g.decisionOk) fields.push('decisionOk');
-  }
-  await hincrMany(aggKey(task, maker), fields);
-  if (first && !maker && task.origin === 'bank') {
-    const tf = [];
-    for (const p of task.answer.planted) {
-      tf.push(`planted:${REASON_OF[p.type]}`);
-      if (g.found.includes(p.sid)) tf.push(`found:${REASON_OF[p.type]}`);
-    }
-    tf.push('firstPlays', `fa:${g.falseAlarms.length}`);
-    await hincrMany('ss:agg:types', tf);
-  }
-  await incr(`ss:count:${maker ? 'maker' : 'plays'}`);
-  await lpushCapped('ss:plays', {
-    at: new Date().toISOString(), taskId: task.id, version: task.version, device: deviceId ?? null, first, maker: !!maker,
-    elapsedSec: Number.isFinite(elapsedSec) ? Math.round(elapsedSec) : null,
-    marks: marks.map((m) => ({ sid: m.sid, reason: m.reason ?? null })), decision: g.decision,
-    origin: task.origin, rounds: g.rounds ?? 1, found1: g.counts?.found1 ?? g.found.length, found2: g.counts?.found2 ?? 0,
-    found: g.found.length, missed: g.missed.length, falseAlarms: g.falseAlarms.length, score: g.score,
-  });
-  return { first };
-}
-
-/** 이 과제를 처음 푼 사람(만든 사람 제외) 가운데 문장마다 짚은 비율 */
-export async function peerStats(task) {
-  const h = await hgetall(aggKey(task, false));
-  const first = h.first ?? 0;
-  const planted = Object.fromEntries(task.answer.planted.map((p) => [p.sid, { found: h[`found:${p.sid}`] ?? 0 }]));
-  const marked = Object.fromEntries(task.sentences.map((s) => [s.sid, h[`mark:${s.sid}`] ?? 0]));
-  return { firstPlays: first, plays: h.plays ?? 0, planted, marked, approve: h['firstdec:승인'] ?? 0, reject: h['firstdec:반려'] ?? 0 };
-}
-
-export async function playCount(task) {
-  const h = await hgetall(aggKey(task, false));
-  return h.plays ?? 0;
-}
-
-export async function overallStats() {
-  const t = await hgetall('ss:agg:types');
-  const types = {};
-  for (const [k, v] of Object.entries(t)) {
-    const m = k.match(/^(planted|found):(.+)$/);
-    if (!m) continue;
-    types[m[2]] ??= { planted: 0, found: 0 };
-    types[m[2]][m[1]] = v;
-  }
-  return {
-    plays: Number(await incr('ss:count:plays', 0)), makerPlays: Number(await incr('ss:count:maker', 0)),
-    firstPlays: t.firstPlays ?? 0, types,
+/** 사수 모드 답안 저장. 채점은 장부가 바뀌면 다시 하므로 답안 원문을 남긴다 */
+export async function saveAnswer({ runId, deviceId, maker, marks, decision, reason, elapsedSec, sourceViews, ledgerVersion, result }) {
+  const id = rid('ans');
+  const first = deviceId ? await sadd(`ss2:seen:${runId}`, deviceId) : false;
+  const rec = {
+    id, at: new Date().toISOString(), runId, deviceId: deviceId ?? null, maker: !!maker, first,
+    marks: marks.map((m) => ({ uid: m.uid, pattern: m.pattern ?? null, origin: !!m.origin, note: String(m.note ?? '').slice(0, 200) })),
+    decision, reason: String(reason ?? '').slice(0, 500), elapsedSec: Number.isFinite(elapsedSec) ? Math.round(elapsedSec) : null,
+    sourceViews: Number.isFinite(sourceViews) ? Math.round(sourceViews) : 0, ledgerVersion: ledgerVersion ?? null,
+    summary: result ? { foundA: result.counts.foundA, A: result.counts.A, falseMarks: result.counts.falseMarks, decisionOk: result.decisionOk, score: result.score } : null,
   };
+  await setJson(`ss2:ans:${id}`, rec, LONG);
+  await lpushCapped(`ss2:answers`, { id, runId, at: rec.at, maker: rec.maker, first, deviceId: rec.deviceId });
+  if (deviceId) await lpushCapped(`ss2:dev:${deviceId}`, { kind: 'shadow', id, runId, at: rec.at, ...rec.summary, marks: rec.marks.length, sourceViews: rec.sourceViews, elapsedSec: rec.elapsedSec }, 200);
+  if (maker) await setJson(`ss2:makerSolved:${runId}`, { at: rec.at, answerId: id }, LONG);
+  await incr(`ss2:count:${maker ? 'maker' : 'answers'}`);
+  return rec;
+}
+export const getAnswer = (id) => getJson(`ss2:ans:${id}`);
+export const makerSolved = (runId) => getJson(`ss2:makerSolved:${runId}`);
+
+/** 팀장 모드 기록(결과 지표만) */
+export async function saveLeadRecord(deviceId, maker, rec) {
+  await lpushCapped('ss2:leads', { ...rec, maker: !!maker, deviceId: deviceId ?? null }, 2000);
+  if (deviceId) await lpushCapped(`ss2:dev:${deviceId}`, { kind: 'lead', ...rec }, 200);
 }
 
-export async function recordFeedback({ taskId, helpful, note, deviceId, maker }) {
-  // 만든 사람의 반응은 따로 둔다(사용자 반응 수에 섞지 않는다)
-  await hincrMany(maker ? 'ss:fbm' : 'ss:fb', [`${helpful ? 'yes' : 'no'}`, `${helpful ? 'yes' : 'no'}:${taskId}`]);
-  if (note && !maker) await lpushCapped('ss:fbnotes', { at: new Date().toISOString(), taskId, helpful, note, device: deviceId ?? null }, 1000);
+/** 내 기록(기기별, 오래된 것부터) */
+export async function deviceHistory(deviceId) {
+  return (await lrange(`ss2:dev:${deviceId}`, 0, 199)).reverse();
 }
 
-export async function feedbackStats() {
-  const h = await hgetall('ss:fb');
-  return { yes: h.yes ?? 0, no: h.no ?? 0 };
+/** 공개 통계: 만든 사람 제외 */
+export async function publicCounts() {
+  const answers = await lrange('ss2:answers', 0, -1);
+  const leads = await lrange('ss2:leads', 0, -1);
+  const users = new Set([...answers.filter((a) => !a.maker).map((a) => a.deviceId), ...leads.filter((l) => !l.maker).map((l) => l.deviceId)].filter(Boolean));
+  return { answers: answers.filter((a) => !a.maker).length, firstAnswers: answers.filter((a) => !a.maker && a.first).length, leads: leads.filter((l) => !l.maker).length, devices: users.size, makerAnswers: answers.filter((a) => a.maker).length, makerLeads: leads.filter((l) => l.maker).length };
 }
-
-export const recentPlays = (n = 200) => lrange('ss:plays', 0, n - 1);

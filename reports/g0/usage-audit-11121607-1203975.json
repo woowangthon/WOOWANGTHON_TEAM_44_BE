@@ -1,0 +1,92 @@
+[
+  {
+    "label": "audit claude-opus-5-5 m4-base-claude-sonnet-5-5-11121604-2",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 16225,
+    "output": 5215,
+    "ms": 47750,
+    "stop": "end_turn",
+    "cost": 0.1692
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-claude-sonnet-5-5-11121603-1",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 15477,
+    "output": 7388,
+    "ms": 67265,
+    "stop": "end_turn",
+    "cost": 0.209668
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-base-claude-sonnet-5-5-11121603-3",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 15033,
+    "output": 8926,
+    "ms": 78678,
+    "stop": "end_turn",
+    "cost": 0.238652
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-careful-claude-sonnet-5-5-11121604-1",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 20670,
+    "output": 5464,
+    "ms": 50300,
+    "stop": "end_turn",
+    "cost": 0.19196
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-careful-claude-sonnet-5-5-11121604-2",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 20335,
+    "output": 6900,
+    "ms": 60701,
+    "stop": "end_turn",
+    "cost": 0.21934
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-careful-claude-sonnet-5-5-11121604-3",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 20668,
+    "output": 5504,
+    "ms": 50983,
+    "stop": "end_turn",
+    "cost": 0.192752
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-claude-sonnet-5-5-11121602-1",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 9495,
+    "output": 4234,
+    "ms": 39431,
+    "stop": "end_turn",
+    "cost": 0.12266
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-claude-sonnet-5-5-11121602-2",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 9291,
+    "output": 3198,
+    "ms": 29272,
+    "stop": "end_turn",
+    "cost": 0.101124
+  },
+  {
+    "label": "audit claude-opus-5-5 m4-rough-claude-sonnet-5-5-11121602-3",
+    "model": "claude-opus-5-5",
+    "attempt": 1,
+    "input": 9479,
+    "output": 4267,
+    "ms": 39186,
+    "stop": "end_turn",
+    "cost": 0.123256
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "label": "testset gpt-6.1-sol mods-income-mobility-2610",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1677,
+    "output": 1101,
+    "ms": 22635,
+    "stop": "stop",
+    "cost": 0.014364
+  },
+  {
+    "label": "testset gpt-6.1-sol mods-migration-2610",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1650,
+    "output": 1620,
+    "ms": 29476,
+    "stop": "stop",
+    "cost": 0.0195
+  },
+  {
+    "label": "testset gpt-6.1-sol moel-jobskill-2609",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1772,
+    "output": 1830,
+    "ms": 38881,
+    "stop": "stop",
+    "cost": 0.021844
+  },
+  {
+    "label": "testset gpt-6.1-sol moel-overtime-2611",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1880,
+    "output": 1470,
+    "ms": 24724,
+    "stop": "stop",
+    "cost": 0.01846
+  },
+  {
+    "label": "testset gpt-6.1-sol moel-workforce-2610",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1662,
+    "output": 436,
+    "ms": 11298,
+    "stop": "stop",
+    "cost": 0.007684
+  },
+  {
+    "label": "testset gpt-6.1-sol mois-exam-fee-2610",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1366,
+    "output": 474,
+    "ms": 9517,
+    "stop": "stop",
+    "cost": 0.007472
+  },
+  {
+    "label": "testset gpt-6.1-sol molit-youth-panel-2611",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1836,
+    "output": 179,
+    "ms": 5989,
+    "stop": "stop",
+    "cost": 0.005462
+  },
+  {
+    "label": "testset gpt-6.1-sol moip-youth-patent-2611",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1771,
+    "output": 1259,
+    "ms": 25260,
+    "stop": "stop",
+    "cost": 0.016132
+  },
+  {
+    "label": "testset gpt-6.1-sol msit-academy-2610",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1870,
+    "output": 1752,
+    "ms": 35047,
+    "stop": "stop",
+    "cost": 0.02126
+  },
+  {
+    "label": "testset gpt-6.1-sol moel-scholarship-2609",
+    "model": "gpt-6.1-sol",
+    "attempt": 1,
+    "input": 1768,
+    "output": 3201,
+    "ms": 72883,
+    "stop": "stop",
+    "cost": 0.035546
+  }
+]
