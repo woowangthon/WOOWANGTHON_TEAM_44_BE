@@ -1,0 +1,10 @@
+{
+  "note": "11/12 23시~11/13 새벽 야간 작업에서 쓴 모델 호출 추정 비용(가격표 기준). 시험 서버(3012, 시험 저장소)의 회사별 금액 카운터와 점검 스크립트 기록을 합쳤다.",
+  "byCompanyUSD": { "Anthropic": 0.267, "OpenAI": 0.188, "Google": 0 },
+  "totalUSD": 0.455,
+  "items": [
+    { "what": "G1 메모 6개 AI 1차 판정 점검(scripts/triage-check.js)", "company": "OpenAI", "model": "gpt-6.1-sol", "usd": 0.0239, "file": "reports/usage-triage-check-*.json" },
+    { "what": "시험 서버: 1차 판정 3회(스모크 2·심사위원 1), 심사위원 팀장 모드 1판(작업 Sonnet 5단계+재작업 1, 감사 GPT-6.1 Sol)", "company": "OpenAI+Anthropic", "usd": 0.4315, "source": "시험 저장소 ss2:cost:* 카운터(OpenAI 0.164, Anthropic 0.267), 호출 12회" },
+    { "what": "m4-base-google-11121636-1 Google 감사 다시 채우기 1회", "company": "Google", "usd": 0, "result": "402 선불 크레딧 바닥으로 실패", "file": "reports/usage-make-runs-11122323-87845.json" }
+  ]
+}
