@@ -26,11 +26,13 @@ export const AUDITORS = () => ({
   OpenAI: process.env.AUDITOR_OPENAI || 'gpt-6.1-sol',
   Google: process.env.AUDITOR_GOOGLE || 'gemini-4-argon',
 });
+/** 팀장 모드(라이브) 감사: 서버 함수 300초 안에 끝나야 해서 Google은 Flash로 한다(미리 만드는 고정 판 감사는 AUDITORS 그대로) */
+export const LIVE_AUDITORS = () => ({ ...AUDITORS(), Google: process.env.LIVE_AUDITOR_GOOGLE || 'gemini-3.8-flash' });
 /** 키가 있는 회사만 */
 export const available = (company) => !!{ Anthropic: process.env.ANTHROPIC_API_KEY, OpenAI: process.env.OPENAI_API_KEY, Google: process.env.GEMINI_API_KEY }[company];
 /** 작업 모델과 다른 회사의 감사들(키가 있는 것만). 고정 판은 셋 다, 라이브는 작업 회사를 뺀 둘 */
-export function auditorsFor(workerCompany, { all = false } = {}) {
-  const A = AUDITORS();
+export function auditorsFor(workerCompany, { all = false, live = false } = {}) {
+  const A = live ? LIVE_AUDITORS() : AUDITORS();
   return COMPANIES.filter((c) => (all || c !== workerCompany) && available(c)).map((c) => A[c]);
 }
 
@@ -170,7 +172,10 @@ const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
  * 두 번째에도 문제가 있으면 { output, problems }를 그대로 돌려 호출한 쪽이 버릴지 정한다. 형식부터 깨지면 던진다.
  */
 // timeoutMs: 서버(Vercel 함수 300초) 안에서는 기본 270초. 스크립트는 길게 줄 수 있다(G0: 감사 high는 4~5분)
-export async function callJson({ model, system, user, schema, check = () => [], maxTokens = 8000, effort, label = '', retryWait = 4000, timeoutMs = Number(process.env.LLM_TIMEOUT_MS || 270e3), retries = 3 }) {
+// deadlineMs: 이 호출 전체(형식 다시 요청 포함)에 쓸 수 있는 시간. 서버 함수 안에서 300초를 넘기지 않게 한다. 남은 시간이 모자라면 다시 요청하지 않고 멈춘다
+export async function callJson({ model, system, user, schema, check = () => [], maxTokens = 8000, effort, label = '', retryWait = 4000, timeoutMs = Number(process.env.LLM_TIMEOUT_MS || 270e3), retries = 3, deadlineMs = null }) {
+  const start = Date.now();
+  const left = () => (deadlineMs ? deadlineMs - (Date.now() - start) : Infinity);
   const company = companyOf(model);
   const fn = CALL[company];
   if (!fn) throw new LlmError(`모르는 모델 ${model}`, 500);
@@ -178,14 +183,16 @@ export async function callJson({ model, system, user, schema, check = () => [], 
   let prompt = user;
   let last;
   for (let attempt = 1; attempt <= 2; attempt++) {
+    if (attempt > 1 && left() < 30e3) break; // 다시 요청할 시간이 없다
     await takeCall(company);
     let res;
     const t0 = Date.now();
     for (let net = 0; ; net++) {
-      try { res = await fn(model, { system, user: prompt, schema, maxTokens, effort, timeoutMs }); break; }
+      try { res = await fn(model, { system, user: prompt, schema, maxTokens, effort, timeoutMs: Math.max(1000, Math.min(timeoutMs, left())) }); break; }
       catch (e) {
         usageLog.push({ label, model, company, attempt, failed: String(e.message).slice(0, 160), ms: Date.now() - t0 });
         if (e.httpStatus === 402) await markDown(company, e.message).catch(() => {});
+        if (deadlineMs && left() < 5e3) throw new LlmError(`${company} 시간 초과(${Math.round(deadlineMs / 1000)}초)`, 504);
         if (!e.retry || net >= retries) throw e;
         await sleep(retryWait * 2 ** net);
       }
@@ -203,6 +210,6 @@ export async function callJson({ model, system, user, schema, check = () => [], 
     if (!problems.length) return last;
     prompt = `${user}\n\n[앞선 답의 형식 문제 — 고쳐서 같은 형식으로 다시 답하세요]\n- ${problems.slice(0, 10).join('\n- ')}`;
   }
-  if (!last.output) throw new LlmError(`AI 출력 형식 오류: ${last.problems.join('; ')}`, 502);
+  if (!last.output) throw new LlmError(`${last.problems.includes('길이 상한에서 잘림') ? '출력이 길어 잘림' : 'AI 출력 형식 오류'}: ${last.problems.join('; ')}`, 502);
   return last;
 }

@@ -50,3 +50,27 @@ test('기존 판 감사(작업 회사를 뺀 두 감사, v2)로 만든 장부는
   assert.ok(runs >= 10);
   assert.equal(n, 0);
 });
+
+test('라이브 감사: Google은 Flash(고정 판은 Argon 그대로), 실패 종류(시간 초과·잘림)를 표시에 적는다', async () => {
+  const { auditorsFor, LIVE_AUDITORS, AUDITORS } = await import('../src/llm.js');
+  const { auditEffort } = await import('../src/audit.js');
+  const { auditLabel, failKind } = await import('../src/lead.js');
+  const keys = { ANTHROPIC_API_KEY: 'x', OPENAI_API_KEY: 'x', GEMINI_API_KEY: 'x' };
+  const saved = Object.fromEntries(Object.keys(keys).map((k) => [k, process.env[k]]));
+  Object.assign(process.env, keys);
+  delete process.env.LIVE_AUDITOR_GOOGLE; delete process.env.AUDITOR_GOOGLE;
+  try {
+    assert.equal(LIVE_AUDITORS().Google, 'gemini-3.8-flash');
+    assert.equal(AUDITORS().Google, 'gemini-4-argon');
+    assert.deepEqual(auditorsFor('Anthropic', { live: true }), ['gpt-6.1-sol', 'gemini-3.8-flash']);
+    assert.ok(auditorsFor('Anthropic', { all: true }).includes('gemini-4-argon'));
+    assert.equal(auditEffort('gemini-3.8-flash', true), 'medium');
+    assert.equal(auditEffort('gemini-4-argon', false), 'high');
+  } finally { for (const [k, v] of Object.entries(saved)) if (v === undefined) delete process.env[k]; else process.env[k] = v; }
+  assert.equal(failKind(new Error('Google 시간 초과(240초)')), '시간 초과');
+  assert.equal(failKind(new Error('Gemini 스트림 끊김: The operation was aborted due to timeout')), '시간 초과');
+  assert.equal(failKind(new Error('출력이 길어 잘림: 길이 상한에서 잘림')), '출력이 길어 잘림');
+  assert.equal(failKind(new Error('Gemini 500: x')), '응답 실패');
+  const s = { phase: 'done', audits: [{ company: 'OpenAI' }], auditFailed: ['gemini-3.8-flash'], auditErrors: ['Google: 시간 초과 (Google 시간 초과(240초))'] };
+  assert.equal(auditLabel(s), 'AI 감사(한 회사: OpenAI) · Google 감사 시간 초과 · 사람 확인 전');
+});

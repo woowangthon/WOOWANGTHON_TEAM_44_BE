@@ -49,12 +49,15 @@ export function auditUser(mission, docs, stages) {
   return `${docsBlock(docs)}\n\n<미션>\n${mission.brief}\n</미션>\n\n<업무 기록>\n${st}\n</업무 기록>\n\n오류 장부를 만드세요.`;
 }
 
-/** live = 라이브(함수 300초 안): OpenAI는 effort medium, 재시도 1번. 고정 판(스크립트)은 high, 시간 넉넉히 */
-export const auditEffort = (auditor, live) => (live && companyOf(auditor) === 'OpenAI' ? 'medium' : 'high');
+/** live = 라이브(함수 300초 안): OpenAI·Google은 effort medium, 연결 재시도 없음, 형식 다시 요청까지 합쳐 240초 안(LIVE_AUDIT_BUDGET_MS).
+ *  Google 라이브 감사(Flash)는 출력 상한 16k. 고정 판(스크립트)은 high, 32k, 시간 넉넉히 */
+export const auditEffort = (auditor, live) => (live && ['OpenAI', 'Google'].includes(companyOf(auditor)) ? 'medium' : 'high');
+export const LIVE_AUDIT_BUDGET_MS = () => Number(process.env.LIVE_AUDIT_BUDGET_MS || 240e3);
 export async function audit(auditor, mission, docs, stages, label = '', { live = false } = {}) {
   const t0 = Date.now();
-  const { output } = await callJson({ model: auditor, system: auditSystem(mission), user: auditUser(mission, docs, stages), schema: AUDIT_SCHEMA, maxTokens: 32000, effort: auditEffort(auditor, live), label, retryWait: 3000,
-    ...(live ? { timeoutMs: 270e3, retries: 0 } : { timeoutMs: Number(process.env.AUDIT_TIMEOUT_MS || 900e3) }) });
+  const maxTokens = live && companyOf(auditor) === 'Google' ? 16000 : 32000;
+  const { output } = await callJson({ model: auditor, system: auditSystem(mission), user: auditUser(mission, docs, stages), schema: AUDIT_SCHEMA, maxTokens, effort: auditEffort(auditor, live), label, retryWait: 3000,
+    ...(live ? { timeoutMs: LIVE_AUDIT_BUDGET_MS(), deadlineMs: LIVE_AUDIT_BUDGET_MS(), retries: 0 } : { timeoutMs: Number(process.env.AUDIT_TIMEOUT_MS || 900e3) }) });
   return { model: auditor, company: companyOf(auditor), effort: auditEffort(auditor, live), at: new Date().toISOString(), sec: Math.round((Date.now() - t0) / 1000), errors: output.errors, overall: output.overall };
 }
 

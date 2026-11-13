@@ -48,7 +48,7 @@ export async function start({ missionId, plan, workerCompany, deviceId, maker })
   if (mine > (maker ? LIMITS.maker() : LIMITS.device())) throw err(`이 기기의 오늘 라이브 횟수(${maker ? LIMITS.maker() : LIMITS.device()}번)를 다 썼습니다`, 429);
   await incr(`ss2:leadcount:${kst()}`, 1, TTL);
   const down = await downCompanies();
-  const companies = COMPANIES.filter(available).filter((c) => !down.has(c)).filter((c) => auditorsFor(c).filter((m) => !down.has(companyOf(m))).length >= 1);
+  const companies = COMPANIES.filter(available).filter((c) => !down.has(c)).filter((c) => auditorsFor(c, { live: true }).filter((m) => !down.has(companyOf(m))).length >= 1);
   const company = workerCompany && companies.includes(workerCompany) ? workerCompany : companies[Math.floor(Math.random() * companies.length)];
   if (!company) throw err('쓸 수 있는 작업 모델이 없습니다', 503);
   const id = `live-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
@@ -103,8 +103,8 @@ export async function signoff(id, { checked, unchecked, sourceViews }) {
   s.signoff = { checked: String(checked ?? '').slice(0, 800), unchecked: String(unchecked ?? '').slice(0, 800), at: new Date().toISOString() };
   s.phase = 'audit';
   const down = await downCompanies();
-  const ok = auditorsFor(s.workerCompany).filter((m) => !down.has(companyOf(m)));
-  s.auditors = ok.length ? ok : auditorsFor(s.workerCompany);
+  const ok = auditorsFor(s.workerCompany, { live: true }).filter((m) => !down.has(companyOf(m)));
+  s.auditors = ok.length ? ok : auditorsFor(s.workerCompany, { live: true });
   await save(s);
   return view(s);
 }
@@ -119,7 +119,7 @@ export async function auditStep(id) {
   const nextModel = s.auditors.find((m) => !s.audits.some((a) => a.model === m) && !(s.auditFailed ?? []).includes(m));
   if (nextModel) {
     try { s.audits.push(await audit(nextModel, mission, docs, s.stages, `${id} audit ${nextModel}`, { live: true })); }
-    catch (e) { (s.auditFailed ??= []).push(nextModel); s.auditErrors = [...(s.auditErrors ?? []), `${companyOf(nextModel)}: ${e.message.slice(0, 120)}`]; }
+    catch (e) { (s.auditFailed ??= []).push(nextModel); s.auditErrors = [...(s.auditErrors ?? []), `${companyOf(nextModel)}: ${failKind(e)} (${e.message.slice(0, 100)})`]; }
     await save(s);
     if (s.auditors.some((m) => !s.audits.some((a) => a.model === m) && !(s.auditFailed ?? []).includes(m))) return view(s);
   }
@@ -176,13 +176,16 @@ const bigr = (x) => { const t = norm(x).replace(/\s/g, ''); const o = new Set();
 /** 구절 a의 글자쌍 가운데 글 b에 있는 비율 */
 export const coverOf = (a, b) => { const A = bigr(a), B = bigr(b); let n = 0; for (const x of A) if (B.has(x)) n++; return A.size ? n / A.size : 0; };
 
-/** 실제로 끝난 감사 수대로 표시한다(하나가 실패하면 그렇게 적는다) */
+/** 감사 실패 종류: 시간 초과 / 출력이 길어 잘림 / 응답 실패 */
+export const failKind = (e) => (/시간 초과|abort|timeout/i.test(e.message) ? '시간 초과' : /잘림|MAX_TOKENS|length/i.test(e.message) ? '출력이 길어 잘림' : '응답 실패');
+/** 실제로 끝난 감사 수대로 표시한다(하나가 실패하면 그 회사와 실패 종류를 적는다) */
 export function auditLabel(s) {
   const done = (s.audits ?? []).map((a) => a.company);
   const failed = (s.auditFailed ?? []).map(companyOf);
   if (s.phase !== 'done') return 'AI 감사(두 회사) · 사람 확인 전';
   const head = done.length >= 2 ? `AI 감사(${done.length}회사: ${done.join('·')})` : `AI 감사(한 회사: ${done.join('') || '없음'})`;
-  return `${head}${failed.length ? ` · ${failed.join('·')} 감사 응답 실패` : ''} · 사람 확인 전`;
+  const kindOf = (c) => (s.auditErrors ?? []).find((x) => x.startsWith(`${c}:`))?.split(':')[1]?.trim().split(' (')[0] || '응답 실패';
+  return `${head}${failed.length ? ` · ${failed.map((c) => `${c} 감사 ${kindOf(c)}`).join(' · ')}` : ''} · 사람 확인 전`;
 }
 
 /** 브라우저로 보내는 상태 */
@@ -192,7 +195,7 @@ function view(s) {
     plan: s.plan.map(({ key, name, kind, inputs, check }) => ({ key, name, kind, inputs, check: !!check })),
     pending: s.pending ? { attempt: s.pending.attempt ?? 1, units: s.pending.units ?? null, rejected: s.pending.rejected ? { reason: s.pending.rejected.reason } : null } : null,
     stages: s.stages.map(({ key, name, kind, units, attempts }) => ({ key, name, kind, units, attempts: attempts.map((a) => ({ n: a.n, verdict: a.verdict, reason: a.reason ?? null })) })),
-    signoff: s.signoff, auditors: s.auditors ?? auditorsFor(s.workerCompany), auditsDone: (s.audits ?? []).map((a) => ({ model: a.model, company: a.company, count: a.errors.length, sec: a.sec })), auditErrors: s.auditErrors ?? [],
+    signoff: s.signoff, auditors: s.auditors ?? auditorsFor(s.workerCompany, { live: true }), auditsDone: (s.audits ?? []).map((a) => ({ model: a.model, company: a.company, count: a.errors.length, sec: a.sec })), auditErrors: s.auditErrors ?? [],
     result: s.result ?? null, ledger: s.phase === 'done' ? s.ledger : null,
     label: auditLabel(s),
   };
