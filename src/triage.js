@@ -25,15 +25,18 @@ export const TRIAGE_SCHEMA = obj({
 
 const refsOf = (it) => [it.origin, ...(it.spread ?? [])];
 
-/** 빨간 줄을 두 갈래로 나눈다. 같은 칸 = 장부의 어떤 항목(A·B·C)의 근원이나 번진 곳에 든 칸 */
+/** 빨간 줄을 두 갈래로 나눈다. 같은 칸 = 장부의 어떤 항목(A·B·C)의 근원이나 번진 곳에 든 칸.
+ *  후보 칸(spreadCandidates: 한 감사만 옮겨졌다고 본 칸)도 같은 칸 쪽이다(채점의 「판단이 갈리는 칸」과 맞춘다). cand: true로 표시 */
 export function splitMarks(ledger, marks) {
   const items = (ledger?.items ?? []).filter((x) => !x.deleted);
   const fresh = [], same = [];
   for (const m of marks ?? []) {
-    const hit = items.filter((it) => refsOf(it).includes(m.uid));
+    let hit = items.filter((it) => refsOf(it).includes(m.uid));
+    let cand = false;
+    if (!hit.length) { hit = items.filter((it) => (it.spreadCandidates ?? []).includes(m.uid)); cand = hit.length > 0; }
     if (!hit.length) fresh.push(m);
     // 메모도 구절도 없으면 이유를 견줄 거리가 없다 → 묻지 않는다
-    else if (String(m.note ?? '').trim() || String(m.quote ?? '').trim()) same.push({ ...m, items: hit });
+    else if (String(m.note ?? '').trim() || String(m.quote ?? '').trim()) same.push({ ...m, items: hit, ...(cand ? { cand: true } : {}) });
   }
   return { fresh, same };
 }
@@ -65,7 +68,7 @@ export function triageUser(mission, docs, run, ledger, split) {
   const st = auditUnits(run.stages).map((s) => `<단계 번호="${s.key}" 이름="${s.name}">\n${s.units.map((u) => `[${u.uid}] ${u.text}`).join('\n')}\n</단계>`).join('\n');
   const line = (m) => `메모: ${String(m.note ?? '').trim() || '(없음)'}${m.quote ? ` / 고른 구절: 「${m.quote}」` : ''}${m.pattern ? ` / 고른 패턴: ${m.pattern}` : ''}`;
   const a = split.fresh.map((m) => `- [${m.uid}] (가) 장부에 없는 칸. ${line(m)}`);
-  const b = split.same.map((m) => `- [${m.uid}] (나) 장부 항목과 같은 칸. ${line(m)}\n  장부 이유: ${m.items.map((it) => `${it.id}(${it.grade}, ${it.pattern}) ${it.why}`).join(' / ')}`);
+  const b = split.same.map((m) => `- [${m.uid}] (나) 장부 항목과 같은 칸${m.cand ? '(그 항목이 옮겨졌을 수 있는 칸)' : ''}. ${line(m)}\n  장부 이유: ${m.items.map((it) => `${it.id}(${it.grade}, ${it.pattern}) ${it.why}`).join(' / ')}`);
   return `${docsBlock(docs)}\n\n<미션>\n${mission.brief}\n</미션>\n\n<업무 기록>\n${st}\n</업무 기록>\n\n<사람의 빨간 줄>\n${[...a, ...b].join('\n')}\n</사람의 빨간 줄>\n\n칸마다 판정하세요.`;
 }
 
@@ -80,7 +83,7 @@ export function shapeJudgments(output, split, docs) {
     const evidence = (j?.evidence ?? []).slice(0, 3).map((e) => { const ref = String(e.ref).trim(); const t = para.get(ref); return { ref, quote: String(e.quote ?? '').slice(0, 300), found: !!t && quoteIn(e.quote, t) }; });
     // 근거 있음인데 원자료 인용이 하나도 맞지 않으면 「판단 어려움」으로 낮춘다(없는 근거를 믿지 않는다)
     const v = verdict === 'grounded' && !evidence.some((e) => e.found) ? 'unclear' : verdict;
-    return { uid: m.uid, kind, verdict: v, modelVerdict: verdict, why: String(j?.why ?? '').slice(0, 500), evidence, ...(kind === 'same' ? { items: m.items.map((it) => it.id) } : {}), note: String(m.note ?? '').slice(0, 300), quote: m.quote ?? null };
+    return { uid: m.uid, kind, verdict: v, modelVerdict: verdict, why: String(j?.why ?? '').slice(0, 500), evidence, ...(kind === 'same' ? { items: m.items.map((it) => it.id), ...(m.cand ? { cand: true } : {}) } : {}), note: String(m.note ?? '').slice(0, 300), quote: m.quote ?? null };
   };
   return [...split.fresh.map((m) => one(m, 'new')), ...split.same.map((m) => one(m, 'same'))];
 }

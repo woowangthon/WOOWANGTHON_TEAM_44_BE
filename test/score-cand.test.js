@@ -52,3 +52,23 @@ test('후보 칸이 없는 장부(v1·G1)는 전과 같다', () => {
   assert.deepEqual(r.falseMarks, ['S3.n1']);
   assert.deepEqual(r.splitMarks, []);
 });
+
+test('AI 1차 판정: 후보 칸에 그은 줄은 「같은 칸」 쪽으로(후보 표시), 장부 밖 칸만 「장부에 없는 칸」', async () => {
+  const { splitMarks, shapeJudgments, triageUser } = await import('../src/triage.js');
+  const marks = [
+    { uid: 'S3.n1', note: '번진 것 같음' }, // L1 후보 칸
+    { uid: 'S2.r1', note: '확정 칸' }, // L1 확정 칸(L2 후보이기도 함 → 확정이 먼저)
+    { uid: 'S3.n3', note: '장부 밖' },
+    { uid: 'S3.n2' }, // L2 후보 칸이지만 메모 없음 → 묻지 않음
+  ];
+  const sp = splitMarks(ledger, marks);
+  assert.deepEqual(sp.fresh.map((m) => m.uid), ['S3.n3']);
+  assert.deepEqual(sp.same.map((m) => [m.uid, m.items.map((x) => x.id), !!m.cand]), [['S3.n1', ['L1'], true], ['S2.r1', ['L1'], false]]);
+  const docs = { A: { key: 'A', title: 't', publisher: 'p', paragraphs: [{ pid: 'A-p1', text: '원문' }] } };
+  const u = triageUser({ brief: 'b' }, docs, { stages: run.stages.map((s) => ({ ...s, name: s.key })) }, ledger, sp);
+  assert.match(u, /\[S3\.n1\] \(나\) 장부 항목과 같은 칸\(그 항목이 옮겨졌을 수 있는 칸\)/);
+  assert.match(u, /\[S3\.n3\] \(가\) 장부에 없는 칸/);
+  const j = shapeJudgments({ judgments: [{ uid: 'S3.n1', verdict: 'same', evidence: [], why: 'w' }] }, sp, docs);
+  assert.equal(j.find((x) => x.uid === 'S3.n1').cand, true);
+  assert.equal(j.find((x) => x.uid === 'S3.n1').kind, 'same');
+});
