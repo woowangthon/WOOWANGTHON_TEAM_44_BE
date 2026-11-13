@@ -105,7 +105,7 @@ export async function finalizeDraft(runId, draft, { reason = '사람 검수' } =
   const pending = draft.items.filter((x) => x.review === 'pending' && x.grade);
   if (pending.length) throw err(`판정하지 않은 항목 ${pending.length}개: ${pending.map((x) => x.id).join(', ')}`);
   // 처음 생긴 곳: 사람이 따로 정하지 않은 항목은, 감사 둘 이상이 같은 칸을 처음 생긴 곳으로 댔으면 자동으로 확정한다(근원 가점에 씀)
-  for (const it of draft.items.filter((x) => !x.deleted)) {
+  for (const it of draft.items.filter((x) => !x.deleted && !x.mergedInto)) {
     if (draft.reviewLog.some((l) => l.item === it.id && l.action === 'confirmOrigin')) continue;
     const origins = Object.values(it.byAudit ?? {}).map((b) => b.origin);
     if (!it.originConfirmed && origins.length >= 2 && origins.every((o) => o === it.origin)) {
@@ -113,7 +113,7 @@ export async function finalizeDraft(runId, draft, { reason = '사람 검수' } =
       draft.reviewLog.push({ at: new Date().toISOString(), item: it.id, action: 'autoConfirmOrigin', before: false, after: true, note: '감사 둘 이상이 같은 칸을 처음 생긴 곳으로 댐' });
     }
   }
-  const items = draft.items.filter((x) => !x.deleted);
+  const items = draft.items.filter((x) => !x.deleted && !x.mergedInto);
   const deleted = draft.items.filter((x) => x.deleted).map((x) => ({ id: x.id, origin: x.origin, why: draft.reviewLog.filter((l) => l.item === x.id && l.action === 'delete').at(-1)?.note ?? '' }));
   const saved = await saveLedgerVersion(runId, { ...draft, status: 'reviewed', reason, items, deleted: [...(draft.deleted ?? []), ...deleted], codeOnly: draft.codeOnly ?? [] });
   await setJson(`ss2:draft:${runId}`, null, 60);

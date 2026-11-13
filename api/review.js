@@ -10,9 +10,10 @@ import { loadMission, loadDocs } from '../src/mission.js';
 import { makerSolved, getAnswer } from '../src/record.js';
 import { auditSpreadOf } from '../src/audit.js';
 import { getTriage } from '../src/triage.js';
+import { tidyDraft, openQuestions } from '../src/tidy.js';
 
 /** 검수 진행: 판정한 수, 전체, 남은 항목 id */
-const progressOf = (d) => (d ? { done: d.items.filter((x) => x.review !== 'pending').length, of: d.items.length, left: d.items.filter((x) => x.review === 'pending').map((x) => x.id) } : null);
+const progressOf = (d) => { if (!d) return null; const all = d.items.filter((x) => !x.deleted && !x.mergedInto || x.review === 'deleted'); const left = openQuestions(d).map((x) => x.id); return { done: all.length - left.length, of: all.length, left }; };
 /** 이의 하나에 판정에 필요한 것을 붙인다: 그 칸의 글, 그 칸에 걸친 장부 항목 */
 async function enrich(o) {
   try {
@@ -25,13 +26,15 @@ async function enrich(o) {
 }
 
 async function draftOf(runId) {
-  const d = await getDraft(runId);
-  if (d) return d;
+  const d0 = await getDraft(runId);
+  // 코드가 할 일(묶인 문장 나누기, 같은 오류 합치기, 옮겨진 칸)은 초안을 열 때마다 먼저 해 둔다(여러 번 해도 같다)
+  if (d0) { if (tidyDraft(runId, d0)) await setDraft(runId, d0); return d0; }
   const L = await latestLedger(runId);
   if (!L) throw err('장부가 없습니다', 404);
   const fresh = { ...structuredClone(L), status: 'draft', base: L.version, reviewLog: [...(L.reviewLog ?? [])] };
   // 검수 판에서 이어 고칠 때는 이미 판정한 항목을 그대로 둔다. AI 판에서 시작하면 모두 pending
   if (L.status !== 'reviewed') fresh.items = fresh.items.map((x) => ({ ...x, review: 'pending' }));
+  tidyDraft(runId, fresh);
   await setDraft(runId, fresh);
   return fresh;
 }
@@ -44,6 +47,7 @@ export default handler(async (req) => {
       const runs = await Promise.all(fixedRunIds().map(async (id) => {
         const r = await getRun(id); const vs = await ledgerVersions(id);
         const d = await getDraft(id);
+        if (d && tidyDraft(id, d)) await setDraft(id, d);
         return { runId: id, missionId: r.missionId, style: r.style, role: r.role, worker: r.worker, versions: vs.map((v) => ({ version: v.version, status: v.status, items: v.items.length })), makerSolved: !!(await makerSolved(id)), draft: !!d, progress: progressOf(d) };
       }));
       // 사람이 건 이의와 AI 1차 판정이 넣은 후보를 한 대기열로(source로 구분)
