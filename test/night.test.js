@@ -117,3 +117,26 @@ test('반려로 막은 A: 다시 한 결과에 비슷한 문장이 남으면 세
   assert.ok(coverOf('가능. 만 19~39세에 해당하고 학력·재학 조건이 없습니다.', '가능. 팀장 안내대로 만 21~25세로 보면 만 19~39세에 해당하고 학력·재학 조건이 없습니다.') >= 0.7);
   assert.ok(coverOf('만 19~39세에 해당하고 학력 조건이 없습니다', '신청 불가: 초대졸 이상 미취업자 대상') < 0.7);
 });
+
+test('확정할 때: 감사 둘이 같은 칸을 처음 생긴 곳으로 댄 항목은 자동으로 근원 확정, 사람이 정한 것은 그대로', async () => {
+  _memReset();
+  const { finalizeDraft } = await import('../src/ledger.js');
+  const draft = { runId: run.id, items: [
+    { id: 'L1', origin: 'S1.e2', spread: [], grade: 'A', review: 'approved', byAudit: { Anthropic: { origin: 'S1.e2' }, OpenAI: { origin: 'S1.e2' } } },
+    { id: 'L2', origin: 'S2.r1', spread: [], grade: 'A', review: 'approved', byAudit: { Anthropic: { origin: 'S2.r1' }, OpenAI: { origin: 'S3.n1' } } },
+    { id: 'L3', origin: 'S1.e1', spread: [], grade: 'B', review: 'approved', byAudit: { Anthropic: { origin: 'S1.e1' }, OpenAI: { origin: 'S1.e1' } } },
+  ], reviewLog: [{ item: 'L3', action: 'confirmOrigin', before: true, after: false }], deleted: [] };
+  const v = await finalizeDraft(run.id, draft);
+  const by = Object.fromEntries(v.items.map((x) => [x.id, !!x.originConfirmed]));
+  assert.deepEqual(by, { L1: true, L2: false, L3: false });
+});
+
+test('묶인 항목 나누기: 떼어 낸 쪽은 감사 기록을 달고 「나눔」으로 남는다(사람이 추가로 세지 않음)', async () => {
+  const { applyReview } = await import('../src/ledger.js');
+  const d = { items: [{ id: 'L4', origin: 'S1.e2', spread: ['S3.n1'], grade: 'A', review: 'pending', source: 'both', byAudit: { Anthropic: { origin: 'S1.e2', grade: 'B' }, OpenAI: { origin: 'S2.r2', grade: 'A' } } }], reviewLog: [] };
+  applyReview(d, { action: 'edit', item: 'L4', grade: 'B', byAudit: { Anthropic: d.items[0].byAudit.Anthropic }, source: 'one', spread: [] });
+  const it = applyReview(d, { action: 'add', split: true, splitFrom: 'L4', byAudit: { OpenAI: { origin: 'S2.r2', grade: 'A' } }, origin: 'S2.r2', grade: 'A', pattern: '기타' });
+  assert.equal(it.id, 'L4b'); assert.equal(it.source, 'one'); assert.equal(it.review, 'edited'); assert.ok(it.byAudit.OpenAI);
+  assert.ok(d.reviewLog.some((l) => l.action === 'split') && !d.reviewLog.some((l) => l.action === 'add'));
+  assert.deepEqual(Object.keys(d.items[0].byAudit), ['Anthropic']);
+});

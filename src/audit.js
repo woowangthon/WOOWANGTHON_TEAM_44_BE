@@ -264,16 +264,19 @@ export function auditSpreadOf(runId, ledger) {
   try { if (existsSync(f)) raw = JSON.parse(readFileSync(f, 'utf8')); } catch { raw = null; }
   const out = {};
   for (const it of ledger?.items ?? []) {
-    const lists = Object.entries(it.byAudit ?? {}).map(([company, b]) => {
-      if (b.spread) return [b.origin, ...b.spread];
+    // 감사마다 짚은 것(처음 생긴 곳, 틀린 구절, 옮겨진 칸, 이유). 두 감사가 다른 문장을 짚었는데 한 항목으로 묶였으면 검수 화면이 둘로 나눠 묻는다
+    const parts = Object.entries(it.byAudit ?? {}).map(([company, b]) => {
       const e = raw?.find((a) => a.company === company)?.errors.find((x) => normRef(x.origin) === b.origin && x.why === b.why);
-      return e ? [normRef(e.origin), ...e.spread.map(normRef)] : null;
+      const spread = b.spread ?? (e ? e.spread.map(normRef) : null);
+      if (!spread) return null;
+      return { company, model: b.model, origin: b.origin, spread: spread.filter((r) => r !== b.origin), wrongText: e?.wrong_text ?? (b.origin === it.origin ? it.wrongText : ''), why: b.why, grade: b.grade, pattern: b.pattern, evidence: e?.evidence ?? [] };
     }).filter(Boolean);
+    const lists = parts.map((x) => [x.origin, ...x.spread]);
     if (!lists.length) continue;
     const n = new Map();
     for (const l of lists) for (const r of new Set(l)) n.set(r, (n.get(r) ?? 0) + 1);
     const cells = [...new Set([...(it.spread ?? []), ...(it.spreadCandidates ?? [])])];
-    out[it.id] = { audits: lists.length, both: cells.filter((r) => (n.get(r) ?? 0) >= 2), one: cells.filter((r) => (n.get(r) ?? 0) < 2) };
+    out[it.id] = { audits: lists.length, parts, sameOrigin: new Set(parts.map((x) => x.origin)).size === 1, both: cells.filter((r) => (n.get(r) ?? 0) >= 2), one: cells.filter((r) => (n.get(r) ?? 0) < 2) };
   }
   return out;
 }

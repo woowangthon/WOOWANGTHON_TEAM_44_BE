@@ -73,15 +73,17 @@ export function applyReview(draft, op) {
   const at = new Date().toISOString();
   const log = (item, action, before, after, note) => draft.reviewLog.push({ at, item, action, before, after, note: String(note ?? '').slice(0, 300) });
   if (op.action === 'add') {
-    const id = `H${draft.items.filter((x) => x.id.startsWith('H')).length + 1}`;
+    const id = op.split && op.splitFrom && !draft.items.some((x) => x.id === `${op.splitFrom}b`) ? `${op.splitFrom}b` : `H${draft.items.filter((x) => x.id.startsWith('H')).length + 1}`;
     const it = {
       id, origin: op.origin, spread: op.spread ?? [], wrongText: op.wrongText ?? '', pattern: op.pattern, grade: op.grade,
-      why: op.why ?? '', fix: op.fix ?? '', prevent: op.prevent ?? '', evidence: op.evidence ?? [], byAudit: {}, source: op.fromObjection ? 'objection' : 'human',
-      review: 'added', originConfirmed: !!op.originConfirmed,
+      why: op.why ?? '', fix: op.fix ?? '', prevent: op.prevent ?? '', evidence: op.evidence ?? [],
+      // split: 두 감사가 다른 문장을 짚어 묶인 항목에서 떼어 낸 것(감사가 찾은 오류라 「사람이 추가」로 세지 않는다)
+      byAudit: op.split ? (op.byAudit ?? {}) : {}, source: op.fromObjection ? 'objection' : op.split ? 'one' : 'human',
+      review: op.split ? 'edited' : 'added', originConfirmed: !!op.originConfirmed,
     };
     if (!it.origin || !['A', 'B', 'C'].includes(it.grade)) throw err('추가할 항목에 근원 단위와 등급이 필요합니다');
     draft.items.push(it);
-    log(id, 'add', null, { origin: it.origin, grade: it.grade, pattern: it.pattern }, op.note);
+    log(id, op.split ? 'split' : 'add', null, { origin: it.origin, grade: it.grade, pattern: it.pattern }, op.note);
     return it;
   }
   const it = draft.items.find((x) => x.id === op.item);
@@ -89,7 +91,8 @@ export function applyReview(draft, op) {
   if (op.action === 'approve') { log(it.id, 'approve', it.review, 'approved', op.note); it.review = it.review === 'edited' ? 'edited' : 'approved'; it.deleted = false; }
   else if (op.action === 'delete') { log(it.id, 'delete', it.review, 'deleted', op.note); it.deleted = true; it.review = 'deleted'; }
   else if (op.action === 'edit') {
-    const fields = ['grade', 'pattern', 'origin', 'spread', 'why', 'fix', 'prevent', 'wrongText', 'habit'];
+    // byAudit·source·evidence: 두 감사가 다른 문장을 짚어 묶인 항목을 나눌 때, 남는 쪽 감사 기록만 두려고 고친다
+    const fields = ['grade', 'pattern', 'origin', 'spread', 'why', 'fix', 'prevent', 'wrongText', 'habit', 'byAudit', 'source', 'evidence'];
     for (const f of fields) if (op[f] !== undefined && JSON.stringify(op[f]) !== JSON.stringify(it[f])) { log(it.id, `edit:${f}`, it[f], op[f], op.note); it[f] = op[f]; }
     it.review = 'edited'; it.deleted = false;
   } else if (op.action === 'confirmOrigin') { log(it.id, 'confirmOrigin', !!it.originConfirmed, !!op.value, op.note); it.originConfirmed = !!op.value; }
@@ -101,6 +104,15 @@ export function applyReview(draft, op) {
 export async function finalizeDraft(runId, draft, { reason = '사람 검수' } = {}) {
   const pending = draft.items.filter((x) => x.review === 'pending' && x.grade);
   if (pending.length) throw err(`판정하지 않은 항목 ${pending.length}개: ${pending.map((x) => x.id).join(', ')}`);
+  // 처음 생긴 곳: 사람이 따로 정하지 않은 항목은, 감사 둘 이상이 같은 칸을 처음 생긴 곳으로 댔으면 자동으로 확정한다(근원 가점에 씀)
+  for (const it of draft.items.filter((x) => !x.deleted)) {
+    if (draft.reviewLog.some((l) => l.item === it.id && l.action === 'confirmOrigin')) continue;
+    const origins = Object.values(it.byAudit ?? {}).map((b) => b.origin);
+    if (!it.originConfirmed && origins.length >= 2 && origins.every((o) => o === it.origin)) {
+      it.originConfirmed = true;
+      draft.reviewLog.push({ at: new Date().toISOString(), item: it.id, action: 'autoConfirmOrigin', before: false, after: true, note: '감사 둘 이상이 같은 칸을 처음 생긴 곳으로 댐' });
+    }
+  }
   const items = draft.items.filter((x) => !x.deleted);
   const deleted = draft.items.filter((x) => x.deleted).map((x) => ({ id: x.id, origin: x.origin, why: draft.reviewLog.filter((l) => l.item === x.id && l.action === 'delete').at(-1)?.note ?? '' }));
   const saved = await saveLedgerVersion(runId, { ...draft, status: 'reviewed', reason, items, deleted: [...(draft.deleted ?? []), ...deleted], codeOnly: draft.codeOnly ?? [] });
