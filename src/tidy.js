@@ -86,5 +86,36 @@ export function tidyDraft(runId, draft) {
   return changed;
 }
 
+/**
+ * 팀장 모드(라이브) 장부용: 같은 처음 생긴 곳의 같은 구절(글자쌍 70% 이상)을 다른 감사가 따로 올렸으면 한 항목으로 합친다.
+ * 검수 초안의 2) 합치기와 같은 기준. 옮겨진 칸은 v2 규칙대로 다시 나눈다(두 감사가 함께 댄 칸 = 옮겨진 칸, 한쪽만 = 후보).
+ * 합친 항목은 items에서 빼고 ledger.merged에 남긴다. 합친 수를 돌려준다.
+ */
+export function mergeSamePhrase(ledger) {
+  const items = ledger.items;
+  const merged = [];
+  for (let i = 0; i < items.length; i++) {
+    const b = items[i];
+    const a = items.slice(0, i).find((x) => !x._gone && x.origin === b.origin && Object.keys(x.byAudit ?? {}).length
+      && Object.keys(x.byAudit).every((c) => !(c in (b.byAudit ?? {}))) && overlap(x.wrongText, b.wrongText) >= 0.7);
+    if (!a || b._gone) continue;
+    const allA = new Set([...(a.spread ?? []), ...(a.spreadCandidates ?? [])]);
+    const allB = new Set([...(b.spread ?? []), ...(b.spreadCandidates ?? [])]);
+    const spread = [...new Set([...(a.spread ?? []), ...(b.spread ?? []), ...[...allA].filter((r) => allB.has(r))])].filter((r) => r !== a.origin);
+    const cand = [...new Set([...allA, ...allB])].filter((r) => r !== a.origin && !spread.includes(r));
+    a.spread = spread;
+    if (a.spreadCandidates || b.spreadCandidates) a.spreadCandidates = cand;
+    a.byAudit = { ...a.byAudit, ...b.byAudit };
+    a.source = Object.keys(a.byAudit).length >= 2 ? 'both' : a.source;
+    a.gradeSplit = a.gradeSplit || b.gradeSplit || a.grade !== b.grade;
+    a.grade = [a.grade, b.grade].sort((x, y) => RANK[x] - RANK[y])[0];
+    b._gone = true;
+    merged.push({ from: b.id, into: a.id, wrongText: b.wrongText });
+  }
+  ledger.items = items.filter((x) => !x._gone);
+  if (merged.length) ledger.merged = [...(ledger.merged ?? []), ...merged];
+  return merged.length;
+}
+
 /** 사람에게 남은 질문(판정 안 한 항목) */
 export const openQuestions = (draft) => draft.items.filter((x) => !x.deleted && !x.mergedInto && x.review === 'pending');

@@ -8,6 +8,7 @@ import { WORKERS, auditorsFor, available, COMPANIES, companyOf, downCompanies } 
 import { saveLiveRun, latestLedger, fixedRunIds, getRun } from './ledger.js';
 import { baselines } from './baseline.js';
 import { norm } from './text.js';
+import { mergeSamePhrase } from './tidy.js';
 
 const err = (m, status = 400) => Object.assign(new Error(m), { status });
 const TTL = 3 * 24 * 3600;
@@ -125,6 +126,8 @@ export async function auditStep(id) {
   if (!s.audits.length) throw err('감사가 모두 실패했습니다. 잠시 뒤 다시 눌러 주세요', 503);
   const run = { id: s.id, role: 'live', origin: 'live', missionId: s.missionId, missionVersion: s.missionVersion, style: 'lead', worker: s.worker, workerCompany: s.workerCompany, at: s.startedAt, stages: s.stages, plan: s.plan };
   const ledger = buildLedger(run, mission, docs, s.audits);
+  // 다른 감사가 같은 칸의 같은 구절을 따로 올린 것이 묶기에서 빠졌으면 하나로(결과 A 목록에 같은 구절이 두 번 나오지 않게)
+  mergeSamePhrase(ledger);
   const fk = finalKeys(s.stages);
   const counts = ledgerCounts(ledger, fk);
   const inFinal = (x, keys) => [x.origin, ...x.spread].some((u) => keys.includes(u.split('.')[0]));
