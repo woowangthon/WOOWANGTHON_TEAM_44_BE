@@ -1,5 +1,6 @@
 // 사수 모드 채점. 사람 검수가 끝난 장부(reviewed)의 A등급 항목으로만 점수를 매긴다. B·C는 피드백으로만 쓴다.
 // 근원 가점은 미영이 근원을 확정한(originConfirmed) 항목에서만 준다.
+// 후보 칸(spreadCandidates)에 그은 줄은 「판단이 갈리는 칸」(splitMarks): 찾음도 헛짚음도 아니다(B·C 칸과 같이 정확도에서 깎지 않는다).
 import { finalKeys } from './mission.js';
 
 const err = (m, status = 400) => Object.assign(new Error(m), { status });
@@ -32,7 +33,12 @@ export function scoreAnswer(run, ledger, answer) {
     };
   });
   const inLedger = new Set(items.flatMap(refsOf));
-  const falseMarks = marks.filter((m) => !inLedger.has(m.uid)).map((m) => m.uid);
+  // 후보 칸(spreadCandidates: 한 감사만 옮겨졌다고 본 칸, 사람이 옮겨진 칸으로 올리지 않음): B·C 칸처럼 찾음에도 헛짚음에도 넣지 않는다.
+  // 다른 항목의 처음 생긴 곳·옮겨진 칸이면 그쪽 규칙이 먼저다
+  const candOf = new Map();
+  for (const it of items) for (const u of it.spreadCandidates ?? []) if (!inLedger.has(u)) candOf.set(u, [...(candOf.get(u) ?? []), it.id]);
+  const splitMarks = marks.filter((m) => candOf.has(m.uid)).map((m) => ({ uid: m.uid, items: candOf.get(m.uid) }));
+  const falseMarks = marks.filter((m) => !inLedger.has(m.uid) && !candOf.has(m.uid)).map((m) => m.uid);
   const bcSeen = marks.filter((m) => items.some((it) => it.grade !== 'A' && refsOf(it).includes(m.uid))).map((m) => m.uid);
 
   const foundA = perItem.filter((x) => x.grade === 'A' && x.found);
@@ -47,9 +53,9 @@ export function scoreAnswer(run, ledger, answer) {
   const score = Math.round(50 * recall + 20 * precision + 20 * (decisionOk ? 1 : 0) + 10 * (originable.length ? originHits / originable.length : 1));
   return {
     ledgerVersion: ledger.version,
-    counts: { A: A.length, foundA: foundA.length, falseMarks: falseMarks.length, marks: marks.length, aFinal: aFinal.length, originable: originable.length, originHits, B: items.filter((x) => x.grade === 'B').length, C: items.filter((x) => x.grade === 'C').length },
+    counts: { A: A.length, foundA: foundA.length, falseMarks: falseMarks.length, splitMarks: splitMarks.length, marks: marks.length, aFinal: aFinal.length, originable: originable.length, originHits, B: items.filter((x) => x.grade === 'B').length, C: items.filter((x) => x.grade === 'C').length },
     decision: answer.decision, shouldReject, decisionOk,
-    falseMarks, bcSeen, perItem, score,
+    falseMarks, bcSeen, splitMarks, perItem, score,
   };
 }
 
