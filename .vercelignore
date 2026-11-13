@@ -3,3 +3,5 @@
 !.env.example
 node_modules
 eval/out
+.local-store.json*
+.vercel
