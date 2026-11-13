@@ -13,7 +13,15 @@ import { getTriage } from '../src/triage.js';
 import { tidyDraft, openQuestions } from '../src/tidy.js';
 
 /** 검수 진행: 판정한 수, 전체, 남은 항목 id */
-const progressOf = (d) => { if (!d) return null; const all = d.items.filter((x) => !x.deleted && !x.mergedInto || x.review === 'deleted'); const left = openQuestions(d).map((x) => x.id); return { done: all.length - left.length, of: all.length, left }; };
+// unchanged: 확정한 검수 판에서 다시 연 초안인데 사람이 아직 아무것도 고치지 않음(다시 확정할 것이 없다)
+const humanLogs = (log) => (log ?? []).filter((l) => !String(l.action).startsWith('auto:')).length;
+const progressOf = (d, vs = []) => {
+  if (!d) return null;
+  const all = d.items.filter((x) => !x.deleted && !x.mergedInto || x.review === 'deleted'); const left = openQuestions(d).map((x) => x.id);
+  const last = vs.at(-1);
+  const unchanged = !!last && last.status === 'reviewed' && d.base === last.version && humanLogs(d.reviewLog) === humanLogs(last.reviewLog);
+  return { done: all.length - left.length, of: all.length, left, unchanged, lastVersion: last?.version ?? null };
+};
 /** 이의 하나에 판정에 필요한 것을 붙인다: 그 칸의 글, 그 칸에 걸친 장부 항목 */
 async function enrich(o) {
   try {
@@ -48,7 +56,7 @@ export default handler(async (req) => {
         const r = await getRun(id); const vs = await ledgerVersions(id);
         const d = await getDraft(id);
         if (d && tidyDraft(id, d)) await setDraft(id, d);
-        return { runId: id, missionId: r.missionId, style: r.style, role: r.role, worker: r.worker, versions: vs.map((v) => ({ version: v.version, status: v.status, items: v.items.length })), makerSolved: !!(await makerSolved(id)), draft: !!d, progress: progressOf(d) };
+        return { runId: id, missionId: r.missionId, style: r.style, role: r.role, worker: r.worker, versions: vs.map((v) => ({ version: v.version, status: v.status, items: v.items.length })), makerSolved: !!(await makerSolved(id)), draft: !!d, progress: progressOf(d, vs) };
       }));
       // 사람이 건 이의와 AI 1차 판정이 넣은 후보를 한 대기열로(source로 구분)
       return { runs, objections: await Promise.all((await objections()).map(enrich)) };
@@ -61,9 +69,10 @@ export default handler(async (req) => {
     const solved = await makerSolved(runId);
     const makerAnswer = solved ? await getAnswer(solved.answerId) : null;
     const draft = await draftOf(runId);
+    const versions = await ledgerVersions(runId);
     // 번진 곳을 감사별로 나눠 보인다(두 감사가 함께 댄 칸 / 한 감사만 댄 칸). 장부·초안은 바꾸지 않는다. 고칠지는 사람이 정한다
     const auditSpread = auditSpreadOf(runId, draft);
-    return { run, mission: m, docs: loadDocs(m), versions: await ledgerVersions(runId), draft, progress: progressOf(draft), auditSpread, objections: await Promise.all((await objections()).filter((o) => o.runId === runId).map(enrich)), makerMarks: makerAnswer?.marks ?? [], makerTriage: makerAnswer ? await getTriage(makerAnswer.id) : null };
+    return { run, mission: m, docs: loadDocs(m), versions, draft, progress: progressOf(draft, versions), auditSpread, objections: await Promise.all((await objections()).filter((o) => o.runId === runId).map(enrich)), makerMarks: makerAnswer?.marks ?? [], makerTriage: makerAnswer ? await getTriage(makerAnswer.id) : null };
   }
   const b = body(req);
   if (b.objectionId) {
