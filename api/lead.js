@@ -2,9 +2,11 @@
 //   { action:'start', missionId, plan:[{kind, name, inputs, instruction}], workerCompany?, deviceId, maker }
 //   { action:'stage', id } · { action:'verdict', id, verdict:'ok'|'reject', reason, sourceViews } · { action:'signoff', id, checked, unchecked, sourceViews }
 //   { action:'audit', id } · { action:'get', id }
+//   { action:'patch', runId, itemId, instruction, deviceId, maker }  막아 보기(F6): 사수 모드 판의 놓친 A 오류가 생긴 단계 하나만 고친 지시로 다시 시키고 판정
 import { handler, body, deviceOk, err } from './_lib.js';
 import { start, stage, verdict, signoff, auditStep, getLead } from '../src/lead.js';
 import { saveLeadRecord } from '../src/record.js';
+import { patch } from '../src/patch.js';
 
 export default handler(async (req) => {
   const b = body(req);
@@ -23,5 +25,9 @@ export default handler(async (req) => {
     return v;
   }
   if (b.action === 'get') return getLead(b.id);
+  if (b.action === 'patch') {
+    if (!deviceOk(b.deviceId)) throw err('기기 ID가 없습니다');
+    return patch(b);
+  }
   throw err('모르는 동작');
 });
