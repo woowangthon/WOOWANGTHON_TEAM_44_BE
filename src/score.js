@@ -1,7 +1,7 @@
 // 사수 모드 채점. 사람 검수가 끝난 장부(reviewed)의 A등급 항목으로만 점수를 매긴다. B·C는 피드백으로만 쓴다.
 // 근원 가점은 미영이 근원을 확정한(originConfirmed) 항목에서만 준다.
 // 후보 칸(spreadCandidates)에 그은 줄은 「판단이 갈리는 칸」(splitMarks): 찾음도 헛짚음도 아니다(B·C 칸과 같이 정확도에서 깎지 않는다).
-// F2 근거 대조(evidenceUse)는 지표로만 더한다. 점수 공식(50·20·20·10)은 바꾸지 않는다.
+// F2 근거 대조(evidenceUse)·F3 확신도 보정(calibration)은 지표로만 더한다. 점수 공식(50·20·20·10)은 바꾸지 않는다.
 import { finalKeys, loadMission, loadDocs } from './mission.js';
 import { evidenceUseOf } from './trace.js';
 
@@ -14,10 +14,12 @@ export function docsOf(run) {
   if (!docsCache.has(run.missionId)) { try { docsCache.set(run.missionId, loadDocs(loadMission(run.missionId))); } catch { docsCache.set(run.missionId, null); } }
   return docsCache.get(run.missionId);
 }
+/** F3 확신도: 없으면 확실 */
+export const confidenceOf = (m) => (m?.confidence === 'unsure' ? 'unsure' : 'sure');
 
 /**
- * answer = { marks: [{ uid, pattern?, origin?: bool, note? }], decision: 'approve'|'reject', reason, trace? }
- * 반환: 찾음·놓침·헛짚음·판정·근원, 항목별 결과, 점수(기록용), evidenceUse(trace가 있을 때만, 없으면 null)
+ * answer = { marks: [{ uid, pattern?, origin?: bool, note?, confidence?: 'sure'|'unsure' }], decision: 'approve'|'reject', reason, trace? }
+ * 반환: 찾음·놓침·헛짚음·판정·근원, 항목별 결과, 점수(기록용), evidenceUse(trace가 있을 때만, 없으면 null), calibration(확실/의심별 그은 수·맞은 수)
  */
 export function scoreAnswer(run, ledger, answer, { docs } = {}) {
   if (!ledger || ledger.status !== 'reviewed') throw err('사람 검수가 끝나지 않은 장부로는 채점하지 않습니다', 409);
@@ -60,12 +62,20 @@ export function scoreAnswer(run, ledger, answer, { docs } = {}) {
   const recall = A.length ? foundA.length / A.length : 1;
   const precision = marks.length ? (marks.length - falseMarks.length) / marks.length : A.length ? 0 : 1;
   const score = Math.round(50 * recall + 20 * precision + 20 * (decisionOk ? 1 : 0) + 10 * (originable.length ? originHits / originable.length : 1));
+  // F3 확신도: 확실/의심별 그은 줄 수, 맞은 수(A 항목 칸에 그은 줄), 헛짚음 수. B·C·후보 칸 줄은 어느 쪽에도 넣지 않는다. 점수에는 넣지 않는다
+  const inA = new Set(A.flatMap(refsOf));
+  const falseSet = new Set(falseMarks);
+  const calibration = Object.fromEntries(['sure', 'unsure'].map((c) => {
+    const ms = marks.filter((m) => confidenceOf(m) === c);
+    return [c, { n: ms.length, correct: ms.filter((m) => inA.has(m.uid)).length, falseMarks: ms.filter((m) => falseSet.has(m.uid)).length }];
+  }));
   return {
     ledgerVersion: ledger.version,
     counts: { A: A.length, foundA: foundA.length, falseMarks: falseMarks.length, splitMarks: splitMarks.length, marks: marks.length, aFinal: aFinal.length, originable: originable.length, originHits, B: items.filter((x) => x.grade === 'B').length, C: items.filter((x) => x.grade === 'C').length },
     decision: answer.decision, shouldReject, decisionOk,
     falseMarks, bcSeen, splitMarks, perItem, score,
     evidenceUse: answer.trace ? evidenceUseOf(run, ledger, marks, answer.trace, docs ?? docsOf(run)) : null,
+    calibration,
   };
 }
 

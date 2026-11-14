@@ -12,7 +12,7 @@ export async function saveAnswer({ runId, deviceId, maker, marks, decision, reas
   const first = deviceId ? await sadd(`ss2:seen:${runId}`, deviceId) : false;
   const rec = {
     id, at: new Date().toISOString(), runId, deviceId: deviceId ?? null, maker: !!maker, first,
-    marks: marks.map((m) => ({ uid: m.uid, pattern: m.pattern ?? null, origin: !!m.origin, note: String(m.note ?? '').slice(0, 300), ...(m.quote ? { quote: String(m.quote).slice(0, 300) } : {}) })),
+    marks: marks.map((m) => ({ uid: m.uid, pattern: m.pattern ?? null, origin: !!m.origin, confidence: m.confidence === 'unsure' ? 'unsure' : 'sure', note: String(m.note ?? '').slice(0, 300), ...(m.quote ? { quote: String(m.quote).slice(0, 300) } : {}) })),
     decision, reason: String(reason ?? '').slice(0, 500), elapsedSec: Number.isFinite(elapsedSec) ? Math.round(elapsedSec) : null,
     sourceViews: Number.isFinite(sourceViews) ? Math.round(sourceViews) : 0, ledgerVersion: ledgerVersion ?? null,
     summary: result ? { foundA: result.counts.foundA, A: result.counts.A, falseMarks: result.counts.falseMarks, decisionOk: result.decisionOk, score: result.score } : null,
