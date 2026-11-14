@@ -15,6 +15,8 @@ import { sanitizeTrace } from '../src/trace.js';
 import { habitOf } from '../src/patterns.js';
 import { triageAnswer, getTriage } from '../src/triage.js';
 import { loadMission, loadDocs } from '../src/mission.js';
+import { patternTable } from './stats.js';
+import { sismember } from '../src/store.js';
 
 /** 결과 화면에 내보내는 장부(채점 뒤에만). extra = { prov, crowd } 항목 id별 */
 const revealLedger = (L, extra = {}) => ({
@@ -89,6 +91,14 @@ export default handler(async (req) => {
     const rec = await addObjection({ runId: run.id, origin: run.origin, ledgerVersion: L?.version ?? null, answerId: b.answerId ?? null, deviceId: deviceOk(b.deviceId) ? b.deviceId : null, maker: !!b.maker,
       kind: b.kind, uid: b.uid, item: b.item ?? null, evidence: (b.evidence ?? []).slice(0, 5).map(String), reason: reason.slice(0, 800), from: b.from === 'drill' ? 'drill' : 'play' });
     return { objectionId: rec.id, message: '이의를 접수했습니다. 만든 사람이 원자료와 대조해 판정합니다. 받아들이면 장부 새 판이 나오고 결과가 다시 계산됩니다.' };
+  }
+  if (b.action === 'patterns') {
+    // 습관 도감: 예문은 이 기기가 결재까지 마친 판의 것만(판을 풀기 전에 정답이 새지 않게)
+    if (!deviceOk(b.deviceId)) throw err('기기 ID가 없습니다');
+    const { patterns } = await patternTable();
+    const seen = {};
+    for (const p of patterns) for (const e of p.examples) if (!(e.runId in seen)) seen[e.runId] = await sismember(`ss2:seen:${e.runId}`, b.deviceId);
+    return { patterns: patterns.map((p) => ({ ...p, examples: p.examples.filter((e) => seen[e.runId]), lockedExamples: p.examples.filter((e) => !seen[e.runId]).length, lockedRuns: [...new Set(p.examples.filter((e) => !seen[e.runId]).map((e) => e.runId))] })) };
   }
   if (b.action === 'history') {
     if (!deviceOk(b.deviceId)) throw err('기기 ID가 없습니다');
