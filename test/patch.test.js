@@ -16,7 +16,9 @@ test('판정 합치기: 코드가 남음이면 남음, 감사가 no·partly면 �
   assert.equal(patchVerdict(0.2, { fixed: 'partly', new_error: false }), 'remained');
   assert.equal(patchVerdict(0.2, { fixed: 'yes', new_error: true }), 'new');
   assert.equal(patchVerdict(0.1, { fixed: 'yes', new_error: false }), 'blocked');
-  assert.equal(patchVerdict(null, null), 'blocked');
+  assert.equal(patchVerdict(0.2, { fixed: 'partly', new_error: true }), 'remained');
+  assert.equal(patchVerdict(0.2, null), 'blocked');
+  assert.equal(patchVerdict(null, null), 'unjudged');
 });
 
 test('입력 검사: 없는 판, 짧은 지시, A가 아닌 항목은 모델을 부르기 전에 막는다', async () => {

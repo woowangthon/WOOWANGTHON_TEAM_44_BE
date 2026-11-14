@@ -2,7 +2,7 @@
 // 원래 판과 같은 입력(원자료·팀장 지시·앞 단계 산출물)과 같은 작업 모델을 쓴다. 판정은 두 겹이다.
 //  (1) 코드: 장부 항목의 틀린 구절이 새 결과에 글자쌍 70% 이상 남았나(팀장 모드 「반려했지만 비슷한 문장이 남음」과 같은 기준)
 //  (2) 감사 모델 하나(작업 회사와 다른 회사): 이 오류가 해결됐나, 새 A급 오류가 생겼나
-// 결과: blocked(막음) / remained(남음: 글자 그대로 또는 말을 바꿔) / new(이 오류는 막았지만 새 오류가 생김). 사람 확인 전 판정이며 점수에 넣지 않는다.
+// 결과: blocked(막음) / remained(남음: 글자 그대로 또는 말을 바꿔, 일부만 해결 포함) / new(이 오류는 막았지만 새 오류가 생김) / unjudged(판정 못 함). 사람 확인 전 판정이며 점수에 넣지 않는다.
 import { incr } from './store.js';
 import { loadMission, loadDocs, runStage, ctxOf, docsBlock, plainOfUnits } from './mission.js';
 import { callJson, auditorsFor, companyOf, available, downCompanies } from './llm.js';
@@ -35,11 +35,13 @@ export function remainScore(wrongText, units) {
 }
 
 /** 두 판정을 합친다 */
+// 「새 오류」는 이 오류를 막은(fixed=yes) 경우에만. 일부만 해결이면 새 오류가 함께 있어도 「남음」이다(새 오류 구절은 따로 보인다).
+// 틀린 구절이 없어 코드가 판단하지 못했는데 감사도 끝나지 않았으면 「판정 못 함」
 export function patchVerdict(codeScore, judge) {
   if (codeScore != null && codeScore >= REMAIN) return 'remained';
-  if (judge?.fixed === 'no') return 'remained';
+  if (judge?.fixed === 'no' || judge?.fixed === 'partly') return 'remained';
   if (judge?.new_error) return 'new';
-  if (judge?.fixed === 'partly') return 'remained';
+  if (!judge && codeScore == null) return 'unjudged';
   return 'blocked';
 }
 
