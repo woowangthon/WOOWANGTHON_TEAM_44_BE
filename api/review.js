@@ -4,6 +4,8 @@
 // POST { runId, op:{action:'approve'|'delete'|'edit'|'add'|'confirmOrigin', …} }   초안에 검수 동작 하나
 // POST { runId, finalize:true }        초안 → 장부 새 판(reviewed)
 // POST { objectionId, accept:bool, note, op? }   이의 판정. 받아들이면 op를 최신 검수 판에 적용해 새 판
+// GET  /api/review?run=<id>&drill=1    F4 드릴 문항 후보(error 자동·ok 후보와 감사 표시·문단 추천 3개)와 지금까지의 세트
+// POST { runId, drillset:{ ledgerVersion, ok:[{uid, paras:[pid]}], skipError:[uid], skip:[{uid, reason}] } }   드릴 세트 확정(ok 문항은 만든 사람이 확정)
 import { handler, body, err, requireReviewer } from './_lib.js';
 import { getRun, fixedRunIds, ledgerVersions, latestLedger, getDraft, setDraft, applyReview, finalizeDraft, objections, decideObjection } from '../src/ledger.js';
 import { loadMission, loadDocs } from '../src/mission.js';
@@ -11,6 +13,9 @@ import { makerSolved, getAnswer } from '../src/record.js';
 import { auditSpreadOf } from '../src/audit.js';
 import { getTriage } from '../src/triage.js';
 import { tidyDraft, openQuestions } from '../src/tidy.js';
+import { docsOf } from '../src/score.js';
+import { drillCandidates, buildSet, eligible } from '../src/drill.js';
+import { auditsRaw, currentSets, saveSet } from '../src/drillstore.js';
 
 /** 검수 진행: 판정한 수, 전체, 남은 항목 id */
 // unchanged: 확정한 검수 판에서 다시 연 초안인데 사람이 아직 아무것도 고치지 않음(다시 확정할 것이 없다)
@@ -64,6 +69,12 @@ export default handler(async (req) => {
     const run = await getRun(runId);
     // 정답을 보기 전에 풀어야 한다: 만든 사람 풀이가 없으면 열지 않는다(force=1로 열 수는 있다)
     if (run.origin !== 'live' && !(await makerSolved(runId)) && req.query?.force !== '1') throw err('먼저 이 판을 정답 없이 풀어 주세요(?maker=1로 풀이). 그래도 열려면 force=1', 423);
+    if (req.query?.drill === '1') {
+      if (run.origin === 'live') throw err('라이브 판으로는 드릴 문항을 만들지 않습니다');
+      const L = await latestLedger(runId, { reviewed: true });
+      if (!L) throw err('사람 검수가 끝난 장부가 있어야 드릴 문항을 고를 수 있습니다', 409);
+      return { runId, ledgerVersion: L.version, candidates: drillCandidates(run, L, auditsRaw(runId), docsOf(run)), drillsets: await currentSets(runId) };
+    }
     const m = loadMission(run.missionId);
     // 만든 사람이 정답 없이 풀 때 그은 빨간 줄: 검수 화면에서 항목 옆에 보여 주고, 장부에 없는 것은 추가 후보로 띄운다
     const solved = await makerSolved(runId);
@@ -92,6 +103,18 @@ export default handler(async (req) => {
     return { decision: await decideObjection(o.id, { accept: !!b.accept, note: b.note, newVersion }), newVersion };
   }
   if (!b.runId) throw err('runId가 필요합니다');
+  if (b.drillset) {
+    const run = await getRun(b.runId);
+    if (run.origin === 'live') throw err('라이브 판으로는 드릴 문항을 만들지 않습니다');
+    // 정답을 보기 전에 푼다는 원칙을 드릴 확정에도 지킨다
+    if (!(await makerSolved(b.runId))) throw err('먼저 이 판을 정답 없이 풀어 주세요', 423);
+    const L = await latestLedger(b.runId, { reviewed: true });
+    if (!L) throw err('사람 검수가 끝난 장부가 있어야 드릴 문항을 확정할 수 있습니다', 409);
+    if (b.drillset.ledgerVersion !== L.version) throw err(`장부 최신 검수 판(${L.version}판) 기준으로 확정해 주세요`, 409);
+    const set = await saveSet(b.runId, buildSet(run, L, b.drillset, drillCandidates(run, L, auditsRaw(b.runId), docsOf(run)), docsOf(run)));
+    const ok = set.questions.filter((q) => q.truth === 'ok').length;
+    return { drillset: { version: set.version, ledgerVersion: set.ledgerVersion, n: set.questions.length, error: set.questions.length - ok, ok, skipped: set.skipped.length, eligible: eligible(set) } };
+  }
   const d = await draftOf(b.runId);
   if (b.finalize) return { ledger: await finalizeDraft(b.runId, d) };
   if (!b.op) throw err('op가 필요합니다');

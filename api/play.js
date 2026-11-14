@@ -2,7 +2,7 @@
 //   { action:'answer', runId, deviceId, maker, marks, decision, reason, elapsedSec, sourceViews, trace? }
 //        trace = { v:1, dropped, events:[[t, type, ref, ms?]…] }  F2 근거 대조 이벤트(최대 2,000개). 틀린 이벤트는 버리고 partial로 표시
 //   { action:'result', answerId }                         장부가 바뀌었으면 두 판으로 다시 계산(evidenceUse도 판마다)
-//   { action:'objection', answerId?, runId, deviceId, kind:'missing'|'notError', uid, item?, evidence:[pid], reason }
+//   { action:'objection', answerId?, runId, deviceId, kind:'missing'|'notError', uid, item?, evidence:[pid], reason, from?:'drill' }
 //   { action:'history', deviceId }                        내 기록
 //   { action:'triage', answerId }                         AI 1차 판정(표시만, 점수 무관). 한 답안에 한 번만 호출한다
 import { handler, body, deviceOk, err } from './_lib.js';
@@ -79,7 +79,7 @@ export default handler(async (req) => {
     if (reason.length < 8) throw err('이유를 한 문장 이상 적어 주세요');
     const L = await latestLedger(run.id);
     const rec = await addObjection({ runId: run.id, origin: run.origin, ledgerVersion: L?.version ?? null, answerId: b.answerId ?? null, deviceId: deviceOk(b.deviceId) ? b.deviceId : null, maker: !!b.maker,
-      kind: b.kind, uid: b.uid, item: b.item ?? null, evidence: (b.evidence ?? []).slice(0, 5).map(String), reason: reason.slice(0, 800) });
+      kind: b.kind, uid: b.uid, item: b.item ?? null, evidence: (b.evidence ?? []).slice(0, 5).map(String), reason: reason.slice(0, 800), from: b.from === 'drill' ? 'drill' : 'play' });
     return { objectionId: rec.id, message: '이의를 접수했습니다. 만든 사람이 원자료와 대조해 판정합니다. 받아들이면 장부 새 판이 나오고 결과가 다시 계산됩니다.' };
   }
   if (b.action === 'history') {
