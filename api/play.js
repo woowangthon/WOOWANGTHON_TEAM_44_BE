@@ -1,13 +1,15 @@
 // POST /api/play
-//   { action:'answer', runId, deviceId, maker, marks, decision, reason, elapsedSec, sourceViews }
-//   { action:'result', answerId }                         장부가 바뀌었으면 두 판으로 다시 계산
+//   { action:'answer', runId, deviceId, maker, marks, decision, reason, elapsedSec, sourceViews, trace? }
+//        trace = { v:1, dropped, events:[[t, type, ref, ms?]…] }  F2 근거 대조 이벤트(최대 2,000개). 틀린 이벤트는 버리고 partial로 표시
+//   { action:'result', answerId }                         장부가 바뀌었으면 두 판으로 다시 계산(evidenceUse도 판마다)
 //   { action:'objection', answerId?, runId, deviceId, kind:'missing'|'notError', uid, item?, evidence:[pid], reason }
 //   { action:'history', deviceId }                        내 기록
 //   { action:'triage', answerId }                         AI 1차 판정(표시만, 점수 무관). 한 답안에 한 번만 호출한다
 import { handler, body, deviceOk, err } from './_lib.js';
 import { getRun, latestLedger, ledgerVersions, addObjection } from '../src/ledger.js';
-import { scoreAnswer, rescore } from '../src/score.js';
-import { saveAnswer, getAnswer, deviceHistory } from '../src/record.js';
+import { scoreAnswer, rescore, docsOf } from '../src/score.js';
+import { saveAnswer, getAnswer, getTrace, deviceHistory } from '../src/record.js';
+import { sanitizeTrace } from '../src/trace.js';
 import { habitOf } from '../src/patterns.js';
 import { triageAnswer, getTriage } from '../src/triage.js';
 import { loadMission, loadDocs } from '../src/mission.js';
@@ -39,11 +41,12 @@ export default handler(async (req) => {
     if (!L) {
       // 장부가 사람 검수 전이면 만든 사람만 풀 수 있다(풀이가 검수보다 먼저). 채점은 검수 뒤에 한다
       if (!b.maker) throw err('이 판은 아직 사람 검수 전이라 채점할 수 없습니다', 409);
-      const rec = await saveAnswer({ ...b, deviceId, result: null });
+      const rec = await saveAnswer({ ...b, trace: sanitizeTrace(b.trace, run, docsOf(run)), deviceId, result: null });
       return { answerId: rec.id, pending: true, message: '풀이를 저장했습니다. 장부를 검수해 확정하면 결과가 나옵니다.' };
     }
-    const result = scoreAnswer(run, L, b);
-    const rec = await saveAnswer({ ...b, deviceId, ledgerVersion: L.version, result });
+    const trace = sanitizeTrace(b.trace, run, docsOf(run));
+    const result = scoreAnswer(run, L, { ...b, trace });
+    const rec = await saveAnswer({ ...b, trace, deviceId, ledgerVersion: L.version, result });
     return { answerId: rec.id, result, ledger: revealLedger(L) };
   }
   if (b.action === 'result') {
@@ -52,7 +55,9 @@ export default handler(async (req) => {
     const run = await getRun(a.runId);
     const vs = await ledgerVersions(run.id);
     if (!vs.some((l) => l.status === 'reviewed')) return { pending: true, answer: a };
-    const r = rescore(run, vs, a);
+    // 이벤트 원본은 따로 읽어 채점에만 쓴다. 응답의 answer에는 싣지 않는다
+    const trace = a.hasTrace ? await getTrace(a.id) : null;
+    const r = rescore(run, vs, trace ? { ...a, trace } : a);
     return { answer: a, result: r.now, before: r.before ?? null, changed: r.changed, ledger: revealLedger(vs.filter((l) => l.status === 'reviewed').at(-1)), triage: await getTriage(a.id) };
   }
   if (b.action === 'triage') {

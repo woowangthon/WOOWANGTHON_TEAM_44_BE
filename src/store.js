@@ -61,11 +61,31 @@ export async function incr(key, n = 1, ttlSec = TTL) {
   return Number(v);
 }
 
+/** 키 여러 개를 한 번에 읽는다(없는 키는 null). 같은 순서로 돌려준다 */
+export async function getJsonMany(keys) {
+  if (!keys.length) return [];
+  if (storeKind() === 'memory') return keys.map((k) => (mem.kv.has(k) ? structuredClone(mem.kv.get(k)) : null));
+  const vs = (await redis(['MGET', ...keys])) ?? [];
+  return keys.map((_, i) => (vs[i] ? JSON.parse(vs[i]) : null));
+}
+
 /** 집합에 넣고, 새로 들어갔으면 true */
-export async function sadd(key, member) {
+export async function sadd(key, member, ttlSec = TTL) {
   if (storeKind() === 'memory') { const s = mem.set.get(key) ?? new Set(); const isNew = !s.has(member); s.add(member); mem.set.set(key, s); persist(); return isNew; }
-  const [v] = await pipeline([['SADD', key, member], ['EXPIRE', key, TTL]]);
+  const [v] = await pipeline([['SADD', key, member], ['EXPIRE', key, String(ttlSec)]]);
   return Number(v) === 1;
+}
+
+/** 집합의 원소 전부 */
+export async function smembers(key) {
+  if (storeKind() === 'memory') return [...(mem.set.get(key) ?? [])];
+  return (await redis(['SMEMBERS', key])) ?? [];
+}
+
+/** 집합에 있나 */
+export async function sismember(key, member) {
+  if (storeKind() === 'memory') return !!mem.set.get(key)?.has(member);
+  return Number(await redis(['SISMEMBER', key, member])) === 1;
 }
 
 /** 해시 필드 여러 개를 한 번에 +1 */

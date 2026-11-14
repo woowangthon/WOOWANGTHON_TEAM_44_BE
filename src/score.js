@@ -1,16 +1,25 @@
 // 사수 모드 채점. 사람 검수가 끝난 장부(reviewed)의 A등급 항목으로만 점수를 매긴다. B·C는 피드백으로만 쓴다.
 // 근원 가점은 미영이 근원을 확정한(originConfirmed) 항목에서만 준다.
 // 후보 칸(spreadCandidates)에 그은 줄은 「판단이 갈리는 칸」(splitMarks): 찾음도 헛짚음도 아니다(B·C 칸과 같이 정확도에서 깎지 않는다).
-import { finalKeys } from './mission.js';
+// F2 근거 대조(evidenceUse)는 지표로만 더한다. 점수 공식(50·20·20·10)은 바꾸지 않는다.
+import { finalKeys, loadMission, loadDocs } from './mission.js';
+import { evidenceUseOf } from './trace.js';
 
 const err = (m, status = 400) => Object.assign(new Error(m), { status });
 const refsOf = (it) => [it.origin, ...(it.spread ?? [])];
+const docsCache = new Map();
+/** 판의 원자료(근거 대조에 씀). 가짜 판(미션 없음)이면 null */
+export function docsOf(run) {
+  if (!run?.missionId) return null;
+  if (!docsCache.has(run.missionId)) { try { docsCache.set(run.missionId, loadDocs(loadMission(run.missionId))); } catch { docsCache.set(run.missionId, null); } }
+  return docsCache.get(run.missionId);
+}
 
 /**
- * answer = { marks: [{ uid, pattern?, origin?: bool, note? }], decision: 'approve'|'reject', reason }
- * 반환: 찾음·놓침·헛짚음·판정·근원, 항목별 결과, 점수(기록용)
+ * answer = { marks: [{ uid, pattern?, origin?: bool, note? }], decision: 'approve'|'reject', reason, trace? }
+ * 반환: 찾음·놓침·헛짚음·판정·근원, 항목별 결과, 점수(기록용), evidenceUse(trace가 있을 때만, 없으면 null)
  */
-export function scoreAnswer(run, ledger, answer) {
+export function scoreAnswer(run, ledger, answer, { docs } = {}) {
   if (!ledger || ledger.status !== 'reviewed') throw err('사람 검수가 끝나지 않은 장부로는 채점하지 않습니다', 409);
   const units = new Set(run.stages.flatMap((s) => s.units.map((u) => u.uid)));
   const seen = new Set();
@@ -56,6 +65,7 @@ export function scoreAnswer(run, ledger, answer) {
     counts: { A: A.length, foundA: foundA.length, falseMarks: falseMarks.length, splitMarks: splitMarks.length, marks: marks.length, aFinal: aFinal.length, originable: originable.length, originHits, B: items.filter((x) => x.grade === 'B').length, C: items.filter((x) => x.grade === 'C').length },
     decision: answer.decision, shouldReject, decisionOk,
     falseMarks, bcSeen, splitMarks, perItem, score,
+    evidenceUse: answer.trace ? evidenceUseOf(run, ledger, marks, answer.trace, docs ?? docsOf(run)) : null,
   };
 }
 

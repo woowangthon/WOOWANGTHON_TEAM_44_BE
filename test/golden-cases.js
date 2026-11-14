@@ -18,3 +18,17 @@ export const TABLE = {
   bcSplit: { 2: [5, 0, ['S4.b5', 'S5.n2'], [], 0, 4, true, 20], 3: [5, 0, ['S5.n2'], ['S4.b5'], 0, 4, true, 30] },
   messy: { 2: [5, 1, ['S1.e1'], [], 1, 4, false, 23], 3: [5, 1, ['S1.e1'], [], 1, 4, false, 23] },
 };
+
+// 테스트용 가짜 v4(설계안 6.2-B3): v3를 복사해 ① L1 근거 D-p7 → D-p8 ② L3 등급 A → B ③ L1 옮겨진 칸에 S2.r4를 더한다
+export function fakeV4(v3) {
+  const v4 = structuredClone(v3);
+  v4.version = 4; v4.parent = 3; v4.reason = '테스트용 가짜 판';
+  const L1 = v4.items.find((x) => x.id === 'L1');
+  L1.evidence = L1.evidence.map((e) => (e.ref === 'D-p7' ? { ...e, ref: 'D-p8' } : e));
+  L1.spread = [...L1.spread, 'S2.r4'];
+  v4.items.find((x) => x.id === 'L3').grade = 'B';
+  return v4;
+}
+// 설계안 2.3 계산 예: D 탭을 열어 D-p7을 2.3초 보고 S4.b7에 줄을 그었다
+export const EXAMPLE_TRACE = { v: 1, dropped: 0, events: [[0, 'open', ''], [4100, 'tab', 'D'], [5200, 'view', 'D-p7', 2300], [61000, 'stage', 'S2'], [88000, 'mark', 'S4.b7'], [300000, 'decide', 'reject']] };
+export const EXAMPLE_ANSWER = { marks: [{ uid: 'S4.b7', origin: true, note: '관심 조건이 빠짐' }], decision: 'reject', reason: 'D-1 대상 조건을 원자료 D와 다시 대조해 주세요' };
