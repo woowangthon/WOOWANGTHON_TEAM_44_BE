@@ -1,0 +1,1815 @@
+{
+ "emptyApprove@v2": {
+  "ledgerVersion": 2,
+  "counts": {
+   "A": 5,
+   "foundA": 0,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 0,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 0,
+   "C": 2
+  },
+  "decision": "approve",
+  "shouldReject": true,
+  "decisionOk": false,
+  "falseMarks": [],
+  "bcSeen": [],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   }
+  ],
+  "score": 0
+ },
+ "emptyApprove@v3": {
+  "ledgerVersion": 3,
+  "counts": {
+   "A": 5,
+   "foundA": 0,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 0,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 1,
+   "C": 2
+  },
+  "decision": "approve",
+  "shouldReject": true,
+  "decisionOk": false,
+  "falseMarks": [],
+  "bcSeen": [],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   },
+   {
+    "id": "H1",
+    "grade": "B",
+    "pattern": "중요 정보 누락",
+    "origin": "S3.i5",
+    "spread": [
+     "S4.b5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i5"
+   }
+  ],
+  "score": 0
+ },
+ "emptyReject@v2": {
+  "ledgerVersion": 2,
+  "counts": {
+   "A": 5,
+   "foundA": 0,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 0,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 0,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [],
+  "bcSeen": [],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   }
+  ],
+  "score": 20
+ },
+ "emptyReject@v3": {
+  "ledgerVersion": 3,
+  "counts": {
+   "A": 5,
+   "foundA": 0,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 0,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 1,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [],
+  "bcSeen": [],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   },
+   {
+    "id": "H1",
+    "grade": "B",
+    "pattern": "중요 정보 누락",
+    "origin": "S3.i5",
+    "spread": [
+     "S4.b5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i5"
+   }
+  ],
+  "score": 20
+ },
+ "origins4@v2": {
+  "ledgerVersion": 2,
+  "counts": {
+   "A": 5,
+   "foundA": 5,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 4,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 4,
+   "B": 0,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [],
+  "bcSeen": [
+   "S3.i2"
+  ],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S1.e7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i4"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i2"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i2"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": true,
+    "hitUnits": [
+     "S1.e7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i2"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   }
+  ],
+  "score": 100
+ },
+ "origins4@v3": {
+  "ledgerVersion": 3,
+  "counts": {
+   "A": 5,
+   "foundA": 5,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 4,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 4,
+   "B": 1,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [],
+  "bcSeen": [
+   "S3.i2"
+  ],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S1.e7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i4"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i2"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i2"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": true,
+    "hitUnits": [
+     "S1.e7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S3.i2"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   },
+   {
+    "id": "H1",
+    "grade": "B",
+    "pattern": "중요 정보 누락",
+    "origin": "S3.i5",
+    "spread": [
+     "S4.b5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i5"
+   }
+  ],
+  "score": 100
+ },
+ "finals4@v2": {
+  "ledgerVersion": 2,
+  "counts": {
+   "A": 5,
+   "foundA": 4,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 4,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 0,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [],
+  "bcSeen": [
+   "S5.n4"
+  ],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n5"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b6"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b4"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n4"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n4"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n4",
+     "S5.n5"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   }
+  ],
+  "score": 80
+ },
+ "finals4@v3": {
+  "ledgerVersion": 3,
+  "counts": {
+   "A": 5,
+   "foundA": 4,
+   "falseMarks": 0,
+   "splitMarks": 0,
+   "marks": 4,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 1,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [],
+  "bcSeen": [
+   "S5.n4"
+  ],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n5"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b6"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b4"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n4"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n4"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S5.n4",
+     "S5.n5"
+    ],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   },
+   {
+    "id": "H1",
+    "grade": "B",
+    "pattern": "중요 정보 누락",
+    "origin": "S3.i5",
+    "spread": [
+     "S4.b5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i5"
+   }
+  ],
+  "score": 80
+ },
+ "bcSplit@v2": {
+  "ledgerVersion": 2,
+  "counts": {
+   "A": 5,
+   "foundA": 0,
+   "falseMarks": 2,
+   "splitMarks": 0,
+   "marks": 2,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 0,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [
+   "S4.b5",
+   "S5.n2"
+  ],
+  "bcSeen": [],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   }
+  ],
+  "score": 20
+ },
+ "bcSplit@v3": {
+  "ledgerVersion": 3,
+  "counts": {
+   "A": 5,
+   "foundA": 0,
+   "falseMarks": 1,
+   "splitMarks": 0,
+   "marks": 2,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 0,
+   "B": 1,
+   "C": 2
+  },
+  "decision": "reject",
+  "shouldReject": true,
+  "decisionOk": true,
+  "falseMarks": [
+   "S5.n2"
+  ],
+  "bcSeen": [
+   "S4.b5"
+  ],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   },
+   {
+    "id": "H1",
+    "grade": "B",
+    "pattern": "중요 정보 누락",
+    "origin": "S3.i5",
+    "spread": [
+     "S4.b5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b5"
+    ],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i5"
+   }
+  ],
+  "score": 30
+ },
+ "messy@v2": {
+  "ledgerVersion": 2,
+  "counts": {
+   "A": 5,
+   "foundA": 1,
+   "falseMarks": 1,
+   "splitMarks": 0,
+   "marks": 2,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 1,
+   "B": 0,
+   "C": 2
+  },
+  "decision": "approve",
+  "shouldReject": true,
+  "decisionOk": false,
+  "falseMarks": [
+   "S1.e1"
+  ],
+  "bcSeen": [],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   }
+  ],
+  "score": 23
+ },
+ "messy@v3": {
+  "ledgerVersion": 3,
+  "counts": {
+   "A": 5,
+   "foundA": 1,
+   "falseMarks": 1,
+   "splitMarks": 0,
+   "marks": 2,
+   "aFinal": 4,
+   "originable": 4,
+   "originHits": 1,
+   "B": 1,
+   "C": 2
+  },
+  "decision": "approve",
+  "shouldReject": true,
+  "decisionOk": false,
+  "falseMarks": [
+   "S1.e1"
+  ],
+  "bcSeen": [],
+  "splitMarks": [],
+  "perItem": [
+   {
+    "id": "L1",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S4.b7",
+    "spread": [
+     "S5.n5"
+    ],
+    "found": true,
+    "hitUnits": [
+     "S4.b7"
+    ],
+    "originHit": true,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S4.b7"
+   },
+   {
+    "id": "L2",
+    "grade": "A",
+    "pattern": "근거보다 큰 결론",
+    "origin": "S1.e7",
+    "spread": [
+     "S2.r7",
+     "S3.i5",
+     "S4.b6"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L3",
+    "grade": "A",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S3.i4",
+    "spread": [
+     "S4.b4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i4"
+   },
+   {
+    "id": "L4",
+    "grade": "C",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e2",
+    "spread": [
+     "S2.r2",
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S1.e2"
+   },
+   {
+    "id": "L5",
+    "grade": "C",
+    "pattern": "원자료에 없는 내용",
+    "origin": "S2.r2",
+    "spread": [
+     "S3.i2",
+     "S4.b3",
+     "S5.n4"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S2.r2"
+   },
+   {
+    "id": "L6",
+    "grade": "A",
+    "pattern": "한정어·조건 탈락",
+    "origin": "S1.e7",
+    "spread": [],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": false,
+    "stopAt": "S1.e7"
+   },
+   {
+    "id": "L4b",
+    "grade": "A",
+    "pattern": "기타",
+    "origin": "S3.i2",
+    "spread": [
+     "S4.b3",
+     "S4.b8",
+     "S5.n4",
+     "S5.n5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": false,
+    "reachedFinal": true,
+    "stopAt": "S3.i2"
+   },
+   {
+    "id": "H1",
+    "grade": "B",
+    "pattern": "중요 정보 누락",
+    "origin": "S3.i5",
+    "spread": [
+     "S4.b5"
+    ],
+    "found": false,
+    "hitUnits": [],
+    "originHit": false,
+    "originConfirmed": true,
+    "reachedFinal": true,
+    "stopAt": "S3.i5"
+   }
+  ],
+  "score": 23
+ }
+}
