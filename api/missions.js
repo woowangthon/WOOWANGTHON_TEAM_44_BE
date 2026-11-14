@@ -42,7 +42,7 @@ export default handler(async (req) => {
   const fixed = fixedList();
   return {
     missions: await Promise.all(allMissions().map(async (m) => ({
-      id: m.id, title: m.title, brief: m.brief, today: m.today, sources: Object.keys(m.sources).length, stages: m.stages.map((s) => ({ key: s.key, name: s.name, kind: s.kind, inputs: s.inputs })),
+      id: m.id, title: m.title, brief: m.brief, today: m.today, sources: Object.keys(m.sources).length, stages: m.stages.map((s) => ({ key: s.key, name: s.name, kind: s.kind, inputs: s.inputs, instruction: s.instruction ?? '' })), // 기본 지시(팀장 모드에서 「기본 지시로 채우기」). 정답과 무관
       fixed: await Promise.all(fixed.filter((f) => f.missionId === m.id).map((f) => runMeta(f.runId))),
       baseline: await baselines(m.id),
     }))),
