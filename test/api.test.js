@@ -79,3 +79,12 @@ test('검수 전: 일반 사용자 답안은 409, 만든 사람 풀이는 저장
   assert.equal(st.body.objections.accepted, 1);
   assert.equal(st.body.usage.makerAnswers, 1);
 });
+
+test('공개 수치: G1 장부 변화는 나눔·합침을 넣으면 항목 수가 맞는다', async () => {
+  _memReset();
+  const st = await call(stats, { method: 'GET' });
+  const g1 = st.body.ledgers.find((l) => l.runId === 'm4-base-anthropic-11121636-2');
+  assert.ok(g1);
+  assert.deepEqual([g1.aiItems, g1.split, g1.merged, g1.deleted, g1.added, g1.finalItems], [7, 3, 1, 2, 1, 8]);
+  for (const l of st.body.ledgers) assert.equal(l.aiItems + l.split - l.merged - l.deleted + l.added, l.finalItems, l.runId);
+});

@@ -28,7 +28,7 @@ export default handler(async () => {
     if (!v1 || !rv) continue;
     const log = rv.reviewLog ?? [];
     const by = (re) => new Set(log.filter((l) => re.test(l.action)).map((l) => l.item)).size;
-    ledgers.push({ runId: id, aiItems: v1.items.length, aiA: v1.items.filter((x) => x.grade === 'A').length, finalItems: rv.items.length, finalA: rv.items.filter((x) => x.grade === 'A').length, deleted: by(/^delete$/), gradeChanged: by(/^edit:grade$/), added: by(/^add$/), version: rv.version });
+    ledgers.push({ runId: id, aiItems: v1.items.length, aiA: v1.items.filter((x) => x.grade === 'A').length, finalItems: rv.items.length, finalA: rv.items.filter((x) => x.grade === 'A').length, split: by(/^auto:splitNew$/), merged: by(/^auto:merge$/), deleted: by(/^delete$/), gradeChanged: by(/^edit:grade$/), added: by(/^add$/), version: rv.version });
   }
   return { patterns: Object.values(patterns).sort((a, b) => b.reviewed + b.ai - a.reviewed - a.ai), usage: await publicCounts(), objections: { total: obs.length, accepted: obs.filter((o) => o.status === 'accepted').length, rejected: obs.filter((o) => o.status === 'rejected').length, open: obs.filter((o) => o.status === 'open').length }, autoCandidates: { total: auto.length, accepted: auto.filter((o) => o.status === 'accepted').length, rejected: auto.filter((o) => o.status === 'rejected').length, open: auto.filter((o) => o.status === 'open').length }, ledgers, capLeft: await capLeft(), spentToday: await spentToday() };
 });
