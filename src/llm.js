@@ -173,7 +173,9 @@ const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
  */
 // timeoutMs: 서버(Vercel 함수 300초) 안에서는 기본 270초. 스크립트는 길게 줄 수 있다(G0: 감사 high는 4~5분)
 // deadlineMs: 이 호출 전체(형식 다시 요청 포함)에 쓸 수 있는 시간. 서버 함수 안에서 300초를 넘기지 않게 한다. 남은 시간이 모자라면 다시 요청하지 않고 멈춘다
-export async function callJson({ model, system, user, schema, check = () => [], maxTokens = 8000, effort, label = '', retryWait = 4000, timeoutMs = Number(process.env.LLM_TIMEOUT_MS || 270e3), retries = 3, deadlineMs = null }) {
+// onTruncate(): 길이 상한에 잘렸을 때 다음 요청을 바꾼다({ effort, maxTokens, note }). 같은 요청을 그대로 다시 보내면 또 잘리기 때문이다
+// salvage(text): 두 번째에도 잘렸으면 받은 글에서 끝까지 온 부분만 살린다(없으면 null). 살린 결과에는 partial: true
+export async function callJson({ model, system, user, schema, check = () => [], maxTokens = 8000, effort, label = '', retryWait = 4000, timeoutMs = Number(process.env.LLM_TIMEOUT_MS || 270e3), retries = 3, deadlineMs = null, onTruncate = null, salvage = null }) {
   const start = Date.now();
   const left = () => (deadlineMs ? deadlineMs - (Date.now() - start) : Infinity);
   const company = companyOf(model);
@@ -182,13 +184,14 @@ export async function callJson({ model, system, user, schema, check = () => [], 
   if (!available(company)) throw new LlmError(`${company} 키가 없습니다`, 503);
   let prompt = user;
   let last;
+  let curEffort = effort, curMax = maxTokens;
   for (let attempt = 1; attempt <= 2; attempt++) {
     if (attempt > 1 && left() < 30e3) break; // 다시 요청할 시간이 없다
     await takeCall(company);
     let res;
     const t0 = Date.now();
     for (let net = 0; ; net++) {
-      try { res = await fn(model, { system, user: prompt, schema, maxTokens, effort, timeoutMs: Math.max(1000, Math.min(timeoutMs, left())) }); break; }
+      try { res = await fn(model, { system, user: prompt, schema, maxTokens: curMax, effort: curEffort, timeoutMs: Math.max(1000, Math.min(timeoutMs, left())) }); break; }
       catch (e) {
         usageLog.push({ label, model, company, attempt, failed: String(e.message).slice(0, 160), ms: Date.now() - t0 });
         if (e.httpStatus === 402) await markDown(company, e.message).catch(() => {});
@@ -201,14 +204,25 @@ export async function callJson({ model, system, user, schema, check = () => [], 
     const p = PRICE[model] ?? [0, 0];
     const cost = (res.input * p[0] + res.output * p[1]) / 1e6;
     await incr(costKey(company), Math.ceil(cost * UNIT), 3 * 24 * 3600);
-    usageLog.push({ label, model, company, attempt, input: res.input, output: res.output, cost, ms, stop: res.stop });
+    usageLog.push({ label, model, company, attempt, input: res.input, output: res.output, cost, ms, stop: res.stop, effort: curEffort, maxTokens: curMax });
     let output = null, problems;
     try { const s = res.text.indexOf('{'); output = JSON.parse(res.text.slice(s, res.text.lastIndexOf('}') + 1)); } catch { problems = ['JSON 아님']; }
     if (output) { const errs = validate(schema, output); problems = errs.length ? errs : check(output); }
-    if (/max_tokens|length|MAX_TOKENS/.test(String(res.stop))) problems = [...(problems ?? []), '길이 상한에서 잘림'];
-    last = { output, problems, attempts: attempt, model, company, ms, cost };
+    const truncated = /max_tokens|length|MAX_TOKENS/.test(String(res.stop));
+    if (truncated) problems = [...(problems ?? []), '길이 상한에서 잘림'];
+    last = { output, problems, attempts: attempt, model, company, ms, cost, text: res.text, truncated };
     if (!problems.length) return last;
-    prompt = `${user}\n\n[앞선 답의 형식 문제 — 고쳐서 같은 형식으로 다시 답하세요]\n- ${problems.slice(0, 10).join('\n- ')}`;
+    if (truncated && onTruncate) {
+      const t = onTruncate(attempt) ?? {};
+      curEffort = t.effort ?? curEffort; curMax = t.maxTokens ?? curMax;
+      prompt = `${user}\n\n${t.note ?? '[앞선 답이 길이 상한에서 잘렸습니다. 더 짧게 같은 형식으로 다시 답하세요]'}`;
+    } else {
+      prompt = `${user}\n\n[앞선 답의 형식 문제 — 고쳐서 같은 형식으로 다시 답하세요]\n- ${problems.slice(0, 10).join('\n- ')}`;
+    }
+  }
+  if (!last.output && last.truncated && salvage) {
+    const part = salvage(last.text);
+    if (part && !validate(schema, part).length) return { ...last, output: part, partial: true, problems: ['길이 상한에서 잘려 끝까지 받은 항목만 살림'] };
   }
   if (!last.output) throw new LlmError(`${last.problems.includes('길이 상한에서 잘림') ? '출력이 길어 잘림' : 'AI 출력 형식 오류'}: ${last.problems.join('; ')}`, 502);
   return last;

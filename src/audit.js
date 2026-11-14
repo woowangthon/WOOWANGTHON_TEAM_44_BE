@@ -53,12 +53,40 @@ export function auditUser(mission, docs, stages) {
  *  Google 라이브 감사(Flash)는 출력 상한 16k. 고정 판(스크립트)은 high, 32k, 시간 넉넉히 */
 export const auditEffort = (auditor, live) => (live && ['OpenAI', 'Google'].includes(companyOf(auditor)) ? 'medium' : 'high');
 export const LIVE_AUDIT_BUDGET_MS = () => Number(process.env.LIVE_AUDIT_BUDGET_MS || 240e3);
+/** 출력 상한. Gemini는 「생각」 토큰도 상한에 같이 센다. 라이브 Flash(생각 medium)는 G1에 7~12k를 썼고, 반려된 결과까지 붙으면 16k를 넘어 잘렸다(11/14 운영) */
+// 라이브 Google은 28k: 초당 약 146토큰(11/14 실측 20,568토큰/141초)이라 28k면 약 190초. 240초 안에 생각을 줄여 다시 요청할 시간(45초 이상)을 남긴다
+export const auditMaxTokens = (auditor, live) => (live && companyOf(auditor) === 'Google' ? 28000 : 32000);
+export const TRUNCATE_NOTE = '[앞선 답이 길이 상한에서 잘렸습니다. 생각은 짧게 하고, 오류는 중요한 순서(A등급 먼저)로 최대 12개만 쓰세요. why·fix·prevent는 각각 한 문장, evidence는 1개씩만. 같은 형식으로 다시 답하세요.]';
+/** 잘린 JSON에서 끝까지 온 errors 항목만 살린다(마지막 반쪽 항목은 버림) */
+export function salvageAudit(text) {
+  const s = String(text ?? '');
+  const k = s.indexOf('"errors"');
+  if (k < 0) return null;
+  const open = s.indexOf('[', k);
+  if (open < 0) return null;
+  const items = [];
+  let depth = 0, start = -1, inStr = false, esc = false;
+  for (let i = open + 1; i < s.length; i++) {
+    const c = s[i];
+    if (inStr) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') inStr = false; continue; }
+    if (c === '"') { inStr = true; continue; }
+    if (c === '{') { if (depth === 0) start = i; depth++; }
+    else if (c === '}') { depth--; if (depth === 0 && start >= 0) { try { items.push(JSON.parse(s.slice(start, i + 1))); } catch { /* 반쪽 */ } start = -1; } }
+    else if (c === ']' && depth === 0) break;
+  }
+  return { errors: items, overall: '(출력이 길이 상한에서 잘려 끝까지 받은 항목만 살렸습니다)' };
+}
 export async function audit(auditor, mission, docs, stages, label = '', { live = false } = {}) {
   const t0 = Date.now();
-  const maxTokens = live && companyOf(auditor) === 'Google' ? 16000 : 32000;
-  const { output } = await callJson({ model: auditor, system: auditSystem(mission), user: auditUser(mission, docs, stages), schema: AUDIT_SCHEMA, maxTokens, effort: auditEffort(auditor, live), label, retryWait: 3000,
+  const maxTokens = auditMaxTokens(auditor, live);
+  const effort = auditEffort(auditor, live);
+  const r = await callJson({ model: auditor, system: auditSystem(mission), user: auditUser(mission, docs, stages), schema: AUDIT_SCHEMA, maxTokens, effort, label, retryWait: 3000,
+    // 잘리면 같은 요청을 반복하지 않는다: 생각을 줄이고(Google·OpenAI는 low) 항목 수와 길이를 줄여 한 번만 다시. 그래도 잘리면 받은 항목만 살린다
+    onTruncate: () => ({ effort: ['OpenAI', 'Google'].includes(companyOf(auditor)) ? 'low' : effort, note: TRUNCATE_NOTE }),
+    salvage: salvageAudit,
     ...(live ? { timeoutMs: LIVE_AUDIT_BUDGET_MS(), deadlineMs: LIVE_AUDIT_BUDGET_MS(), retries: 0 } : { timeoutMs: Number(process.env.AUDIT_TIMEOUT_MS || 900e3) }) });
-  return { model: auditor, company: companyOf(auditor), effort: auditEffort(auditor, live), at: new Date().toISOString(), sec: Math.round((Date.now() - t0) / 1000), errors: output.errors, overall: output.overall };
+  return { model: auditor, company: companyOf(auditor), effort, at: new Date().toISOString(), sec: Math.round((Date.now() - t0) / 1000), errors: r.output.errors, overall: r.output.overall,
+    ...(r.attempts > 1 ? { attempts: r.attempts } : {}), ...(r.partial ? { partial: true } : {}) };
 }
 
 // ---------------- 코드 대조 ----------------

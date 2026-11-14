@@ -185,7 +185,8 @@ export function auditLabel(s) {
   if (s.phase !== 'done') return 'AI 감사(두 회사) · 사람 확인 전';
   const head = done.length >= 2 ? `AI 감사(${done.length}회사: ${done.join('·')})` : `AI 감사(한 회사: ${done.join('') || '없음'})`;
   const kindOf = (c) => (s.auditErrors ?? []).find((x) => x.startsWith(`${c}:`))?.split(':')[1]?.trim().split(' (')[0] || '응답 실패';
-  return `${head}${failed.length ? ` · ${failed.map((c) => `${c} 감사 ${kindOf(c)}`).join(' · ')}` : ''} · 사람 확인 전`;
+  const partial = (s.audits ?? []).filter((a) => a.partial).map((a) => `${a.company} 감사는 잘려 받은 항목만`);
+  return `${head}${failed.length ? ` · ${failed.map((c) => `${c} 감사 ${kindOf(c)}`).join(' · ')}` : ''}${partial.length ? ` · ${partial.join(' · ')}` : ''} · 사람 확인 전`;
 }
 
 /** 브라우저로 보내는 상태 */
@@ -195,7 +196,7 @@ function view(s) {
     plan: s.plan.map(({ key, name, kind, inputs, check }) => ({ key, name, kind, inputs, check: !!check })),
     pending: s.pending ? { attempt: s.pending.attempt ?? 1, units: s.pending.units ?? null, rejected: s.pending.rejected ? { reason: s.pending.rejected.reason } : null } : null,
     stages: s.stages.map(({ key, name, kind, units, attempts }) => ({ key, name, kind, units, attempts: attempts.map((a) => ({ n: a.n, verdict: a.verdict, reason: a.reason ?? null })) })),
-    signoff: s.signoff, auditors: s.auditors ?? auditorsFor(s.workerCompany, { live: true }), auditsDone: (s.audits ?? []).map((a) => ({ model: a.model, company: a.company, count: a.errors.length, sec: a.sec })), auditErrors: s.auditErrors ?? [],
+    signoff: s.signoff, auditors: s.auditors ?? auditorsFor(s.workerCompany, { live: true }), auditsDone: (s.audits ?? []).map((a) => ({ model: a.model, company: a.company, count: a.errors.length, sec: a.sec, ...(a.partial ? { partial: true } : {}) })), auditErrors: s.auditErrors ?? [],
     result: s.result ?? null, ledger: s.phase === 'done' ? s.ledger : null,
     label: auditLabel(s),
   };
