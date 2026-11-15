@@ -40,8 +40,11 @@ export default handler(async (req) => {
     };
   }
   const fixed = fixedList();
+  // 미션 순서는 fixed.json에 처음 나오는 순서를 따른다(첫 판 = 홈의 「첫 판」)
+  const order = (m) => { const i = fixed.findIndex((f) => f.missionId === m.id); return i < 0 ? Infinity : i; };
+  const ms = allMissions().map((m, i) => [m, i]).sort((a, b) => order(a[0]) - order(b[0]) || a[1] - b[1]).map(([m]) => m);
   return {
-    missions: await Promise.all(allMissions().map(async (m) => ({
+    missions: await Promise.all(ms.map(async (m) => ({
       id: m.id, title: m.title, brief: m.brief, today: m.today, sources: Object.keys(m.sources).length, stages: m.stages.map((s) => ({ key: s.key, name: s.name, kind: s.kind, inputs: s.inputs, instruction: s.instruction ?? '' })), // 기본 지시(팀장 모드에서 「기본 지시로 채우기」). 정답과 무관
       fixed: await Promise.all(fixed.filter((f) => f.missionId === m.id).map((f) => runMeta(f.runId))),
       baseline: await baselines(m.id),
