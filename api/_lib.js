@@ -1,7 +1,11 @@
 // API 공통: CORS, 오류 응답, 본문 읽기, 기기 ID·만든 사람 확인
 export function handler(fn) {
   return async (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
+    // ALLOWED_ORIGIN은 쉼표로 여러 출처를 받는다(예: vercel.app 주소와 개인 도메인). 요청 출처가 목록에 있으면 그 출처를 돌려준다
+    const allow = (process.env.ALLOWED_ORIGIN || '*').split(',').map((x) => x.trim()).filter(Boolean);
+    const origin = req.headers?.origin;
+    res.setHeader('Access-Control-Allow-Origin', allow.includes('*') ? '*' : allow.includes(origin) ? origin : allow[0]);
+    res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Headers', 'content-type,x-review-code');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
     res.setHeader('Cache-Control', 'no-store');
