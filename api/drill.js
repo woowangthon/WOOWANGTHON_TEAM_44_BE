@@ -13,6 +13,15 @@ import { deviceHistory } from '../src/record.js';
 import { eligible, publicQuestion, pickQuestions, gradeDrill, regradeDrill } from '../src/drill.js';
 import { currentSets, saveDrillAnswer } from '../src/drillstore.js';
 import { loadMock, mockQuestions, mockCrowd } from '../src/crowd.js';
+import { loadMission } from '../src/mission.js';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
+/** 판 목록(data/fixed.json)에 내는 판. 짧은 연습을 여는 판 안내는 이 목록 안에서만 한다(모의 문제집 판은 목록에 없다) */
+const listed = () => {
+  const f = process.env.FIXED_FILE || join(process.cwd(), 'data', 'fixed.json');
+  try { return new Set((existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : []).map((x) => x.runId)); } catch { return new Set(); }
+};
 
 const kstDay = () => new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10);
 const label = (set) => `이 판 정답표(사람 검수 ${set.ledgerVersion}판) 기준 · 이의 제기 가능`;
@@ -37,16 +46,22 @@ export default handler(async (req) => {
     // 패턴으로 고르면 나오는 문항이 모두 틀린 문장이 되어 정답이 샌다
     if ('pattern' in b) throw err('패턴으로 문항을 고르는 기능은 없습니다');
     const n = Math.min(5, Math.max(1, Number.parseInt(b.n, 10) || 3));
-    const pool = []; const metas = []; let locked = false;
+    const pool = []; const metas = []; let locked = false; const unlock = []; const shown = listed();
     for (const runId of fixedRunIds()) {
       const set = (await currentSets(runId)).at(-1);
       if (!set || !eligible(set)) continue;
-      if (!(await sismember(`ss2:seen:${runId}`, b.deviceId))) { locked = true; continue; }
+      if (!(await sismember(`ss2:seen:${runId}`, b.deviceId))) {
+        locked = true;
+        if (shown.has(runId)) { const run = await getRun(runId); unlock.push({ runId, title: (() => { try { return loadMission(run.missionId).title; } catch { return runId; } })() }); }
+        continue;
+      }
       pool.push(...set.questions.map((q) => ({ ...q, runId })));
       metas.push({ runId, ledgerVersion: set.ledgerVersion, drillsetVersion: set.version, label: label(set) });
     }
     if (!pool.length) {
-      return { mode: 'none', locked, reason: locked ? '판을 먼저 풀면 그 판 문장으로 짧은 연습이 열립니다' : '문항 준비 중', set: null, sets: [], questions: [], left: 0 };
+      // 짧은 연습 문항이 있는 판은 일부다. 어느 판을 결재하면 열리는지 알려 준다(다른 판만 푼 사람이 「판을 먼저 풀라」는 말에 헷갈리지 않게)
+      const names = unlock.map((u) => `「${u.title}」`).join(', ');
+      return { mode: 'none', locked, unlock, reason: locked ? (names ? `짧은 연습 문항은 지금 ${names} 판의 문장으로만 냅니다. 그 판을 결재하면 열립니다.` : '판을 먼저 풀면 그 판 문장으로 짧은 연습이 열립니다') : '문항 준비 중', set: null, sets: [], questions: [], left: 0 };
     }
     const seen = new Set(await smembers(`ss2:dseen:${b.deviceId}`));
     const p = pickQuestions(pool, { deviceId: b.deviceId, day: kstDay(), seen, n });

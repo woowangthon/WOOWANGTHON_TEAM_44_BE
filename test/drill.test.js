@@ -84,6 +84,8 @@ test('비노출 6.1-1·3·5: 결재 전엔 문항이 없고(복습형), 결재 �
   assert.deepEqual([s.n, s.error, s.ok, s.eligible], [22, 12, 10, true]);
   const before = await call(drill, { body: { action: 'next', deviceId: 'dev-user-0001' } });
   assert.equal(before.status, 200); assert.equal(before.body.mode, 'none'); assert.equal(before.body.locked, true); assert.deepEqual(before.body.questions, []);
+  // 어느 판을 결재하면 열리는지 알려 준다(판 목록에 있는 판만)
+  assert.ok(before.body.unlock.some((u) => u.runId === 'm4-base-anthropic-11121636-2' && u.title.includes('지원 사업'))); assert.match(before.body.reason, /결재하면 열립니다/);
   // 결재 전에는 qid를 알아도 채점(=정답)을 받지 못한다
   const probe = await call(drill, { body: { action: 'answer', deviceId: 'dev-user-0001', qid: set3.questions[0].qid, verdict: 'ok' } });
   assert.equal(probe.status, 403);
