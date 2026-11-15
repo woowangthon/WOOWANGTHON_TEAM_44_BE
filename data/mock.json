@@ -5,10 +5,11 @@
   "questions": [
     { "runId": "m3-base-anthropic-11121624-2", "uid": "S4.b1" },
     { "runId": "m3-base-anthropic-11121624-1", "uid": "S3.i2" },
-    { "runId": "m3-base-anthropic-11121624-1", "uid": "S2.r9" },
     { "runId": "m3-base-anthropic-11121624-2", "uid": "S1.e14" },
+    { "runId": "m3-base-anthropic-11121624-1", "uid": "S2.r9" },
     { "runId": "m3-base-anthropic-11121624-2", "uid": "S1.e19" },
-    { "runId": "m3-base-anthropic-11121624-2", "uid": "S4.b3" },
-    { "runId": "m3-base-anthropic-11121624-1", "uid": "S4.b2" }
-  ]
+    { "runId": "m3-base-anthropic-11121624-1", "uid": "S4.b2" },
+    { "runId": "m3-base-anthropic-11121624-2", "uid": "S4.b3" }
+  ],
+  "_order": "맞음·틀림이 번갈아 나오지 않게 섞은 순서(정답을 순서로 짐작하지 못하게)"
 }
