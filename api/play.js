@@ -12,11 +12,12 @@ import { scoreAnswer, rescore, docsOf } from '../src/score.js';
 import { saveAnswer, getAnswer, getTrace, deviceHistory, firstAnswers, getAnswers } from '../src/record.js';
 import { provenanceOf, crowdOf, patternSkill } from '../src/insight.js';
 import { sanitizeTrace } from '../src/trace.js';
-import { habitOf } from '../src/patterns.js';
+import { habitOf, HABITS } from '../src/patterns.js';
 import { triageAnswer, getTriage } from '../src/triage.js';
 import { loadMission, loadDocs } from '../src/mission.js';
 import { patternTable } from './stats.js';
 import { sismember } from '../src/store.js';
+import { runCrowd, othersSkill } from '../src/crowd.js';
 
 /** 결과 화면에 내보내는 장부(채점 뒤에만). extra = { prov, crowd } 항목 id별 */
 const revealLedger = (L, extra = {}) => ({
@@ -57,7 +58,7 @@ export default handler(async (req) => {
     const trace = sanitizeTrace(b.trace, run, docsOf(run));
     const result = scoreAnswer(run, L, { ...b, trace });
     const rec = await saveAnswer({ ...b, trace, deviceId, ledgerVersion: L.version, result });
-    return { answerId: rec.id, result, ledger: await revealFull(run, L, await ledgerVersions(run.id)) };
+    return { answerId: rec.id, result, ledger: await revealFull(run, L, await ledgerVersions(run.id)), crowd: await runCrowd(run.id).catch(() => null) };
   }
   if (b.action === 'result') {
     const a = await getAnswer(b.answerId);
@@ -68,7 +69,7 @@ export default handler(async (req) => {
     // 이벤트 원본은 따로 읽어 채점에만 쓴다. 응답의 answer에는 싣지 않는다
     const trace = a.hasTrace ? await getTrace(a.id) : null;
     const r = rescore(run, vs, trace ? { ...a, trace } : a);
-    return { answer: a, result: r.now, before: r.before ?? null, changed: r.changed, ledger: await revealFull(run, vs.filter((l) => l.status === 'reviewed').at(-1), vs), triage: await getTriage(a.id) };
+    return { answer: a, result: r.now, before: r.before ?? null, changed: r.changed, ledger: await revealFull(run, vs.filter((l) => l.status === 'reviewed').at(-1), vs), triage: await getTriage(a.id), crowd: await runCrowd(run.id).catch(() => null) };
   }
   if (b.action === 'triage') {
     // 채점이 끝난 답안만(사람 검수 장부가 있어야 「장부에 없는 칸」이 정해진다). 실패해도 결과 화면은 그대로다
@@ -114,7 +115,7 @@ export default handler(async (req) => {
         if (L) scored.push(scoreAnswer(await getRun(a.runId), L, a));
       } catch { /* 지워진 판 등은 건너뛴다 */ }
     }
-    return { history, skill: patternSkill(scored) };
+    return { history, skill: patternSkill(scored), others: await othersSkill(b.deviceId).catch(() => null), habits: HABITS };
   }
   throw err('모르는 동작');
 });

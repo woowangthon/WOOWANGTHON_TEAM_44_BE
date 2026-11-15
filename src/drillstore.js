@@ -40,7 +40,7 @@ export async function currentSets(runId) {
 }
 
 /** 드릴 답안 저장. 정답 여부는 저장하지 않고 읽을 때 계산한다(판 답안과 같은 원칙) */
-export async function saveDrillAnswer({ deviceId, maker, q, set, verdict, pick, pattern, trace }) {
+export async function saveDrillAnswer({ deviceId, maker, q, set, verdict, pick, pattern, trace, mock = false }) {
   const id = rid('dan');
   const repeat = !(await sadd(`ss2:dseen:${deviceId}`, q.qid, LONG));
   const num = (x) => (Number.isFinite(x) && x >= 0 ? Math.round(Math.min(x, 36e5)) : null);
@@ -49,11 +49,11 @@ export async function saveDrillAnswer({ deviceId, maker, q, set, verdict, pick, 
     drillsetVersion: set.version, ledgerVersion: set.ledgerVersion, verdict,
     pick: String(pick ?? '').slice(0, 200), pattern: pattern ? String(pattern).slice(0, 40) : null,
     trace: trace && typeof trace === 'object' ? { elapsedMs: num(trace.elapsedMs), paraMs: num(trace.paraMs), openedFull: !!trace.openedFull } : null,
-    repeat, first: !repeat,
+    repeat, first: !repeat, ...(mock ? { mock: true } : {}),
   };
   await setJson(`ss2:dans:${id}`, rec, LONG);
   await lpushCapped('ss2:drill:answers', { id, qid: q.qid, at: rec.at, maker: rec.maker, first: rec.first, deviceId });
-  await lpushCapped(`ss2:dev:${deviceId}`, { kind: 'drill', id, qid: q.qid, runId: set.runId, at: rec.at, ledgerVersion: set.ledgerVersion }, 200);
+  await lpushCapped(`ss2:dev:${deviceId}`, { kind: 'drill', ...(mock ? { mock: true } : {}), id, qid: q.qid, runId: set.runId, at: rec.at, ledgerVersion: set.ledgerVersion }, 200);
   await incr(`ss2:count:${maker ? 'drillMaker' : 'drill'}`);
   return rec;
 }

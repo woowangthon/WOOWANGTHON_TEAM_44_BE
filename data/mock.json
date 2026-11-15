@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "title": "모의 문제집 1회 · 고용 통계 요약",
+  "about": "판 하나를 다 풀기 전에 감을 잡는 7문항입니다. AI가 고용 통계 보도자료를 임원 보고로 정리한 실제 작업 기록에서, 사람이 검수한 정답표로 판단이 갈리지 않는 문장만 골랐습니다.",
+  "questions": [
+    { "runId": "m3-base-anthropic-11121624-2", "uid": "S4.b1" },
+    { "runId": "m3-base-anthropic-11121624-1", "uid": "S3.i2" },
+    { "runId": "m3-base-anthropic-11121624-1", "uid": "S2.r9" },
+    { "runId": "m3-base-anthropic-11121624-2", "uid": "S1.e14" },
+    { "runId": "m3-base-anthropic-11121624-2", "uid": "S1.e19" },
+    { "runId": "m3-base-anthropic-11121624-2", "uid": "S4.b3" },
+    { "runId": "m3-base-anthropic-11121624-1", "uid": "S4.b2" }
+  ]
+}
