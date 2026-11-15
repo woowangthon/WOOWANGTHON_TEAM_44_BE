@@ -23,8 +23,9 @@ export async function saveAnswer({ runId, deviceId, maker, marks, decision, reas
   await lpushCapped(`ss2:answers`, { id, runId, at: rec.at, maker: rec.maker, first, deviceId: rec.deviceId });
   const eu = result?.evidenceUse;
   const evidence = eu ? { found: eu.found.n, checked: eu.found.checked, missed: eu.missed.n, neverLooked: eu.missed.neverLooked } : undefined;
-  if (deviceId) await lpushCapped(`ss2:dev:${deviceId}`, { kind: 'shadow', id, runId, at: rec.at, ...rec.summary, marks: rec.marks.length, sourceViews: rec.sourceViews, elapsedSec: rec.elapsedSec, ...(evidence ? { evidence } : {}) }, 200);
-  if (maker) await setJson(`ss2:makerSolved:${runId}`, { at: rec.at, answerId: id }, LONG);
+  if (deviceId) await lpushCapped(`ss2:dev:${deviceId}`, { kind: 'shadow', id, runId, at: rec.at, first, ...rec.summary, marks: rec.marks.length, sourceViews: rec.sourceViews, elapsedSec: rec.elapsedSec, ...(evidence ? { evidence } : {}) }, 200);
+  // 만든 사람의 「정답 보기 전 첫 풀이」는 처음 한 번만 남긴다(다시 풀기로 덮어쓰지 않게)
+  if (maker && !(await getJson(`ss2:makerSolved:${runId}`))) await setJson(`ss2:makerSolved:${runId}`, { at: rec.at, answerId: id }, LONG);
   await incr(`ss2:count:${maker ? 'maker' : 'answers'}`);
   return rec;
 }

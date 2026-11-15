@@ -58,7 +58,7 @@ export default handler(async (req) => {
     const trace = sanitizeTrace(b.trace, run, docsOf(run));
     const result = scoreAnswer(run, L, { ...b, trace });
     const rec = await saveAnswer({ ...b, trace, deviceId, ledgerVersion: L.version, result });
-    return { answerId: rec.id, result, ledger: await revealFull(run, L, await ledgerVersions(run.id)), crowd: await runCrowd(run.id).catch(() => null) };
+    return { answerId: rec.id, first: rec.first, result, ledger: await revealFull(run, L, await ledgerVersions(run.id)), crowd: await runCrowd(run.id).catch(() => null) };
   }
   if (b.action === 'result') {
     const a = await getAnswer(b.answerId);
